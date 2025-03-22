@@ -1,6 +1,8 @@
 import type { Metadata } from "next";
 import { Geist } from "next/font/google";
 
+import { ClerkProvider } from "@clerk/nextjs";
+
 import { Toaster } from "@/components/ui/sonner";
 import { cn } from "@/lib/utils";
 
@@ -15,15 +17,17 @@ export const metadata: Metadata = {
 
 export default function Layout({ children }: React.PropsWithChildren) {
   return (
-    <html lang="en">
-      <body className={cn("antialiased", font.className)}>
-        {children}
-        <Toaster
-          toastOptions={{ className: font.className }}
-          theme="light"
-          richColors
-        />
-      </body>
-    </html>
+    <ClerkProvider>
+      <html lang="en">
+        <body className={cn("antialiased", font.className)}>
+          {children}
+          <Toaster
+            toastOptions={{ className: font.className }}
+            theme="light"
+            richColors
+          />
+        </body>
+      </html>
+    </ClerkProvider>
   );
 }

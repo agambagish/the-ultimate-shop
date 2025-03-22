@@ -9,6 +9,11 @@ export const businessTypeEnum = pgEnum("business_type", [
 ]);
 
 export const storeCategoryEnum = pgEnum("store_category", ["clothing", "toys"]);
+export const statusEnum = pgEnum("status", [
+  "activated",
+  "pending",
+  "deactivated",
+]);
 
 export const stores = pgTable("stores", {
   id: integer().primaryKey().generatedAlwaysAsIdentity(),
@@ -17,6 +22,7 @@ export const stores = pgTable("stores", {
   businessDescription: text().notNull(),
   firstName: text().notNull(),
   lastName: text().notNull(),
+  email: text().notNull().unique(),
   storeName: varchar({ length: 24 }).notNull(),
   storeUrl: text().notNull(),
   storeCategory: storeCategoryEnum().notNull(),
@@ -27,5 +33,5 @@ export const stores = pgTable("stores", {
   state: text().notNull(),
   city: text().notNull(),
   zipCode: text().notNull(),
-  userId: text().notNull().unique(),
+  status: statusEnum().notNull().default("pending"),
 });

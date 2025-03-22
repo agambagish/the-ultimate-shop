@@ -1,1 +1,6 @@
-export { businessTypeEnum, storeCategoryEnum, stores } from "./stores";
+export {
+  businessTypeEnum,
+  statusEnum,
+  storeCategoryEnum,
+  stores,
+} from "./stores";
