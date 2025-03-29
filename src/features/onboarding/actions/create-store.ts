@@ -8,7 +8,7 @@ import type { OnboardingSchema } from "@/features/onboarding/lib/onboarding-sche
 import { tryCatch } from "@/lib/try-catch";
 import { getEmail } from "@/lib/utils";
 
-export async function createStore(payload: OnboardingSchema) {
+export async function createStore(store: OnboardingSchema) {
   const user = await currentUser();
 
   if (!user?.id) {
@@ -22,8 +22,9 @@ export async function createStore(payload: OnboardingSchema) {
     db
       .insert(stores)
       .values({
-        ...payload,
+        ...store,
         email: getEmail(user),
+        userId: user.id,
       })
       .returning({ id: stores.id })
   );

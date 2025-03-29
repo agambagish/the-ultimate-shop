@@ -25,66 +25,68 @@ import { NavMain } from "@/features/dashboard/components/nav-main";
 import { NavSecondary } from "@/features/dashboard/components/nav-secondary";
 import { NavUser } from "@/features/dashboard/components/nav-user";
 
-const data = {
-  user: {
-    name: "shadcn",
-    email: "m@example.com",
-    avatar: "/avatars/shadcn.jpg",
-  },
-  navMain: [
-    {
-      title: "Dashboard",
-      url: "#",
-      icon: LayoutDashboardIcon,
-    },
-    {
-      title: "Products",
-      url: "#",
-      icon: PackageIcon,
-    },
-    {
-      title: "Orders",
-      url: "#",
-      icon: PackageOpenIcon,
-    },
-    {
-      title: "Customers",
-      url: "#",
-      icon: UsersIcon,
-    },
-    {
-      title: "Payments",
-      url: "#",
-      icon: WalletIcon,
-    },
-  ],
-  navSecondary: [
-    {
-      title: "Settings",
-      url: "#",
-      icon: SettingsIcon,
-    },
-    {
-      title: "Get Help",
-      url: "#",
-      icon: HelpCircleIcon,
-    },
-    {
-      title: "Search",
-      url: "#",
-      icon: SearchIcon,
-    },
-  ],
-};
-
 interface Props {
   storeName: string;
+  storeId: string;
 }
 
 export function DashboardSidebar({
   storeName,
+  storeId,
   ...props
 }: React.ComponentProps<typeof Sidebar> & Props) {
+  const data = {
+    user: {
+      name: "shadcn",
+      email: "m@example.com",
+      avatar: "/avatars/shadcn.jpg",
+    },
+    navMain: [
+      {
+        title: "Dashboard",
+        url: `/dashboard/${storeId}`,
+        icon: LayoutDashboardIcon,
+      },
+      {
+        title: "Products",
+        url: `/dashboard/${storeId}/products`,
+        icon: PackageIcon,
+      },
+      {
+        title: "Orders",
+        url: "#",
+        icon: PackageOpenIcon,
+      },
+      {
+        title: "Customers",
+        url: "#",
+        icon: UsersIcon,
+      },
+      {
+        title: "Payments",
+        url: "#",
+        icon: WalletIcon,
+      },
+    ],
+    navSecondary: [
+      {
+        title: "Settings",
+        url: "#",
+        icon: SettingsIcon,
+      },
+      {
+        title: "Get Help",
+        url: "#",
+        icon: HelpCircleIcon,
+      },
+      {
+        title: "Search",
+        url: "#",
+        icon: SearchIcon,
+      },
+    ],
+  };
+
   return (
     <Sidebar collapsible="offcanvas" {...props}>
       <SidebarHeader>

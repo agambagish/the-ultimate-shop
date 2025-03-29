@@ -4,6 +4,7 @@ import { Geist } from "next/font/google";
 import { ClerkProvider } from "@clerk/nextjs";
 
 import { Toaster } from "@/components/ui/sonner";
+import { EdgeStoreProvider } from "@/lib/edgestore";
 import { cn } from "@/lib/utils";
 
 import "./globals.css";
@@ -20,7 +21,7 @@ export default function Layout({ children }: React.PropsWithChildren) {
     <ClerkProvider>
       <html lang="en">
         <body className={cn("antialiased", font.className)}>
-          {children}
+          <EdgeStoreProvider>{children}</EdgeStoreProvider>
           <Toaster
             toastOptions={{ className: font.className }}
             theme="light"

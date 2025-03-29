@@ -1,6 +1,8 @@
+export { products, productsRelations, productStatusEnum } from "./products";
 export {
   businessTypeEnum,
-  statusEnum,
   storeCategoryEnum,
   stores,
+  storesRelations,
+  storeStatusEnum,
 } from "./stores";

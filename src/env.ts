@@ -7,6 +7,8 @@ export const env = createEnv({
   server: {
     DATABASE_URL: z.string().url(),
     CLERK_SECRET_KEY: z.string(),
+    EDGE_STORE_ACCESS_KEY: z.string(),
+    EDGE_STORE_SECRET_KEY: z.string(),
   },
   client: {
     NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY: z.string(),
@@ -26,6 +28,8 @@ export const env = createEnv({
     NEXT_PUBLIC_CLERK_SIGN_UP_FALLBACK_REDIRECT_URL:
       process.env.NEXT_PUBLIC_CLERK_SIGN_UP_FALLBACK_REDIRECT_URL,
     NEXT_PUBLIC_APP_URL: process.env.NEXT_PUBLIC_APP_URL,
+    EDGE_STORE_ACCESS_KEY: process.env.EDGE_STORE_ACCESS_KEY,
+    EDGE_STORE_SECRET_KEY: process.env.EDGE_STORE_SECRET_KEY,
   },
   emptyStringAsUndefined: true,
   onValidationError: (issues) => {

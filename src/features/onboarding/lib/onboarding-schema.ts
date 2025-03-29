@@ -40,6 +40,7 @@ export const onboardingSchema = createInsertSchema(stores, {
 }).omit({
   email: true,
   status: true,
+  userId: true,
 });
 
 export type OnboardingSchema = z.infer<typeof onboardingSchema>;
