@@ -32,13 +32,12 @@ import {
 } from "@/components/ui/select";
 import { Textarea } from "@/components/ui/textarea";
 import { productStatusEnum } from "@/db/schema";
+import { createProduct } from "@/features/dashboard/actions/product";
 import type { CreateProductSchema } from "@/features/dashboard/lib/create-product-schema";
 import { createProductSchema } from "@/features/dashboard/lib/create-product-schema";
 import { useUploadFile } from "@/hooks/use-upload-file";
 import { tryCatch } from "@/lib/try-catch";
 import { cn } from "@/lib/utils";
-
-import { createProduct } from "../actions/create-product";
 
 export function CreateProductForm() {
   const { progresses, isUploading, uploadFiles } = useUploadFile({

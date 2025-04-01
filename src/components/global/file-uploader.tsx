@@ -26,7 +26,7 @@ import { toast } from "sonner";
 
 import { Button } from "@/components/ui/button";
 import { Progress } from "@/components/ui/progress";
-import { useControllableState } from "@/features/dashboard/hooks/use-controllable-state";
+import { useControllableState } from "@/hooks/use-controllable-state";
 import { cn, formatBytes } from "@/lib/utils";
 
 interface Props extends React.HTMLAttributes<HTMLDivElement> {

@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useRef, useState } from "react";
 
-import { useCallbackRef } from "@/features/dashboard/hooks/use-callback-ref";
+import { useCallbackRef } from "@/hooks/use-callback-ref";
 
 interface UseControllableStateParams<T> {
   prop?: T | undefined;

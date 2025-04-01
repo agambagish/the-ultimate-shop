@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { Geist } from "next/font/google";
 
 import { ClerkProvider } from "@clerk/nextjs";
+import { NuqsAdapter as NuqsProvider } from "nuqs/adapters/next/app";
 
 import { Toaster } from "@/components/ui/sonner";
 import { EdgeStoreProvider } from "@/lib/edgestore";
@@ -21,7 +22,9 @@ export default function Layout({ children }: React.PropsWithChildren) {
     <ClerkProvider>
       <html lang="en">
         <body className={cn("antialiased", font.className)}>
-          <EdgeStoreProvider>{children}</EdgeStoreProvider>
+          <EdgeStoreProvider>
+            <NuqsProvider>{children}</NuqsProvider>
+          </EdgeStoreProvider>
           <Toaster
             toastOptions={{ className: font.className }}
             theme="light"

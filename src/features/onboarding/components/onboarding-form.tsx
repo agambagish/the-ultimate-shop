@@ -45,7 +45,7 @@ import {
 import { Textarea } from "@/components/ui/textarea";
 import { businessTypeEnum, storeCategoryEnum } from "@/db/schema";
 import { env } from "@/env";
-import { createStore } from "@/features/onboarding/actions/create-store";
+import { createStore } from "@/features/onboarding/actions/store";
 import type { OnboardingSchema } from "@/features/onboarding/lib/onboarding-schema";
 import { onboardingSchema } from "@/features/onboarding/lib/onboarding-schema";
 import type { Step } from "@/features/onboarding/lib/types";

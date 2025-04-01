@@ -188,10 +188,7 @@ export function ChartAreaInteractive() {
             </ToggleGroupItem>
           </ToggleGroup>
           <Select value={timeRange} onValueChange={setTimeRange}>
-            <SelectTrigger
-              className="flex w-40 @[767px]/card:hidden"
-              aria-label="Select a value"
-            >
+            <SelectTrigger className="flex w-40 @[767px]/card:hidden">
               <SelectValue placeholder="Last 3 months" />
             </SelectTrigger>
             <SelectContent className="rounded-xl">

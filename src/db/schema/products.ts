@@ -1,4 +1,4 @@
-import { relations } from "drizzle-orm";
+import { relations, sql } from "drizzle-orm";
 import {
   decimal,
   index,
@@ -7,6 +7,7 @@ import {
   pgEnum,
   pgTable,
   text,
+  timestamp,
 } from "drizzle-orm/pg-core";
 
 import { stores } from "./stores";
@@ -30,6 +31,10 @@ export const products = pgTable(
     storeId: integer()
       .references(() => stores.id, { onDelete: "cascade" })
       .notNull(),
+    createdAt: timestamp("created_at").defaultNow().notNull(),
+    updatedAt: timestamp("updated_at")
+      .default(sql`current_timestamp`)
+      .$onUpdate(() => new Date()),
   },
   (t) => ({
     storeIdIdx: index("products_store_id_idx").on(t.storeId),
