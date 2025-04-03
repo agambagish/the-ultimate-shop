@@ -1,13 +1,15 @@
 "use client";
 
+import Link from "next/link";
+
 import {
   HelpCircleIcon,
   LayoutDashboardIcon,
   PackageIcon,
   PackageOpenIcon,
-  QrCodeIcon,
   SearchIcon,
   SettingsIcon,
+  StoreIcon,
   UsersIcon,
   WalletIcon,
 } from "lucide-react";
@@ -96,10 +98,10 @@ export function DashboardSidebar({
               asChild
               className="data-[slot=sidebar-menu-button]:!p-1.5"
             >
-              <a href="#">
-                <QrCodeIcon className="size-5" />
+              <Link href="#">
+                <StoreIcon />
                 <span className="text-base font-semibold">{storeName}</span>
-              </a>
+              </Link>
             </SidebarMenuButton>
           </SidebarMenuItem>
         </SidebarMenu>

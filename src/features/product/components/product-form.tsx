@@ -1,19 +1,9 @@
 "use client";
 
-import { useState } from "react";
-
-import { zodResolver } from "@hookform/resolvers/zod";
-import {
-  CircleSmallIcon,
-  Loader2Icon,
-  PackageIcon,
-  PlusCircleIcon,
-} from "lucide-react";
-import { useForm } from "react-hook-form";
-import { toast } from "sonner";
+import { CircleSmallIcon, PackageIcon } from "lucide-react";
+import type { FieldPath, FieldValues, UseFormReturn } from "react-hook-form";
 
 import { FileUploader } from "@/components/global/file-uploader";
-import { Button } from "@/components/ui/button";
 import {
   Form,
   FormControl,
@@ -32,73 +22,38 @@ import {
 } from "@/components/ui/select";
 import { Textarea } from "@/components/ui/textarea";
 import { productStatusEnum } from "@/db/schema";
-import { createProduct } from "@/features/dashboard/actions/product";
-import type { CreateProductSchema } from "@/features/dashboard/lib/create-product-schema";
-import { createProductSchema } from "@/features/dashboard/lib/create-product-schema";
-import { useUploadFile } from "@/hooks/use-upload-file";
-import { tryCatch } from "@/lib/try-catch";
 import { cn } from "@/lib/utils";
 
-export function CreateProductForm() {
-  const { progresses, isUploading, uploadFiles } = useUploadFile({
-    route: "productImages",
-  });
-  const [isLoading, setIsLoading] = useState<boolean>(false);
-  const isDisabled = isLoading || isUploading;
+interface Props<T extends FieldValues>
+  extends Omit<React.ComponentPropsWithRef<"form">, "onSubmit"> {
+  children: React.ReactNode;
+  form: UseFormReturn<T>;
+  onSubmit: (payload: T) => void;
+  isLoading: boolean;
+  progresses: Record<string, number>;
+}
 
-  const form = useForm<CreateProductSchema>({
-    resolver: zodResolver(createProductSchema),
-    mode: "onChange",
-    defaultValues: {
-      title: "",
-      description: "",
-      price: "",
-      inventory: 0,
-      images: [],
-      status: "draft",
-    },
-  });
-
-  async function onSubmit(payload: CreateProductSchema) {
-    setIsLoading(true);
-
-    const { data: images, error: uploadError } = await tryCatch(
-      uploadFiles(payload.images)
-    );
-
-    if (uploadError) {
-      toast.error("Unable to upload images");
-      return;
-    }
-
-    const { data, error } = await createProduct({ ...payload, images });
-
-    if (error) {
-      toast.error(error);
-    }
-
-    if (data) {
-      toast.success("New product created successfully");
-    }
-
-    setIsLoading(false);
-    form.reset();
-  }
-
+export function ProductForm<T extends FieldValues>({
+  form,
+  onSubmit,
+  children,
+  isLoading,
+  progresses,
+}: Props<T>) {
   return (
     <Form {...form}>
       <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
         <FormField
           control={form.control}
-          name="title"
+          name={"title" as FieldPath<T>}
           render={({ field }) => (
             <FormItem>
               <FormLabel>Title</FormLabel>
               <FormControl>
                 <Input
                   placeholder="e.g. Red T-shirt"
+                  disabled={isLoading}
                   {...field}
-                  disabled={isDisabled}
                 />
               </FormControl>
               <FormMessage />
@@ -107,7 +62,7 @@ export function CreateProductForm() {
         />
         <FormField
           control={form.control}
-          name="description"
+          name={"description" as FieldPath<T>}
           render={({ field }) => (
             <FormItem>
               <FormLabel>Description</FormLabel>
@@ -115,7 +70,7 @@ export function CreateProductForm() {
                 <Textarea
                   placeholder="e.g. Lorem ipsum, dolor sit amet consectetur adipisicing elit. Necessitatibus incidunt repellendus nisi."
                   className="min-h-[100px] resize-none"
-                  disabled={isDisabled}
+                  disabled={isLoading}
                   {...field}
                 />
               </FormControl>
@@ -125,7 +80,7 @@ export function CreateProductForm() {
         />
         <FormField
           control={form.control}
-          name="price"
+          name={"price" as FieldPath<T>}
           render={({ field }) => (
             <FormItem>
               <FormLabel>Price</FormLabel>
@@ -135,7 +90,7 @@ export function CreateProductForm() {
                     className="peer ps-6 pe-12 tabular-nums"
                     placeholder="69.00"
                     type="number"
-                    disabled={isDisabled}
+                    disabled={isLoading}
                     {...field}
                   />
                   <span className="text-muted-foreground pointer-events-none absolute inset-y-0 start-0 flex items-center justify-center ps-3 text-sm peer-disabled:opacity-50">
@@ -152,7 +107,7 @@ export function CreateProductForm() {
         />
         <FormField
           control={form.control}
-          name="inventory"
+          name={"inventory" as FieldPath<T>}
           render={() => (
             <FormItem>
               <FormLabel>Inventory</FormLabel>
@@ -162,8 +117,8 @@ export function CreateProductForm() {
                     className="peer pe-9 tabular-nums"
                     placeholder="e.g. 18"
                     type="number"
-                    disabled={isDisabled}
-                    {...form.register("inventory", {
+                    disabled={isLoading}
+                    {...form.register("inventory" as FieldPath<T>, {
                       valueAsNumber: true,
                     })}
                   />
@@ -178,14 +133,14 @@ export function CreateProductForm() {
         />
         <FormField
           control={form.control}
-          name="status"
+          name={"status" as FieldPath<T>}
           render={({ field }) => (
             <FormItem>
               <FormLabel>Status</FormLabel>
               <Select
                 onValueChange={field.onChange}
                 defaultValue={field.value}
-                disabled={isDisabled}
+                disabled={isLoading}
               >
                 <FormControl>
                   <SelectTrigger className="w-full capitalize">
@@ -209,7 +164,7 @@ export function CreateProductForm() {
         />
         <FormField
           control={form.control}
-          name="images"
+          name={"images" as FieldPath<T>}
           render={({ field }) => (
             <FormItem className="w-full">
               <FormLabel>Images</FormLabel>
@@ -220,38 +175,24 @@ export function CreateProductForm() {
                   maxFileCount={4}
                   maxSize={4 * 1024 * 1024}
                   progresses={progresses}
-                  // pass the onUpload function here for direct upload
-                  // onUpload={uploadFiles}
-                  disabled={isDisabled}
+                  disabled={isLoading}
                 />
               </FormControl>
               <FormMessage />
             </FormItem>
           )}
         />
-        <Button
-          type="submit"
-          disabled={isDisabled}
-          className="w-full"
-          size="lg"
-        >
-          {isDisabled ? (
-            <Loader2Icon className="animate-spin" />
-          ) : (
-            <PlusCircleIcon />
-          )}
-          Create
-        </Button>
+        {children}
       </form>
     </Form>
   );
 }
 
-interface Props {
+function StatusDot({
+  status,
+}: {
   status: (typeof productStatusEnum.enumValues)[number];
-}
-
-function StatusDot({ status }: Props) {
+}) {
   const statusColorMap: Record<
     (typeof productStatusEnum.enumValues)[number],
     string

@@ -2,6 +2,7 @@
 
 import { useCallback, useState, useTransition } from "react";
 
+import { SelectTrigger } from "@radix-ui/react-select";
 import type { Table } from "@tanstack/react-table";
 import {
   CheckCircle2Icon,
@@ -17,7 +18,6 @@ import {
   SelectContent,
   SelectGroup,
   SelectItem,
-  SelectTrigger,
 } from "@/components/ui/select";
 import { Separator } from "@/components/ui/separator";
 import {
@@ -28,13 +28,13 @@ import {
 import type { productStatusEnum } from "@/db/schema";
 import { products } from "@/db/schema";
 import {
-  deleteProducts,
-  updateProductStatus,
-} from "@/features/dashboard/actions/product";
-import {
   DataTableActionBar,
   DataTableActionBarAction,
 } from "@/features/data-table/components/data-table-action-bar";
+import {
+  deleteProducts,
+  updateProductStatus,
+} from "@/features/product/actions";
 import { exportTableToCSV } from "@/lib/utils";
 
 // eslint-disable-next-line @typescript-eslint/no-unused-vars

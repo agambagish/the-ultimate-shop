@@ -18,6 +18,8 @@ export const createProductSchema = createInsertSchema(products, {
   .omit({
     images: true,
     storeId: true,
+    createdAt: true,
+    updatedAt: true,
   })
   .extend({
     images: z

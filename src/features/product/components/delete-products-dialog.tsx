@@ -18,7 +18,7 @@ import {
   DialogTrigger,
 } from "@/components/ui/dialog";
 import type { products } from "@/db/schema";
-import { deleteProducts } from "@/features/dashboard/actions/product";
+import { deleteProducts } from "@/features/product/actions";
 import { useMediaQuery } from "@/hooks/use-media-query";
 
 interface Props extends React.ComponentPropsWithoutRef<typeof Dialog> {

@@ -31,9 +31,9 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { products } from "@/db/schema";
-import { updateProductStatus } from "@/features/dashboard/actions/product";
 import { DataTableColumnHeader } from "@/features/data-table/components/data-table-column-header";
 import type { DataTableRowAction } from "@/features/data-table/lib/types";
+import { updateProductStatus } from "@/features/product/actions";
 import { formatDate, formatPrice } from "@/lib/utils";
 
 interface Props {

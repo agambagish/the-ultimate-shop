@@ -1,13 +1,18 @@
+import type { Metadata } from "next";
 import { Suspense } from "react";
 
-import {
-  getProductStatusCounts,
-  getProducts,
-} from "@/features/dashboard/actions/product";
-import { ProductsTable } from "@/features/dashboard/components/tables/products-table";
 import { DataTableSkeleton } from "@/features/data-table/components/data-table-skeleton";
 import { productsTableParams } from "@/features/data-table/lib/products-table-params";
 import { getValidFilters } from "@/features/data-table/lib/utils";
+import { ProductsTable } from "@/features/product/components/products-table";
+import {
+  getProductStatusCounts,
+  getProducts,
+} from "@/features/product/queries";
+
+export const metadata: Metadata = {
+  title: "Manage Products",
+};
 
 interface Props {
   searchParams: Promise<{

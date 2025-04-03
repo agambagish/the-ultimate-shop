@@ -118,3 +118,16 @@ export function exportTableToCSV<TData>(
   link.click();
   document.body.removeChild(link);
 }
+
+export function getUpdatedValues<T extends Record<string, unknown>>(
+  source: T,
+  filter: Partial<Record<keyof T, boolean>>
+): Partial<T> {
+  const result: Partial<T> = {};
+  for (const key in filter) {
+    if (filter[key] === true && key in source) {
+      result[key] = source[key];
+    }
+  }
+  return result;
+}

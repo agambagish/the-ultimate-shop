@@ -1,3 +1,4 @@
+import type { Metadata } from "next";
 import { notFound, redirect } from "next/navigation";
 
 import { currentUser } from "@clerk/nextjs/server";
@@ -6,6 +7,10 @@ import { db } from "@/db";
 import { OnboardingForm } from "@/features/onboarding/components/onboarding-form";
 import { tryCatch } from "@/lib/try-catch";
 import { getEmail } from "@/lib/utils";
+
+export const metadata: Metadata = {
+  title: "Onboarding",
+};
 
 export default async function Page() {
   const user = await currentUser();
