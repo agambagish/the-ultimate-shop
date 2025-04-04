@@ -6,6 +6,9 @@ const nextConfig: NextConfig = {
       {
         hostname: "files.edgestore.dev",
       },
+      {
+        hostname: "images.unsplash.com",
+      },
     ],
   },
 };
