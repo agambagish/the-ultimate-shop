@@ -1,5 +1,7 @@
 "use client";
 
+import { use } from "react";
+
 import { CircleSmallIcon, PackageIcon } from "lucide-react";
 import type { FieldPath, FieldValues, UseFormReturn } from "react-hook-form";
 
@@ -22,6 +24,7 @@ import {
 } from "@/components/ui/select";
 import { Textarea } from "@/components/ui/textarea";
 import { productStatusEnum } from "@/db/schema";
+import type { getCategories } from "@/features/product/queries";
 import { cn } from "@/lib/utils";
 
 interface Props<T extends FieldValues>
@@ -31,6 +34,7 @@ interface Props<T extends FieldValues>
   onSubmit: (payload: T) => void;
   isLoading: boolean;
   progresses: Record<string, number>;
+  categoriesPromise: Promise<Awaited<ReturnType<typeof getCategories>>>;
 }
 
 export function ProductForm<T extends FieldValues>({
@@ -39,7 +43,10 @@ export function ProductForm<T extends FieldValues>({
   children,
   isLoading,
   progresses,
+  categoriesPromise,
 }: Props<T>) {
+  const { categories } = use(categoriesPromise);
+
   return (
     <Form {...form}>
       <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
@@ -127,6 +134,40 @@ export function ProductForm<T extends FieldValues>({
                   </div>
                 </div>
               </FormControl>
+              <FormMessage />
+            </FormItem>
+          )}
+        />
+        <FormField
+          control={form.control}
+          name={"categoryId" as FieldPath<T>}
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel>Category</FormLabel>
+              <Select
+                onValueChange={field.onChange}
+                defaultValue={field.value}
+                disabled={isLoading}
+              >
+                <FormControl>
+                  <SelectTrigger className="w-full">
+                    <SelectValue placeholder="Select a category" />
+                  </SelectTrigger>
+                </FormControl>
+                <SelectContent>
+                  {categories.map((c) => (
+                    <SelectItem
+                      key={c.id}
+                      value={String(c.id)}
+                      {...form.register("categoryId" as FieldPath<T>, {
+                        valueAsNumber: true,
+                      })}
+                    >
+                      {c.label}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
               <FormMessage />
             </FormItem>
           )}

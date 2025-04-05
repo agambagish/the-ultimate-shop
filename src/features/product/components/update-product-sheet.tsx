@@ -22,12 +22,18 @@ import { updateProduct } from "@/features/product/actions";
 import { ProductForm } from "@/features/product/components/product-form";
 import type { UpdateProductSchema } from "@/features/product/lib/update-product-schema";
 import { updateProductSchema } from "@/features/product/lib/update-product-schema";
+import type { getCategories } from "@/features/product/queries";
 
 interface Props extends React.ComponentPropsWithRef<typeof Sheet> {
   product: typeof products.$inferSelect | null;
+  categoriesPromise: Promise<Awaited<ReturnType<typeof getCategories>>>;
 }
 
-export function UpdateProductSheet({ product, ...props }: Props) {
+export function UpdateProductSheet({
+  product,
+  categoriesPromise,
+  ...props
+}: Props) {
   const [isLoading, setIsLoading] = useState<boolean>(false);
 
   const form = useForm<UpdateProductSchema>({
@@ -54,6 +60,7 @@ export function UpdateProductSheet({ product, ...props }: Props) {
       form.setValue("description", product.description);
       form.setValue("price", product.price);
       form.setValue("inventory", product.inventory);
+      form.setValue("categoryId", product.categoryId);
       form.setValue("status", product.status);
       form.setValue("images", imageFiles);
     }
@@ -101,6 +108,7 @@ export function UpdateProductSheet({ product, ...props }: Props) {
             onSubmit={onSubmit}
             isLoading={isLoading}
             progresses={{}}
+            categoriesPromise={categoriesPromise}
           >
             <SheetFooter className="flex flex-row justify-end pt-2">
               <SheetClose asChild>

@@ -23,7 +23,12 @@ export function MenuList({ label, items }: Props) {
       <NavigationMenuContent>
         <ul className="grid w-[400px] gap-3 p-4 md:w-[500px] md:grid-cols-2 lg:w-[600px]">
           {items.map((item, i) => (
-            <ListItem key={i} title={item.label} href={item.url ?? "/"}>
+            <ListItem
+              key={i}
+              title={item.label}
+              href={item.url ?? "/"}
+              className="truncate"
+            >
               {item.description ?? ""}
             </ListItem>
           ))}

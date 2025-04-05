@@ -17,9 +17,11 @@ import {
   SheetTitle,
   SheetTrigger,
 } from "@/components/ui/sheet";
-import { NAV_ITEMS } from "@/features/site-header/lib/config";
+import { getNavItems } from "@/features/site-header/lib/config";
 
-export function MobileNav() {
+export async function MobileNav() {
+  const navItems = await getNavItems();
+
   return (
     <Sheet>
       <SheetTrigger className="cursor-pointer">
@@ -36,7 +38,7 @@ export function MobileNav() {
           </SheetTitle>
         </SheetHeader>
         <div className="flex flex-col items-start p-6 pt-0">
-          {NAV_ITEMS.map((item, i) => (
+          {navItems.map((item, i) => (
             <Fragment key={i}>
               {item.type === "item" && (
                 <SheetClose asChild>

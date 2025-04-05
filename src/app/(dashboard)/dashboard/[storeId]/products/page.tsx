@@ -6,6 +6,7 @@ import { productsTableParams } from "@/features/data-table/lib/products-table-pa
 import { getValidFilters } from "@/features/data-table/lib/utils";
 import { ProductsTable } from "@/features/product/components/products-table";
 import {
+  getCategories,
   getProductStatusCounts,
   getProducts,
 } from "@/features/product/queries";
@@ -54,7 +55,10 @@ export default async function Page(props: Props) {
           />
         }
       >
-        <ProductsTable promises={promises} />
+        <ProductsTable
+          promises={promises}
+          categoriesPromise={getCategories()}
+        />
       </Suspense>
     </main>
   );

@@ -1,34 +1,25 @@
+import { getCategories } from "@/features/product/queries";
 import type { NavItem } from "@/features/site-header/lib/types";
 
-export const NAV_ITEMS: NavItem[] = [
-  {
-    label: "Shop",
-    type: "list",
-    children: [
-      {
-        label: "Men's",
-        url: "#",
+export async function getNavItems(): Promise<NavItem[]> {
+  const { categories } = await getCategories();
+
+  return [
+    {
+      label: "Shop",
+      type: "list",
+      children: categories.map((c) => ({
+        label: c.label,
         description:
           "Lorem ipsum, dolor sit amet consectetur adipisicing elit.",
-      },
-      {
-        label: "Women's",
-        url: "#",
-        description:
-          "Lorem ipsum, dolor sit amet consectetur adipisicing elit.",
-      },
-      {
-        label: "Kid's",
-        url: "#",
-        description:
-          "Lorem ipsum, dolor sit amet consectetur adipisicing elit.",
-      },
-    ],
-  },
-  {
-    label: "On Sale",
-    type: "item",
-    url: "#",
-    children: [],
-  },
-];
+        url: `/products?category=${c.slug}`,
+      })),
+    },
+    {
+      label: "On Sale",
+      type: "item",
+      url: "#",
+      children: [],
+    },
+  ];
+}

@@ -14,6 +14,7 @@ import { ProductsTableActionBar } from "@/features/product/components/products-t
 import { getProductsTableColumns } from "@/features/product/components/products-table-columns";
 import { UpdateProductSheet } from "@/features/product/components/update-product-sheet";
 import type {
+  getCategories,
   getProductStatusCounts,
   getProducts,
 } from "@/features/product/queries";
@@ -25,9 +26,10 @@ interface Props {
       Awaited<ReturnType<typeof getProductStatusCounts>>,
     ]
   >;
+  categoriesPromise: Promise<Awaited<ReturnType<typeof getCategories>>>;
 }
 
-export function ProductsTable({ promises }: Props) {
+export function ProductsTable({ promises, categoriesPromise }: Props) {
   const [{ data, pageCount }, statusCounts] = use(promises);
 
   const [rowAction, setRowAction] = useState<DataTableRowAction<
@@ -63,7 +65,7 @@ export function ProductsTable({ promises }: Props) {
         actionBar={<ProductsTableActionBar table={table} />}
       >
         <DataTableToolbar table={table}>
-          <CreateProductSheet />
+          <CreateProductSheet categoriesPromise={categoriesPromise} />
           <DataTableSortList table={table} align="end" />
         </DataTableToolbar>
       </DataTable>
@@ -71,6 +73,7 @@ export function ProductsTable({ promises }: Props) {
         open={rowAction?.variant === "update"}
         onOpenChange={() => setRowAction(null)}
         product={rowAction?.row.original ?? null}
+        categoriesPromise={categoriesPromise}
       />
       <DeleteProductsDialog
         open={rowAction?.variant === "delete"}

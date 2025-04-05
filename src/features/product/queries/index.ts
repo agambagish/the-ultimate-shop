@@ -11,7 +11,7 @@ import {
 } from "drizzle-orm";
 
 import { db } from "@/db";
-import { products } from "@/db/schema";
+import { categories, products } from "@/db/schema";
 import type { productsTableParams } from "@/features/data-table/lib/products-table-params";
 import { unstable_cache } from "@/lib/unstable-cache";
 
@@ -143,6 +143,31 @@ export async function getProductStatusCounts() {
     ["product-status-counts"],
     {
       revalidate: 3600,
+    }
+  )();
+}
+
+export async function getCategories() {
+  return await unstable_cache(
+    async () => {
+      try {
+        const data = await db
+          .select({
+            id: categories.id,
+            label: categories.label,
+            slug: categories.slug,
+          })
+          .from(categories)
+          .orderBy(asc(categories.id));
+
+        return { categories: data };
+      } catch {
+        return { categories: [] };
+      }
+    },
+    ["categories"],
+    {
+      revalidate: 1,
     }
   )();
 }

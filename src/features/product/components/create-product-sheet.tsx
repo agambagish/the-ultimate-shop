@@ -22,10 +22,15 @@ import { createProduct } from "@/features/product/actions";
 import { ProductForm } from "@/features/product/components/product-form";
 import type { CreateProductSchema } from "@/features/product/lib/create-product-schema";
 import { createProductSchema } from "@/features/product/lib/create-product-schema";
+import type { getCategories } from "@/features/product/queries";
 import { useUploadFile } from "@/hooks/use-upload-file";
 import { tryCatch } from "@/lib/try-catch";
 
-export function CreateProductSheet() {
+interface Props {
+  categoriesPromise: Promise<Awaited<ReturnType<typeof getCategories>>>;
+}
+
+export function CreateProductSheet({ categoriesPromise }: Props) {
   const { uploadFiles, isUploading, progresses } = useUploadFile({
     route: "productImages",
   });
@@ -93,6 +98,7 @@ export function CreateProductSheet() {
             onSubmit={onSubmit}
             isLoading={isDisabled}
             progresses={progresses}
+            categoriesPromise={categoriesPromise}
           >
             <SheetFooter className="flex flex-row justify-end pt-2">
               <SheetClose asChild>

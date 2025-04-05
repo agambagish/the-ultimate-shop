@@ -1,3 +1,4 @@
+export { categories, categoriesRelations } from "./categories";
 export { products, productsRelations, productStatusEnum } from "./products";
 export {
   businessTypeEnum,
