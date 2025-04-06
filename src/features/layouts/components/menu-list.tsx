@@ -6,7 +6,7 @@ import {
   NavigationMenuLink,
   NavigationMenuTrigger,
 } from "@/components/ui/navigation-menu";
-import type { MenuListItem } from "@/features/site-header/lib/types";
+import type { MenuListItem } from "@/features/layouts/lib/types";
 import { cn } from "@/lib/utils";
 
 interface Props {

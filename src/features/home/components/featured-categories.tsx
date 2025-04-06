@@ -27,7 +27,7 @@ export async function FeaturedCategories({ title, description }: Props) {
           </h2>
           <p className="mx-auto max-w-2xl text-gray-600">{description}</p>
         </div>
-        <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-4">
+        <div className="grid grid-cols-2 gap-6 md:grid-cols-3 lg:grid-cols-4">
           {categories.map((category, i) => (
             <Suspense
               key={i}
@@ -78,14 +78,6 @@ export async function FeaturedCategories({ title, description }: Props) {
                     >
                       <ArrowRightIcon className="h-5 w-5" />
                     </Link>
-                    {/* <Button
-                  variant="ghost"
-                  size="icon"
-                  className="rounded-full opacity-0 group-hover:opacity-100 transition-opacity duration-300"
-                  onClick={() => (window.location.href = href)}
-                >
-                  <ArrowRightIcon className="h-5 w-5" />
-                </Button> */}
                   </div>
                 </CardContent>
               </Card>
@@ -95,22 +87,10 @@ export async function FeaturedCategories({ title, description }: Props) {
         <div className="mt-12 text-center">
           <Link
             href="#"
-            className={cn(
-              buttonVariants({ variant: "outline" }),
-              "rounded-full px-8 py-2"
-            )}
+            className={cn(buttonVariants({ variant: "outline" }), "px-6")}
           >
             View All Categories
-            <ArrowRightIcon className="ml-2 size-4" />
           </Link>
-          {/* <Button
-            variant="outline"
-            className="px-8 py-2 rounded-full"
-            onClick={() => (window.location.href = "/categories")}
-          >
-            View All Categories
-            <ArrowRight className="ml-2 h-4 w-4" />
-          </Button> */}
         </div>
       </div>
     </section>

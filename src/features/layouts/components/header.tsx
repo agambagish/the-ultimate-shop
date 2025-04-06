@@ -2,10 +2,10 @@ import Link from "next/link";
 
 import { auth } from "@clerk/nextjs/server";
 
-import { AuthButton } from "@/features/site-header/components/auth-button";
-import { MainNav } from "@/features/site-header/components/main-nav";
-import { MobileNav } from "@/features/site-header/components/mobile-nav";
-import { getStore } from "@/features/site-header/queries";
+import { AuthButton } from "@/features/layouts/components/auth-button";
+import { MainNav } from "@/features/layouts/components/main-nav";
+import { MobileNav } from "@/features/layouts/components/mobile-nav";
+import { getStore } from "@/features/layouts/queries";
 
 export async function Header() {
   const { userId } = await auth();

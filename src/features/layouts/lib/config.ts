@@ -1,5 +1,5 @@
+import type { NavItem } from "@/features/layouts/lib/types";
 import { getCategories } from "@/features/product/queries";
-import type { NavItem } from "@/features/site-header/lib/types";
 
 export async function getNavItems(): Promise<NavItem[]> {
   const { categories } = await getCategories();

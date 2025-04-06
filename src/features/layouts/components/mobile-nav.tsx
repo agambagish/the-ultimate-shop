@@ -17,7 +17,7 @@ import {
   SheetTitle,
   SheetTrigger,
 } from "@/components/ui/sheet";
-import { getNavItems } from "@/features/site-header/lib/config";
+import { getNavItems } from "@/features/layouts/lib/config";
 
 export async function MobileNav() {
   const navItems = await getNavItems();

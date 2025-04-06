@@ -1,6 +1,6 @@
 "use server";
 
-import { count, desc, eq } from "drizzle-orm";
+import { asc, count, desc, eq } from "drizzle-orm";
 
 import { db } from "@/db";
 import { categories, products } from "@/db/schema";
@@ -29,6 +29,33 @@ export async function getFeaturedCategories() {
       }
     },
     ["featured-categories"],
+    {
+      revalidate: 1,
+    }
+  )();
+}
+
+export async function getNewArrivals() {
+  return await unstable_cache(
+    async () => {
+      try {
+        const data = await db
+          .select({
+            id: products.id,
+            title: products.title,
+            price: products.price,
+            images: products.images,
+          })
+          .from(products)
+          .limit(15)
+          .orderBy(asc(products.createdAt));
+
+        return { products: data };
+      } catch {
+        return { products: [] };
+      }
+    },
+    ["new-arrivals"],
     {
       revalidate: 1,
     }
