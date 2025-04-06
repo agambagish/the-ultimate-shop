@@ -5,36 +5,8 @@
     {
       "idx": 0,
       "version": "7",
-      "when": 1742574830067,
-      "tag": "0000_curious_viper",
-      "breakpoints": true
-    },
-    {
-      "idx": 1,
-      "version": "7",
-      "when": 1742635001854,
-      "tag": "0001_unknown_junta",
-      "breakpoints": true
-    },
-    {
-      "idx": 2,
-      "version": "7",
-      "when": 1743251602534,
-      "tag": "0002_fair_guardian",
-      "breakpoints": true
-    },
-    {
-      "idx": 3,
-      "version": "7",
-      "when": 1743498112531,
-      "tag": "0003_worried_jasper_sitwell",
-      "breakpoints": true
-    },
-    {
-      "idx": 4,
-      "version": "7",
-      "when": 1743880893955,
-      "tag": "0004_curious_namora",
+      "when": 1743922795577,
+      "tag": "0000_many_gamora",
       "breakpoints": true
     }
   ]
