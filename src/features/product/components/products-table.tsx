@@ -16,13 +16,13 @@ import { UpdateProductSheet } from "@/features/product/components/update-product
 import type {
   getCategories,
   getProductStatusCounts,
-  getProducts,
+  getProductsTableData,
 } from "@/features/product/queries";
 
 interface Props {
   promises: Promise<
     [
-      Awaited<ReturnType<typeof getProducts>>,
+      Awaited<ReturnType<typeof getProductsTableData>>,
       Awaited<ReturnType<typeof getProductStatusCounts>>,
     ]
   >;

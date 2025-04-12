@@ -1,3 +1,4 @@
+import type { Metadata } from "next";
 import Link from "next/link";
 
 import { SlidersIcon } from "lucide-react";
@@ -23,6 +24,10 @@ import { ProductCard } from "@/features/product/components/product-card";
 import { ProductsPageFilters } from "@/features/product/components/products-page-filters";
 import { MobileFilters } from "@/features/product/components/products-page-filters/mobile-filters";
 import { getProducts } from "@/features/product/queries";
+
+export const metadata: Metadata = {
+  title: "Products",
+};
 
 export default async function Page() {
   const { products } = await getProducts();

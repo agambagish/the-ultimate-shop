@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { Geist } from "next/font/google";
+import { Jost } from "next/font/google";
 
 import { ClerkProvider } from "@clerk/nextjs";
 import { NuqsAdapter as NuqsProvider } from "nuqs/adapters/next/app";
@@ -10,7 +10,7 @@ import { cn } from "@/lib/utils";
 
 import "./globals.css";
 
-const font = Geist({ subsets: ["latin"] });
+const font = Jost({ subsets: ["latin"] });
 
 export const metadata: Metadata = {
   title: {
