@@ -3,6 +3,7 @@ import {
   asc,
   count,
   desc,
+  eq,
   gt,
   gte,
   ilike,
@@ -12,10 +13,11 @@ import {
 
 import { db } from "@/db";
 import { categories, products } from "@/db/schema";
-import type { productsTableParams } from "@/features/data-table/lib/products-table-params";
+import type { productsTableParams } from "@/features/product/lib/products-table-params";
+import { tryCatch } from "@/lib/try-catch";
 import { unstable_cache } from "@/lib/unstable-cache";
 
-export async function getProducts(
+export async function getProductsTableData(
   payload: Awaited<ReturnType<typeof productsTableParams.parse>>
 ) {
   return await unstable_cache(
@@ -170,4 +172,30 @@ export async function getCategories() {
       revalidate: 1,
     }
   )();
+}
+
+export async function getProducts() {
+  const { data, error } = await tryCatch(
+    db
+      .select({
+        id: products.id,
+        title: products.title,
+        price: products.price,
+        discountedPrice: products.discountedPrice,
+        images: products.images,
+      })
+      .from(products)
+      .where(eq(products.status, "active"))
+      .orderBy(desc(products.createdAt))
+  );
+
+  if (error) {
+    return {
+      products: [],
+    };
+  }
+
+  return {
+    products: data,
+  };
 }

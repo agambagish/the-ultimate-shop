@@ -3,7 +3,7 @@ import { Input } from "@/components/ui/input";
 
 export function Newsletter() {
   return (
-    <section className="w-full bg-gray-50 px-4 py-16 md:px-8">
+    <section className="w-full px-4 py-16 md:px-8">
       <div className="mx-auto max-w-4xl text-center">
         <h2 className="mb-3 text-2xl font-bold text-gray-900 md:text-3xl">
           Subscribe to Our Newsletter

@@ -2,13 +2,13 @@ import type { Metadata } from "next";
 import { Suspense } from "react";
 
 import { DataTableSkeleton } from "@/features/data-table/components/data-table-skeleton";
-import { productsTableParams } from "@/features/data-table/lib/products-table-params";
 import { getValidFilters } from "@/features/data-table/lib/utils";
 import { ProductsTable } from "@/features/product/components/products-table";
+import { productsTableParams } from "@/features/product/lib/products-table-params";
 import {
   getCategories,
   getProductStatusCounts,
-  getProducts,
+  getProductsTableData,
 } from "@/features/product/queries";
 
 export const metadata: Metadata = {
@@ -28,7 +28,7 @@ export default async function Page(props: Props) {
   const validFilters = getValidFilters(searchParams.filters);
 
   const promises = Promise.all([
-    getProducts({
+    getProductsTableData({
       ...searchParams,
       filters: validFilters,
     }),

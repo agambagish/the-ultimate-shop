@@ -16,8 +16,9 @@ CREATE TABLE "products" (
 	"description" text NOT NULL,
 	"images" json DEFAULT '[]'::json NOT NULL,
 	"price" numeric(10, 2) DEFAULT '0' NOT NULL,
+	"discounted_price" numeric(10, 2) DEFAULT '0' NOT NULL,
 	"inventory" integer DEFAULT 0 NOT NULL,
-	"category_id" integer NOT NULL,
+	"category_slug" text NOT NULL,
 	"status" "product_status" DEFAULT 'draft' NOT NULL,
 	"store_id" integer NOT NULL,
 	"created_at" timestamp DEFAULT now() NOT NULL,
@@ -48,6 +49,6 @@ CREATE TABLE "stores" (
 	CONSTRAINT "stores_userId_unique" UNIQUE("user_id")
 );
 --> statement-breakpoint
-ALTER TABLE "products" ADD CONSTRAINT "products_category_id_categories_id_fk" FOREIGN KEY ("category_id") REFERENCES "public"."categories"("id") ON DELETE cascade ON UPDATE no action;--> statement-breakpoint
+ALTER TABLE "products" ADD CONSTRAINT "products_category_slug_categories_slug_fk" FOREIGN KEY ("category_slug") REFERENCES "public"."categories"("slug") ON DELETE cascade ON UPDATE no action;--> statement-breakpoint
 ALTER TABLE "products" ADD CONSTRAINT "products_store_id_stores_id_fk" FOREIGN KEY ("store_id") REFERENCES "public"."stores"("id") ON DELETE cascade ON UPDATE no action;--> statement-breakpoint
 CREATE INDEX "products_store_id_idx" ON "products" USING btree ("store_id");

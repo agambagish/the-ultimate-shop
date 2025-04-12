@@ -45,6 +45,7 @@ export function CreateProductSheet({ categoriesPromise }: Props) {
       title: "",
       description: "",
       price: "",
+      discountedPrice: "0.00",
       inventory: 0,
       images: [],
       status: "draft",

@@ -16,7 +16,7 @@ export default function Page() {
       <ProductList
         title="New Arrivals"
         description="Check out our latest products and find your new favorites"
-        newArrivalsPromise={getNewArrivals()}
+        productsPromise={getNewArrivals()}
       />
       <Newsletter />
     </>

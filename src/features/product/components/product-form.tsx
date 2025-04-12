@@ -114,6 +114,33 @@ export function ProductForm<T extends FieldValues>({
         />
         <FormField
           control={form.control}
+          name={"discountedPrice" as FieldPath<T>}
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel>Discounted Price</FormLabel>
+              <FormControl>
+                <div className="relative">
+                  <Input
+                    className="peer ps-6 pe-12 tabular-nums"
+                    placeholder="0.00"
+                    type="number"
+                    disabled={isLoading}
+                    {...field}
+                  />
+                  <span className="text-muted-foreground pointer-events-none absolute inset-y-0 start-0 flex items-center justify-center ps-3 text-sm peer-disabled:opacity-50">
+                    ₹
+                  </span>
+                  <span className="text-muted-foreground pointer-events-none absolute inset-y-0 end-0 flex items-center justify-center pe-3 text-sm peer-disabled:opacity-50">
+                    INR
+                  </span>
+                </div>
+              </FormControl>
+              <FormMessage />
+            </FormItem>
+          )}
+        />
+        <FormField
+          control={form.control}
           name={"inventory" as FieldPath<T>}
           render={() => (
             <FormItem>
@@ -140,7 +167,7 @@ export function ProductForm<T extends FieldValues>({
         />
         <FormField
           control={form.control}
-          name={"categoryId" as FieldPath<T>}
+          name={"categorySlug" as FieldPath<T>}
           render={({ field }) => (
             <FormItem>
               <FormLabel>Category</FormLabel>
@@ -156,13 +183,7 @@ export function ProductForm<T extends FieldValues>({
                 </FormControl>
                 <SelectContent>
                   {categories.map((c) => (
-                    <SelectItem
-                      key={c.id}
-                      value={String(c.id)}
-                      {...form.register("categoryId" as FieldPath<T>, {
-                        valueAsNumber: true,
-                      })}
-                    >
+                    <SelectItem key={c.id} value={c.slug}>
                       {c.label}
                     </SelectItem>
                   ))}

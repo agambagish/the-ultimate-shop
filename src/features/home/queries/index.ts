@@ -1,9 +1,9 @@
 "use server";
 
-import { asc, count, desc, eq } from "drizzle-orm";
+import { and, count, desc, eq } from "drizzle-orm";
 
 import { db } from "@/db";
-import { categories, products } from "@/db/schema";
+import { categories, products, stores } from "@/db/schema";
 import { unstable_cache } from "@/lib/unstable-cache";
 
 export async function getFeaturedCategories() {
@@ -18,7 +18,7 @@ export async function getFeaturedCategories() {
             productCount: count(products.id),
           })
           .from(categories)
-          .leftJoin(products, eq(categories.id, products.categoryId))
+          .leftJoin(products, eq(categories.slug, products.categorySlug))
           .groupBy(categories.id)
           .limit(4)
           .orderBy(desc(count(products.id)));
@@ -44,11 +44,16 @@ export async function getNewArrivals() {
             id: products.id,
             title: products.title,
             price: products.price,
+            discountedPrice: products.discountedPrice,
             images: products.images,
           })
           .from(products)
+          .where(
+            and(eq(products.status, "active"), eq(stores.status, "activated"))
+          )
+          .leftJoin(stores, eq(products.storeId, stores.id))
           .limit(15)
-          .orderBy(asc(products.createdAt));
+          .orderBy(desc(products.createdAt));
 
         return { products: data };
       } catch {

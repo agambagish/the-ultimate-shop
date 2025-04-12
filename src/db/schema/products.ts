@@ -27,9 +27,12 @@ export const products = pgTable(
     description: text().notNull(),
     images: json().$type<string[]>().notNull().default([]),
     price: decimal({ precision: 10, scale: 2 }).notNull().default("0"),
+    discountedPrice: decimal({ precision: 10, scale: 2 })
+      .notNull()
+      .default("0"),
     inventory: integer().notNull().default(0),
-    categoryId: integer()
-      .references(() => categories.id, { onDelete: "cascade" })
+    categorySlug: text()
+      .references(() => categories.slug, { onDelete: "cascade" })
       .notNull(),
     status: productStatusEnum().notNull().default("draft"),
     storeId: integer()
@@ -48,7 +51,7 @@ export const products = pgTable(
 export const productsRelations = relations(products, ({ one }) => ({
   store: one(stores, { fields: [products.storeId], references: [stores.id] }),
   category: one(categories, {
-    fields: [products.categoryId],
-    references: [categories.id],
+    fields: [products.categorySlug],
+    references: [categories.slug],
   }),
 }));

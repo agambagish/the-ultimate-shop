@@ -59,8 +59,9 @@ export function UpdateProductSheet({
       form.setValue("title", product.title);
       form.setValue("description", product.description);
       form.setValue("price", product.price);
+      form.setValue("discountedPrice", product.discountedPrice);
       form.setValue("inventory", product.inventory);
-      form.setValue("categoryId", product.categoryId);
+      form.setValue("categorySlug", product.categorySlug);
       form.setValue("status", product.status);
       form.setValue("images", imageFiles);
     }

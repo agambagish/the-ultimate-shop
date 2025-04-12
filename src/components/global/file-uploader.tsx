@@ -219,7 +219,8 @@ function FileCard({
             alt={file.name}
             width={48}
             height={48}
-            className="rounded-md object-cover"
+            className="aspect-square rounded-md object-cover"
+            style={{ objectPosition: "center 0%" }}
           />
         ) : (
           <FileTextIcon className="text-muted-foreground size-10" />

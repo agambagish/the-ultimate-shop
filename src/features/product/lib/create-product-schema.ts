@@ -11,6 +11,10 @@ export const createProductSchema = createInsertSchema(products, {
     f.regex(/^\d+(\.\d{1,2})?$/, {
       message: "Must be a valid price",
     }),
+  discountedPrice: (f) =>
+    f.regex(/^\d+(\.\d{1,2})?$/, {
+      message: "Must be a valid price",
+    }),
   inventory: (f) =>
     f.nonnegative({ message: "Inventory must be greater than equal to 0" }),
   status: (f) => f.default("draft"),

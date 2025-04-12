@@ -102,6 +102,21 @@ export function getProductsTableColumns({
       enableColumnFilter: true,
     },
     {
+      id: "categorySlug",
+      accessorKey: "categorySlug",
+      header: ({ column }) => (
+        <DataTableColumnHeader column={column} title="Category" />
+      ),
+      cell: ({ cell }) => (
+        <Badge variant="outline" className="py-1 capitalize [&>svg]:size-3.5">
+          {cell.getValue<string>().replaceAll("-", " ")}
+        </Badge>
+      ),
+      meta: {
+        label: "Category",
+      },
+    },
+    {
       id: "price",
       accessorKey: "price",
       header: ({ column }) => (
@@ -114,6 +129,21 @@ export function getProductsTableColumns({
       ),
       meta: {
         label: "Price",
+      },
+    },
+    {
+      id: "discountedPrice",
+      accessorKey: "discountedPrice",
+      header: ({ column }) => (
+        <DataTableColumnHeader column={column} title="Discounted Price" />
+      ),
+      cell: ({ cell }) => (
+        <span className="tabular-nums">
+          {formatPrice(cell.getValue<string>())}
+        </span>
+      ),
+      meta: {
+        label: "Discounted Price",
       },
     },
     {

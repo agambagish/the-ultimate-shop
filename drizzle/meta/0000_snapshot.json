@@ -1,5 +1,5 @@
 {
-  "id": "ead910f3-4f86-4973-ab9a-41d360a0be25",
+  "id": "6531efdb-5fdd-4e27-a2a3-573db58bed09",
   "prevId": "00000000-0000-0000-0000-000000000000",
   "version": "7",
   "dialect": "postgresql",
@@ -107,6 +107,13 @@
           "notNull": true,
           "default": "'0'"
         },
+        "discounted_price": {
+          "name": "discounted_price",
+          "type": "numeric(10, 2)",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "'0'"
+        },
         "inventory": {
           "name": "inventory",
           "type": "integer",
@@ -114,9 +121,9 @@
           "notNull": true,
           "default": 0
         },
-        "category_id": {
-          "name": "category_id",
-          "type": "integer",
+        "category_slug": {
+          "name": "category_slug",
+          "type": "text",
           "primaryKey": false,
           "notNull": true
         },
@@ -167,15 +174,15 @@
         }
       },
       "foreignKeys": {
-        "products_category_id_categories_id_fk": {
-          "name": "products_category_id_categories_id_fk",
+        "products_category_slug_categories_slug_fk": {
+          "name": "products_category_slug_categories_slug_fk",
           "tableFrom": "products",
           "tableTo": "categories",
           "columnsFrom": [
-            "category_id"
+            "category_slug"
           ],
           "columnsTo": [
-            "id"
+            "slug"
           ],
           "onDelete": "cascade",
           "onUpdate": "no action"
