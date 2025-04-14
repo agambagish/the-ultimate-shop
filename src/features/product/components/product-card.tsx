@@ -80,6 +80,7 @@ export function ProductCard({ product, index }: Props) {
                   100 -
                 100
               ).toFixed(2)}
+              %
             </span>
           </>
         )}

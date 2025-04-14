@@ -1,4 +1,3 @@
-import Link from "next/link";
 import { use } from "react";
 
 import {
@@ -6,22 +5,21 @@ import {
   CarouselContent,
   CarouselItem,
 } from "@/components/ui/carousel";
-import type { getNewArrivals } from "@/features/home/queries";
+import type { products } from "@/db/schema";
 import { ProductCard } from "@/features/product/components/product-card";
 
 interface Props {
   title: string;
   description: string;
-  buttonLink?: string;
-  productsPromise: Promise<Awaited<ReturnType<typeof getNewArrivals>>>;
+  productsPromise: Promise<{
+    products: Pick<
+      typeof products.$inferSelect,
+      "id" | "title" | "price" | "discountedPrice" | "images"
+    >[];
+  }>;
 }
 
-export function ProductList({
-  title,
-  description,
-  buttonLink,
-  productsPromise,
-}: Props) {
+export function ProductList({ title, description, productsPromise }: Props) {
   const { products } = use(productsPromise);
 
   return (
@@ -50,16 +48,6 @@ export function ProductList({
             ))}
           </CarouselContent>
         </Carousel>
-        {buttonLink && (
-          <div className="w-full px-4 text-center sm:px-0">
-            <Link
-              href={buttonLink}
-              className="inline-block w-full rounded-full border border-black/10 px-[54px] py-4 text-sm font-medium text-black transition-all hover:bg-black hover:text-white sm:w-[218px] sm:text-base"
-            >
-              View All
-            </Link>
-          </div>
-        )}
       </div>
     </section>
   );
