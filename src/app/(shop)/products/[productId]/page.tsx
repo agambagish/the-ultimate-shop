@@ -12,8 +12,7 @@ import {
 } from "@/components/ui/breadcrumb";
 import { Separator } from "@/components/ui/separator";
 import { db } from "@/db";
-import { AddToCartButton } from "@/features/cart/add-to-cart-button";
-import { CartCounter } from "@/features/cart/cart-counter";
+import { AddToCartButton } from "@/features/cart/components/add-to-cart-button";
 import { getNewArrivals } from "@/features/home/queries";
 import { ProductDetailsTabs } from "@/features/product/components/product-details-tabs";
 import { ProductImageGallery } from "@/features/product/components/product-image-gallery";
@@ -58,6 +57,7 @@ export default async function Page({ params }: Props) {
     db.query.products.findFirst({
       where: (f, o) => o.eq(f.id, Number(productId)),
       columns: {
+        id: true,
         title: true,
         description: true,
         images: true,
@@ -147,8 +147,7 @@ export default async function Page({ params }: Props) {
               </p>
               <Separator className="my-5 hidden md:block" />
               <div className="fixed bottom-0 left-0 z-10 flex w-full items-center justify-between border-t border-black/5 bg-white p-4 sm:justify-start md:relative md:justify-center md:border-none md:p-0">
-                <CartCounter />
-                <AddToCartButton />
+                <AddToCartButton productId={product.id} />
               </div>
             </div>
           </div>

@@ -2,6 +2,7 @@ import Link from "next/link";
 
 import { auth } from "@clerk/nextjs/server";
 
+import { CartSheet } from "@/features/cart/components/cart-sheet";
 import { AuthButton } from "@/features/layouts/components/auth-button";
 import { MainNav } from "@/features/layouts/components/main-nav";
 import { MobileNav } from "@/features/layouts/components/mobile-nav";
@@ -24,6 +25,8 @@ export async function Header() {
         </div>
         <div className="flex w-full justify-end gap-4">
           <AuthButton storeId={storeId} />
+          <div className="hidden border-r md:inline" />
+          <CartSheet />
         </div>
         <div className="flex w-12 shrink items-end justify-end lg:hidden">
           <MobileNav />

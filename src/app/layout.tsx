@@ -7,6 +7,7 @@ import { NuqsAdapter as NuqsProvider } from "nuqs/adapters/next/app";
 import { Toaster } from "@/components/ui/sonner";
 import { EdgeStoreProvider } from "@/lib/edgestore";
 import { cn } from "@/lib/utils";
+import { QueryProvider } from "@/providers/query-provider";
 
 import "./globals.css";
 
@@ -64,7 +65,9 @@ export default function Layout({ children }: React.PropsWithChildren) {
       <html lang="en">
         <body className={cn("antialiased", font.className)}>
           <EdgeStoreProvider>
-            <NuqsProvider>{children}</NuqsProvider>
+            <NuqsProvider>
+              <QueryProvider>{children}</QueryProvider>
+            </NuqsProvider>
           </EdgeStoreProvider>
           <Toaster
             toastOptions={{ className: font.className }}
