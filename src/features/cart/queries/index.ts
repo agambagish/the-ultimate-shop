@@ -5,6 +5,7 @@ import { eq, inArray } from "drizzle-orm";
 import { db } from "@/db";
 import { categories, products } from "@/db/schema";
 import { tryCatch } from "@/lib/try-catch";
+import { delay } from "@/lib/utils";
 
 export async function getCart(items: { productId: number; qty: number }[]) {
   const productIds = [...new Set(items.map((i) => i.productId))];
@@ -15,6 +16,7 @@ export async function getCart(items: { productId: number; qty: number }[]) {
         id: products.id,
         title: products.title,
         price: products.price,
+        discountedPrice: products.discountedPrice,
         images: products.images,
         category: categories.label,
       })
@@ -41,4 +43,20 @@ export async function getCart(items: { productId: number; qty: number }[]) {
   }
 
   return data;
+}
+
+export async function verifyVpa(vpa: string) {
+  await delay(3 * 1000);
+
+  if (vpa === "anything@payu") {
+    return {
+      valid: true,
+      name: "PayU Test Account",
+    };
+  }
+
+  return {
+    valid: false,
+    name: null,
+  };
 }

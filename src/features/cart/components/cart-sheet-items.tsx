@@ -12,12 +12,12 @@ import { Separator } from "@/components/ui/separator";
 import { SheetFooter, SheetTrigger } from "@/components/ui/sheet";
 import type { products } from "@/db/schema";
 import { useCart } from "@/features/cart/hooks/use-cart";
-import { formatPrice } from "@/lib/utils";
+import { calculatePrices, formatPrice } from "@/lib/utils";
 
 interface Props {
   cart: (Pick<
     typeof products.$inferSelect,
-    "id" | "title" | "price" | "images"
+    "id" | "title" | "price" | "discountedPrice" | "images"
   > & {
     qty: number;
     category: string;
@@ -26,18 +26,14 @@ interface Props {
 
 export function CartSheetItems({ cart }: Props) {
   const { incrementQty, decrementQty, removeItem } = useCart();
-
-  const cartTotal = cart.reduce(
-    (total, item) => total + item.qty * Number(item.price),
-    0
-  );
+  const { total, subtotal, discount } = calculatePrices(cart);
 
   return (
     <>
       <ScrollArea className="h-full">
         <div className="flex w-full flex-1 flex-col gap-5 px-6">
-          {cart.map((item) => (
-            <div key={item.id} className="space-y-3">
+          {cart.map((item, i) => (
+            <div className="space-y-3" key={i}>
               <div className="xs:flex-row flex flex-col items-start justify-between gap-4">
                 <div className="flex items-center space-x-4">
                   <div className="relative aspect-square size-16 min-w-fit overflow-hidden rounded">
@@ -108,22 +104,26 @@ export function CartSheetItems({ cart }: Props) {
         <Separator />
         <div className="space-y-1.5 text-sm">
           <div className="flex">
+            <span className="flex-1">Subtotal</span>
+            <span>{formatPrice(subtotal)}</span>
+          </div>
+          <div className="flex">
+            <span className="flex-1">Discount</span>
+            <span className="text-destructive">{formatPrice(discount)}</span>
+          </div>
+          <div className="flex">
             <span className="flex-1">Shipping</span>
             <span>Free</span>
           </div>
           <div className="flex">
-            <span className="flex-1">Taxes</span>
-            <span>Calculated at checkout</span>
-          </div>
-          <div className="flex">
             <span className="flex-1">Total</span>
-            <span>{formatPrice(cartTotal.toFixed(2))}</span>
+            <span>{formatPrice(total)}</span>
           </div>
         </div>
         <SheetFooter>
           <SheetTrigger asChild>
             <Link
-              href="/cart"
+              href="/checkout"
               className={buttonVariants({
                 size: "sm",
                 className: "w-full",

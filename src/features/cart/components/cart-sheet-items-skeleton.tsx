@@ -35,15 +35,15 @@ export function CartSheetItemsSkeleton() {
         <Separator />
         <div className="space-y-1.5 text-sm">
           <div className="flex justify-between">
-            <span className="flex-1">Shipping</span>
+            <span className="flex-1">Subtotal</span>
             <Skeleton className="h-4 w-12" />
           </div>
           <div className="flex justify-between">
-            <span className="flex-1">Taxes</span>
+            <span className="flex-1">Discount</span>
             <Skeleton className="h-4 w-24" />
           </div>
           <div className="flex justify-between">
-            <span className="flex-1">Total</span>
+            <span className="flex-1">Shipping</span>
             <Skeleton className="h-4 w-16" />
           </div>
         </div>

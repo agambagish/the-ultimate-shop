@@ -131,3 +131,46 @@ export function getUpdatedValues<T extends Record<string, unknown>>(
   }
   return result;
 }
+
+export function calculatePrices(
+  items: { price: string; discountedPrice: string; qty: number }[] | undefined
+) {
+  const subtotal =
+    items?.reduce((total, item) => total + item.qty * Number(item.price), 0) ??
+    0;
+
+  const total =
+    items?.reduce(
+      (total, item) =>
+        total +
+        item.qty *
+          (Number(item.discountedPrice) > 0
+            ? Number(item.discountedPrice)
+            : Number(item.price)),
+      0
+    ) ?? 0;
+
+  return {
+    total,
+    subtotal,
+    discount: Number(total - subtotal).toFixed(2),
+    discountPercentage: Number(((total - subtotal) / subtotal) * 100).toFixed(
+      2
+    ),
+  };
+}
+
+export function delay(ms: number) {
+  return new Promise((resolve) => setTimeout(resolve, ms));
+}
+
+export function pgEncoder(payload: string) {
+  return payload
+    .replace(/'/g, "--quote--")
+    .replace(/,/g, "--comma--")
+    .replace(/[^a-zA-Z0-9 \-]/g, "");
+}
+
+export function pgDecoder(payload: string) {
+  return payload.replace(/--quote--/g, "'").replace(/--comma--/g, ",");
+}

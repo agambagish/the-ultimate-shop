@@ -1,10 +1,13 @@
 import { CheckIcon } from "lucide-react";
 
-import type { Step } from "@/features/onboarding/lib/types";
 import { cn } from "@/lib/utils";
 
 export interface StepperProps extends React.HTMLAttributes<HTMLDivElement> {
-  steps: Step[];
+  steps: {
+    title: string;
+    description: string;
+    fields: string[];
+  }[];
   activeStep: number;
   orientation?: "horizontal" | "vertical";
 }
