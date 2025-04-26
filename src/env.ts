@@ -19,7 +19,9 @@ export const env = createEnv({
     NEXT_PUBLIC_APP_URL: z.string(),
     NEXT_PUBLIC_PAYU_KEY: z.string(),
     NEXT_PUBLIC_NGROK_URL: z.string().url().optional(),
-    NEXT_PUBLIC_NODE_ENV: z.enum(["development", "production"]),
+    NEXT_PUBLIC_NODE_ENV: z
+      .enum(["development", "production"])
+      .default("development"),
   },
   runtimeEnv: {
     DATABASE_URL: process.env.DATABASE_URL,
