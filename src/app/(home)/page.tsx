@@ -138,7 +138,7 @@ const featuredProducts = [
 
 export default function Page() {
   return (
-    <main className="mx-auto max-w-7xl px-4 py-14 md:py-8">
+    <div className="mx-auto max-w-7xl px-4 py-14 md:py-8">
       <HeroSection />
       <section className="mt-16">
         <div className="mb-8 flex items-center justify-between">
@@ -155,6 +155,6 @@ export default function Page() {
           ))}
         </div>
       </section>
-    </main>
+    </div>
   );
 }
