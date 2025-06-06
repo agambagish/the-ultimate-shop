@@ -7,7 +7,10 @@
     "build": "next build",
     "start": "next start",
     "lint": "eslint .",
-    "prepare": "husky"
+    "prepare": "husky",
+    "db:push": "drizzle-kit push",
+    "db:generate": "drizzle-kit generate",
+    "db:studio": "drizzle-kit studio"
   },
   "dependencies": {
     "@clerk/nextjs": "^6.20.2",
@@ -16,15 +19,19 @@
     "@radix-ui/react-scroll-area": "^1.2.9",
     "@radix-ui/react-separator": "^1.1.7",
     "@radix-ui/react-slot": "^1.2.3",
+    "@t3-oss/env-nextjs": "^0.13.6",
     "@tanstack/react-table": "^8.21.3",
     "class-variance-authority": "^0.7.1",
     "clsx": "^2.1.1",
+    "drizzle-orm": "^0.44.2",
     "lucide-react": "^0.511.0",
     "next": "15.3.3",
+    "pg": "^8.16.0",
     "react": "^19.0.0",
     "react-dom": "^19.0.0",
     "recharts": "^2.15.3",
-    "tailwind-merge": "^3.3.0"
+    "tailwind-merge": "^3.3.0",
+    "zod": "^3.25.55"
   },
   "devDependencies": {
     "@eslint/eslintrc": "^3",
@@ -32,8 +39,10 @@
     "@tailwindcss/postcss": "^4",
     "@trivago/prettier-plugin-sort-imports": "^5.2.2",
     "@types/node": "^20",
+    "@types/pg": "^8.15.4",
     "@types/react": "^19",
     "@types/react-dom": "^19",
+    "drizzle-kit": "^0.31.1",
     "eslint": "^9",
     "eslint-config-next": "15.3.3",
     "eslint-config-prettier": "^10.1.5",
@@ -45,10 +54,24 @@
     "prettier": "^3.5.3",
     "prettier-plugin-tailwindcss": "^0.6.12",
     "tailwindcss": "^4",
+    "tsx": "^4.19.4",
     "tw-animate-css": "^1.3.3",
     "typescript": "^5"
   },
   "lint-staged": {
     "*": "pnpm lint"
+  },
+  "pnpm": {
+    "allowedDeprecatedVersions": {
+      "@esbuild-kit/core-utils": "3.3.2",
+      "@esbuild-kit/esm-loader": "2.6.5"
+    },
+    "onlyBuiltDependencies": [
+      "@clerk/shared",
+      "@tailwindcss/oxide",
+      "esbuild",
+      "sharp",
+      "unrs-resolver"
+    ]
   }
 }
