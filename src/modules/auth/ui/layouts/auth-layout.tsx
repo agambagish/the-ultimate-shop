@@ -11,7 +11,7 @@ interface Props {
 export function AuthLayout({ children }: Props) {
   return (
     <main>
-      <Navbar />
+      <Navbar isStoreOwner />
       <div className="flex h-[calc(100vh-4.5rem)] items-center justify-center">
         <ClerkLoading>
           <Loader2Icon className="text-muted-foreground size-8 animate-spin" />

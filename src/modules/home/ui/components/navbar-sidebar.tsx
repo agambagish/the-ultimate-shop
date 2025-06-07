@@ -21,9 +21,15 @@ interface Props {
   items: NavbarItem[];
   open: boolean;
   onOpenChange: (open: boolean) => void;
+  isStoreOwner: boolean;
 }
 
-export function NavbarSidebar({ items, open, onOpenChange }: Props) {
+export function NavbarSidebar({
+  items,
+  open,
+  onOpenChange,
+  isStoreOwner,
+}: Props) {
   return (
     <Sheet open={open} onOpenChange={onOpenChange}>
       <SheetTrigger asChild>
@@ -46,15 +52,17 @@ export function NavbarSidebar({ items, open, onOpenChange }: Props) {
               {item.title}
             </Link>
           ))}
-          <div className="border-t">
-            <Link
-              href="/onboarding"
-              className="flex w-full items-center p-4 text-left text-base font-medium hover:bg-black hover:text-white"
-              onClick={() => onOpenChange(false)}
-            >
-              Start Selling
-            </Link>
-          </div>
+          {!isStoreOwner && (
+            <div className="border-t">
+              <Link
+                href="/onboarding"
+                className="flex w-full items-center p-4 text-left text-base font-medium hover:bg-black hover:text-white"
+                onClick={() => onOpenChange(false)}
+              >
+                Start Selling
+              </Link>
+            </div>
+          )}
         </ScrollArea>
       </SheetContent>
     </Sheet>

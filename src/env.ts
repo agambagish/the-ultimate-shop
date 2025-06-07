@@ -6,6 +6,7 @@ export const env = createEnv({
   server: {
     CLERK_SECRET_KEY: z.string(),
     DATABASE_URL: z.string().url(),
+    CLERK_WEBHOOK_SIGNING_SECRET: z.string(),
   },
   client: {
     NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY: z.string(),
@@ -23,6 +24,7 @@ export const env = createEnv({
     NEXT_PUBLIC_CLERK_SIGN_IN_URL: process.env.NEXT_PUBLIC_CLERK_SIGN_IN_URL,
     NEXT_PUBLIC_CLERK_SIGN_UP_FALLBACK_REDIRECT_URL:
       process.env.NEXT_PUBLIC_CLERK_SIGN_UP_FALLBACK_REDIRECT_URL,
+    CLERK_WEBHOOK_SIGNING_SECRET: process.env.CLERK_WEBHOOK_SIGNING_SECRET,
   },
   emptyStringAsUndefined: true,
   onValidationError: (issues) => {

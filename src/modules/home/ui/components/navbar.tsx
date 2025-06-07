@@ -39,7 +39,11 @@ const navigationItems = [
   },
 ];
 
-export function Navbar() {
+interface Props {
+  isStoreOwner: boolean;
+}
+
+export function Navbar({ isStoreOwner }: Props) {
   const [isSidebarOpen, setIsSidebarOpen] = useState<boolean>(false);
 
   return (
@@ -72,18 +76,21 @@ export function Navbar() {
           </Button>
           <div className="border-r" />
           <AuthButton />
-          <Link
-            href="/onboarding"
-            className={cn(buttonVariants(), "hidden lg:flex")}
-          >
-            Start Selling
-          </Link>
+          {!isStoreOwner && (
+            <Link
+              href="/onboarding"
+              className={cn(buttonVariants(), "hidden lg:flex")}
+            >
+              Start Selling
+            </Link>
+          )}
         </div>
         <div className="flex w-12 shrink items-end justify-end lg:hidden">
           <NavbarSidebar
             items={navigationItems}
             open={isSidebarOpen}
             onOpenChange={setIsSidebarOpen}
+            isStoreOwner={isStoreOwner}
           />
         </div>
       </div>

@@ -1,3 +1,4 @@
+import { relations } from "drizzle-orm";
 import {
   decimal,
   integer,
@@ -9,11 +10,18 @@ import {
   varchar,
 } from "drizzle-orm/pg-core";
 
+export const userRoleEnum = pgEnum("user_role", ["user", "admin"]);
+
 export const storeStatusEnum = pgEnum("store_status", [
   "active",
   "pending",
   "deactive",
 ]);
+
+export const users = pgTable("users", {
+  clerkId: varchar({ length: 255 }).primaryKey(),
+  role: userRoleEnum().notNull().default("user"),
+});
 
 export const stores = pgTable("stores", {
   id: integer().primaryKey().generatedAlwaysAsIdentity(),
@@ -30,6 +38,9 @@ export const stores = pgTable("stores", {
   state: varchar({ length: 255 }).notNull(),
   country: varchar({ length: 255 }).notNull(),
   pinCode: varchar({ length: 255 }).notNull(),
+  userId: varchar({ length: 255 })
+    .notNull()
+    .references(() => users.clerkId, { onDelete: "cascade" }),
 });
 
 export const products = pgTable("products", {
@@ -42,10 +53,33 @@ export const products = pgTable("products", {
   imageUrl: text().notNull(),
   fileTypes: json().$type<string[]>().notNull().default([]),
   rating: integer().notNull().default(0),
+  storeId: integer()
+    .notNull()
+    .references(() => stores.id, { onDelete: "cascade" }),
   updatedAt: timestamp()
     .defaultNow()
     .$onUpdate(() => new Date()),
 });
 
+export const usersRelations = relations(users, ({ one }) => ({
+  store: one(stores),
+}));
+
+export const storesRelations = relations(stores, ({ one, many }) => ({
+  user: one(users, {
+    fields: [stores.userId],
+    references: [users.clerkId],
+  }),
+  products: many(products),
+}));
+
+export const productsRelations = relations(products, ({ one }) => ({
+  store: one(stores, {
+    fields: [products.storeId],
+    references: [stores.id],
+  }),
+}));
+
+export type User = typeof users.$inferInsert;
 export type Store = typeof stores.$inferSelect;
 export type Product = typeof products.$inferSelect;

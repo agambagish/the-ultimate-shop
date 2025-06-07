@@ -10,7 +10,9 @@
     "prepare": "husky",
     "db:push": "drizzle-kit push",
     "db:generate": "drizzle-kit generate",
-    "db:studio": "drizzle-kit studio"
+    "db:studio": "drizzle-kit studio",
+    "dev:webhook": "ngrok http --domain wired-keen-herring.ngrok-free.app 3000",
+    "dev:all": "concurrently \"pnpm dev:webhook\" \"pnpm dev\""
   },
   "dependencies": {
     "@clerk/nextjs": "^6.20.2",
@@ -30,6 +32,7 @@
     "react": "^19.0.0",
     "react-dom": "^19.0.0",
     "recharts": "^2.15.3",
+    "svix": "^1.67.0",
     "tailwind-merge": "^3.3.0",
     "zod": "^3.25.55"
   },
@@ -42,6 +45,7 @@
     "@types/pg": "^8.15.4",
     "@types/react": "^19",
     "@types/react-dom": "^19",
+    "concurrently": "^9.1.2",
     "drizzle-kit": "^0.31.1",
     "eslint": "^9",
     "eslint-config-next": "15.3.3",
