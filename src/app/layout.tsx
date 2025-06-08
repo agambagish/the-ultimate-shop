@@ -3,6 +3,7 @@ import { Jost } from "next/font/google";
 
 import { ClerkProvider } from "@clerk/nextjs";
 
+import { Toaster } from "@/components/ui/sonner";
 import { cn } from "@/lib/utils";
 
 import "./globals.css";
@@ -23,6 +24,7 @@ export default function Layout({ children }: React.PropsWithChildren) {
           suppressHydrationWarning
         >
           {children}
+          <Toaster richColors toastOptions={{ className: font.className }} />
         </body>
       </html>
     </ClerkProvider>
