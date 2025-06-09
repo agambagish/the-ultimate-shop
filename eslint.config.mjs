@@ -11,9 +11,42 @@ const compat = new FlatCompat({
 
 const eslintConfig = [
   ...compat.extends("next/core-web-vitals", "next/typescript", "prettier"),
-  ...compat.plugins("check-file", "n"),
+  ...compat.plugins("check-file", "n", "boundaries"),
   ...compat.config({
     ignorePatterns: ["src/components/ui/*"],
+    settings: {
+      "boundaries/include": ["src/**/*"],
+      "boundaries/elements": [
+        {
+          mode: "full",
+          type: "shared",
+          pattern: [
+            "src/components/**/*",
+            "src/db/**/*",
+            "src/lib/**/*",
+            "src/providers/**/*",
+            "src/env.ts",
+          ],
+        },
+        {
+          mode: "full",
+          type: "module",
+          capture: ["moduleName"],
+          pattern: ["src/modules/*/**/*"],
+        },
+        {
+          mode: "full",
+          type: "app",
+          capture: ["_", "fileName"],
+          pattern: ["src/app/**/*"],
+        },
+        {
+          mode: "full",
+          type: "neverImport",
+          pattern: ["src/*"],
+        },
+      ],
+    },
     rules: {
       semi: ["error"],
       quotes: ["error", "double"],
@@ -56,6 +89,35 @@ const eslintConfig = [
           destructuredArrayIgnorePattern: "^_",
           varsIgnorePattern: "^_",
           ignoreRestSiblings: true,
+        },
+      ],
+      "boundaries/no-unknown": ["error"],
+      "boundaries/no-unknown-files": ["error"],
+      "boundaries/element-types": [
+        "error",
+        {
+          default: "disallow",
+          rules: [
+            {
+              from: ["shared"],
+              allow: ["shared"],
+            },
+            {
+              from: ["module"],
+              allow: [
+                "shared",
+                ["module", { moduleName: "${from.moduleName}" }],
+              ],
+            },
+            {
+              from: ["app", "neverImport"],
+              allow: ["shared", "module"],
+            },
+            {
+              from: ["app"],
+              allow: [["app", { fileName: "*.css" }]],
+            },
+          ],
         },
       ],
     },

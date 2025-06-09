@@ -1,6 +1,6 @@
 import { ProductCard } from "@/components/product-card";
 import { Button } from "@/components/ui/button";
-import { HeroSection } from "@/modules/home/ui/components/hero-section";
+import { HeroSection } from "@/modules/home/components/hero-section";
 
 const featuredProducts = [
   {

@@ -3,7 +3,6 @@
 import { useState } from "react";
 
 import { zodResolver } from "@hookform/resolvers/zod";
-import { createInsertSchema } from "drizzle-zod";
 import {
   ArrowBigLeftDashIcon,
   ArrowBigRightDashIcon,
@@ -15,7 +14,6 @@ import {
 } from "lucide-react";
 import { useForm } from "react-hook-form";
 import { toast } from "sonner";
-import type { z } from "zod/v4";
 
 import {
   Stepper,
@@ -45,64 +43,11 @@ import {
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
-import { stores } from "@/db/schema";
 
-import { createStore } from "../../server/create-store";
-
-const onboardingSchema = createInsertSchema(stores, {
-  name: (s) => s.min(5),
-  description: (s) => s.min(12),
-  slug: (s) => s.regex(/^[A-Za-z0-9]+(?:-[A-Za-z0-9]+)*$/).min(5),
-  addressLine1: (s) => s.min(7),
-  addressLine2: (s) => s.min(3).optional(),
-  city: (s) => s.min(2),
-  state: (s) => s.min(2),
-  country: (s) => s.min(2),
-  pinCode: (s) => s.min(2),
-}).omit({
-  avatarUrl: true,
-  credits: true,
-  rating: true,
-  status: true,
-  userId: true,
-});
-
-export type OnboardingSchema = z.infer<typeof onboardingSchema>;
-
-interface Step {
-  step: number;
-  title: string;
-  description: string;
-  fields: (keyof OnboardingSchema)[];
-}
-
-const steps: Step[] = [
-  {
-    step: 1,
-    title: "Store Info",
-    description: "Set up your online store",
-    fields: ["name", "description", "slug"],
-  },
-  {
-    step: 2,
-    title: "Address",
-    description: "Provide your address",
-    fields: [
-      "addressLine1",
-      "addressLine2",
-      "city",
-      "state",
-      "country",
-      "pinCode",
-    ],
-  },
-  {
-    step: 3,
-    title: "Review Application",
-    description: "Review your information before proceeding to verification",
-    fields: [],
-  },
-];
+import { steps } from "../lib/constants";
+import type { OnboardingSchema } from "../schemas/onboarding-schema";
+import { onboardingSchema } from "../schemas/onboarding-schema";
+import { createStore } from "../server/create-store";
 
 export function OnboardingForm() {
   const [isLoading, setIsLoading] = useState<boolean>(false);

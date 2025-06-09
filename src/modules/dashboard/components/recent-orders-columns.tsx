@@ -13,7 +13,7 @@ interface Sale {
   status: "Yet to deliver" | "Delivered" | "Cancelled";
 }
 
-export const columns: ColumnDef<Sale>[] = [
+export const recentOrdersColumns: ColumnDef<Sale>[] = [
   {
     accessorKey: "id",
     header: "#",

@@ -4,11 +4,10 @@ import { DataTable } from "@/components/data-table";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Separator } from "@/components/ui/separator";
 import { formatPrice } from "@/lib/utils";
-import { Heading } from "@/modules/dashboard/ui/components/heading";
-import { SalesByMonthChart } from "@/modules/dashboard/ui/components/sales-by-month-chart";
-import { TopSellingProductsChart } from "@/modules/dashboard/ui/components/top-selling-products-chart";
-
-import { columns } from "./columns";
+import { Heading } from "@/modules/dashboard/components/heading";
+import { recentOrdersColumns } from "@/modules/dashboard/components/recent-orders-columns";
+import { SalesByMonthChart } from "@/modules/dashboard/components/sales-by-month-chart";
+import { TopSellingProductsChart } from "@/modules/dashboard/components/top-selling-products-chart";
 
 interface Props {
   params: Promise<{ slug: string }>;
@@ -68,7 +67,7 @@ export default async function Page({ params }: Props) {
       </div>
       <DataTable
         // @ts-expect-error IDK
-        columns={columns}
+        columns={recentOrdersColumns}
         data={[
           {
             id: "1",

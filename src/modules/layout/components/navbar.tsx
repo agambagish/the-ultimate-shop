@@ -5,6 +5,7 @@ import { useState } from "react";
 
 import { ShoppingBagIcon } from "lucide-react";
 
+import { ModeToggle } from "@/components/mode-toggle";
 import { Button, buttonVariants } from "@/components/ui/button";
 import {
   NavigationMenu,
@@ -12,8 +13,8 @@ import {
   NavigationMenuList,
 } from "@/components/ui/navigation-menu";
 import { cn } from "@/lib/utils";
-import { AuthButton } from "@/modules/auth/ui/components/auth-button";
 
+import { AuthButton } from "../components/auth-button";
 import { NavbarSidebar } from "./navbar-sidebar";
 
 const navigationItems = [
@@ -74,6 +75,7 @@ export function Navbar({ isStoreOwner }: Props) {
           <Button variant="outline" size="icon">
             <ShoppingBagIcon />
           </Button>
+          <ModeToggle />
           <div className="border-r" />
           <AuthButton />
           {!isStoreOwner && (

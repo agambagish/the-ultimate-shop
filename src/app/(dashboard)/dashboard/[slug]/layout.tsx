@@ -4,7 +4,8 @@ import { auth } from "@clerk/nextjs/server";
 
 import { db } from "@/db";
 import { tryCatch } from "@/lib/try-catch";
-import { DashboardLayout } from "@/modules/dashboard/ui/layouts/dashboard-layout";
+import { DashboardNavbar } from "@/modules/dashboard/components/dashboard-navbar";
+import { Footer } from "@/modules/layout/components/footer";
 
 export default async function Layout({ children }: React.PropsWithChildren) {
   const { userId } = await auth();
@@ -21,5 +22,11 @@ export default async function Layout({ children }: React.PropsWithChildren) {
     notFound();
   }
 
-  return <DashboardLayout>{children}</DashboardLayout>;
+  return (
+    <main className="flex min-h-screen flex-col">
+      <DashboardNavbar />
+      <div className="flex-1">{children}</div>
+      <Footer />
+    </main>
+  );
 }

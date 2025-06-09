@@ -3,8 +3,8 @@ import { Jost } from "next/font/google";
 
 import { ClerkProvider } from "@clerk/nextjs";
 
-import { Toaster } from "@/components/ui/sonner";
 import { cn } from "@/lib/utils";
+import { Providers } from "@/providers";
 
 import "./globals.css";
 
@@ -18,13 +18,12 @@ export const metadata: Metadata = {
 export default function Layout({ children }: React.PropsWithChildren) {
   return (
     <ClerkProvider>
-      <html lang="en">
+      <html lang="en" suppressHydrationWarning>
         <body
           className={cn("antialiased", font.className)}
           suppressHydrationWarning
         >
-          {children}
-          <Toaster richColors toastOptions={{ className: font.className }} />
+          <Providers>{children}</Providers>
         </body>
       </html>
     </ClerkProvider>

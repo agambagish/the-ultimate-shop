@@ -6,7 +6,7 @@ import { db } from "@/db";
 import { stores } from "@/db/schema";
 import { tryCatch } from "@/lib/try-catch";
 
-import type { OnboardingSchema } from "../ui/components/onboarding-form";
+import type { OnboardingSchema } from "../schemas/onboarding-schema";
 
 export async function createStore(values: OnboardingSchema) {
   const { userId } = await auth();
