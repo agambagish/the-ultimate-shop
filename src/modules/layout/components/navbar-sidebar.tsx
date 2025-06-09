@@ -21,15 +21,10 @@ interface Props {
   items: NavbarItem[];
   open: boolean;
   onOpenChange: (open: boolean) => void;
-  isStoreOwner: boolean;
+  storeSlug?: string;
 }
 
-export function NavbarSidebar({
-  items,
-  open,
-  onOpenChange,
-  isStoreOwner,
-}: Props) {
+export function NavbarSidebar({ items, open, onOpenChange, storeSlug }: Props) {
   return (
     <Sheet open={open} onOpenChange={onOpenChange}>
       <SheetTrigger asChild>
@@ -52,7 +47,7 @@ export function NavbarSidebar({
               {item.title}
             </Link>
           ))}
-          {!isStoreOwner && (
+          {!storeSlug && (
             <div className="border-t">
               <Link
                 href="/onboarding"

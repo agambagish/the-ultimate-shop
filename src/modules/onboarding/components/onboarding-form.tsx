@@ -83,7 +83,7 @@ export function OnboardingForm() {
     }
 
     if (data) {
-      toast.success(data);
+      toast.success("The request has been registered");
     }
 
     setIsLoading(false);
@@ -336,10 +336,15 @@ export function OnboardingForm() {
                         <p className="text-muted-foreground">Address Line 1</p>
                         <p>{form.getValues("addressLine1")}</p>
                       </div>
-                      <div>
-                        <p className="text-muted-foreground">Address Line 2</p>
-                        <p>{form.getValues("addressLine2")}</p>
-                      </div>
+                      {(form.getValues("addressLine2") as string).length >
+                        0 && (
+                        <div>
+                          <p className="text-muted-foreground">
+                            Address Line 2
+                          </p>
+                          <p>{form.getValues("addressLine2")}</p>
+                        </div>
+                      )}
                       <div>
                         <p className="text-muted-foreground">City</p>
                         <p>{form.getValues("city")}</p>

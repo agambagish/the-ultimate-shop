@@ -11,13 +11,13 @@ export default async function Layout({ children }: React.PropsWithChildren) {
   const { data: store } = await tryCatch(
     db.query.stores.findFirst({
       where: (f, o) => o.eq(f.userId, userId ?? ""),
-      columns: { id: true },
+      columns: { slug: true },
     })
   );
 
   return (
     <main className="flex min-h-screen flex-col">
-      <Navbar isStoreOwner={!!store} />
+      <Navbar storeSlug={store?.slug} />
       <div className="flex-1">{children}</div>
       <Footer />
     </main>

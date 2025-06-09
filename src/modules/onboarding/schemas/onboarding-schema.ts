@@ -6,9 +6,9 @@ import { stores } from "@/db/schema";
 export const onboardingSchema = createInsertSchema(stores, {
   name: (s) => s.min(5),
   description: (s) => s.min(12),
-  slug: (s) => s.regex(/^[A-Za-z0-9]+(?:-[A-Za-z0-9]+)*$/).min(5),
+  slug: (s) => s.regex(/^[a-z0-9]+(?:-[a-z0-9]+)*$/).min(5),
   addressLine1: (s) => s.min(7),
-  addressLine2: (s) => s.min(3).optional(),
+  addressLine2: (s) => s.optional(),
   city: (s) => s.min(2),
   state: (s) => s.min(2),
   country: (s) => s.min(2),

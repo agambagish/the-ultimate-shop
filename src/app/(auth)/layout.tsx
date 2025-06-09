@@ -7,7 +7,7 @@ import { Navbar } from "@/modules/layout/components/navbar";
 export default function Layout({ children }: React.PropsWithChildren) {
   return (
     <main>
-      <Navbar isStoreOwner />
+      <Navbar />
       <div className="flex h-[calc(100vh-4.5rem)] items-center justify-center">
         <ClerkLoading>
           <Loader2Icon className="text-muted-foreground size-8 animate-spin" />

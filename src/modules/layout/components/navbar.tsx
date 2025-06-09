@@ -41,10 +41,10 @@ const navigationItems = [
 ];
 
 interface Props {
-  isStoreOwner: boolean;
+  storeSlug?: string;
 }
 
-export function Navbar({ isStoreOwner }: Props) {
+export function Navbar({ storeSlug }: Props) {
   const [isSidebarOpen, setIsSidebarOpen] = useState<boolean>(false);
 
   return (
@@ -77,8 +77,8 @@ export function Navbar({ isStoreOwner }: Props) {
           </Button>
           <ModeToggle />
           <div className="border-r" />
-          <AuthButton />
-          {!isStoreOwner && (
+          <AuthButton storeSlug={storeSlug} />
+          {!storeSlug && (
             <Link
               href="/onboarding"
               className={cn(buttonVariants(), "hidden lg:flex")}
@@ -92,7 +92,7 @@ export function Navbar({ isStoreOwner }: Props) {
             items={navigationItems}
             open={isSidebarOpen}
             onOpenChange={setIsSidebarOpen}
-            isStoreOwner={isStoreOwner}
+            storeSlug={storeSlug}
           />
         </div>
       </div>

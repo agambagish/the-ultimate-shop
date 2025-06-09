@@ -1,3 +1,5 @@
+"use client";
+
 import Link from "next/link";
 
 import {
@@ -7,11 +9,15 @@ import {
   SignedOut,
   UserButton,
 } from "@clerk/nextjs";
-import { Loader2Icon } from "lucide-react";
+import { LayoutDashboardIcon, Loader2Icon } from "lucide-react";
 
 import { Button, buttonVariants } from "@/components/ui/button";
 
-export function AuthButton() {
+interface Props {
+  storeSlug?: string;
+}
+
+export function AuthButton({ storeSlug }: Props) {
   return (
     <>
       <ClerkLoading>
@@ -30,7 +36,17 @@ export function AuthButton() {
         </SignedOut>
         <SignedIn>
           <Button size="icon" variant="secondary">
-            <UserButton />
+            <UserButton>
+              <UserButton.MenuItems>
+                {!!storeSlug && (
+                  <UserButton.Link
+                    label="Dashboard"
+                    href={`/dashboard/${storeSlug}`}
+                    labelIcon={<LayoutDashboardIcon className="size-4" />}
+                  />
+                )}
+              </UserButton.MenuItems>
+            </UserButton>
           </Button>
         </SignedIn>
       </ClerkLoaded>

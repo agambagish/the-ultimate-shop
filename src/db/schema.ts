@@ -40,6 +40,7 @@ export const stores = pgTable("stores", {
   pinCode: varchar({ length: 255 }).notNull(),
   userId: varchar({ length: 255 })
     .notNull()
+    .unique()
     .references(() => users.clerkId, { onDelete: "cascade" }),
 });
 
