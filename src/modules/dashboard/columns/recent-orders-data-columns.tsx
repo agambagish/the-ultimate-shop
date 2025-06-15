@@ -13,15 +13,10 @@ interface Sale {
   status: "Yet to deliver" | "Delivered" | "Cancelled";
 }
 
-export const recentOrdersColumns: ColumnDef<Sale>[] = [
+export const recentOrdersDataColumns: ColumnDef<Sale>[] = [
   {
     accessorKey: "id",
     header: "#",
-  },
-  {
-    accessorKey: "amount",
-    header: "Amount",
-    cell: ({ row }) => formatPrice(row.getValue("amount")),
   },
   {
     accessorKey: "customer",
@@ -46,5 +41,10 @@ export const recentOrdersColumns: ColumnDef<Sale>[] = [
         {row.getValue("status")}
       </Badge>
     ),
+  },
+  {
+    accessorKey: "amount",
+    header: "Amount",
+    cell: ({ row }) => formatPrice(row.getValue("amount")),
   },
 ];
