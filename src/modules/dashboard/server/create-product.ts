@@ -6,16 +6,25 @@ import { db } from "@/db";
 import { products } from "@/db/schema";
 import { tryCatch } from "@/lib/try-catch";
 
-import type { CreateProductSchema } from "../schemas/product-schema";
+import type { CreateProductSchema } from "../schemas/create-product-schema";
 
-export async function createProduct(values: CreateProductSchema) {
+export async function createProduct(
+  values: Omit<
+    CreateProductSchema,
+    "thumbnailImage" | "image1" | "image2" | "image3" | "image4" | "image5"
+  > & {
+    thumbnailImageURL: string;
+    imageURL1: string;
+    imageURL2: string;
+    imageURL3: string;
+    imageURL4: string;
+    imageURL5: string;
+  }
+) {
   const { userId } = await auth();
 
   if (!userId) {
-    return {
-      data: null,
-      error: "You are not signed in",
-    };
+    throw new Error("You are not signed in");
   }
 
   const { data: store, error: storeErr } = await tryCatch(
@@ -26,10 +35,7 @@ export async function createProduct(values: CreateProductSchema) {
   );
 
   if (storeErr || !store?.id) {
-    return {
-      data: null,
-      error: "Your store is deactivated",
-    };
+    throw new Error("Your store is deactivated");
   }
 
   const { data, error } = await tryCatch(
@@ -37,7 +43,6 @@ export async function createProduct(values: CreateProductSchema) {
       .insert(products)
       .values({
         ...values,
-        imageUrl: "",
         storeId: store.id,
       })
       .returning({
@@ -46,14 +51,10 @@ export async function createProduct(values: CreateProductSchema) {
   );
 
   if (error) {
-    return {
-      data: null,
-      error: "Something went wrong",
-    };
+    throw new Error("Something went wrong");
   }
 
   return {
     data: data[0].title,
-    error: "Your store is deactivated",
   };
 }

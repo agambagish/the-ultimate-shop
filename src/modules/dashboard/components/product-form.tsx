@@ -3,6 +3,7 @@
 import { PercentIcon } from "lucide-react";
 import type { FieldPath, FieldValues, UseFormReturn } from "react-hook-form";
 
+import { ImageField } from "@/components/image-field";
 import {
   Form,
   FormControl,
@@ -20,6 +21,7 @@ interface Props<T extends FieldValues>
   form: UseFormReturn<T>;
   disabled: boolean;
   onSubmit: (values: T) => void;
+  purpose?: "create" | "update";
 }
 
 export function ProductForm<T extends FieldValues>({
@@ -136,6 +138,90 @@ export function ProductForm<T extends FieldValues>({
                       <PercentIcon size={16} />
                     </div>
                   </div>
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+        </div>
+        <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
+          <FormField
+            control={form.control}
+            name={"thumbnailImage" as FieldPath<T>}
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>Thumbnail Image</FormLabel>
+                <FormControl>
+                  <ImageField field={field} form={form} disabled={disabled} />
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+          <FormField
+            control={form.control}
+            name={"image1" as FieldPath<T>}
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>
+                  Image 1 <span className="text-destructive">*</span>
+                </FormLabel>
+                <FormControl>
+                  <ImageField field={field} form={form} disabled={disabled} />
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+          <FormField
+            control={form.control}
+            name={"image2" as FieldPath<T>}
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>
+                  Image 2 <span className="text-destructive">*</span>
+                </FormLabel>
+                <FormControl>
+                  <ImageField field={field} form={form} disabled={disabled} />
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+          <FormField
+            control={form.control}
+            name={"image3" as FieldPath<T>}
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>Image 3</FormLabel>
+                <FormControl>
+                  <ImageField field={field} form={form} disabled={disabled} />
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+          <FormField
+            control={form.control}
+            name={"image4" as FieldPath<T>}
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>Image 4</FormLabel>
+                <FormControl>
+                  <ImageField field={field} form={form} disabled={disabled} />
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+          <FormField
+            control={form.control}
+            name={"image5" as FieldPath<T>}
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>Image 5</FormLabel>
+                <FormControl>
+                  <ImageField field={field} form={form} disabled={disabled} />
                 </FormControl>
                 <FormMessage />
               </FormItem>

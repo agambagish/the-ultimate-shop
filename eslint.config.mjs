@@ -24,8 +24,10 @@ const eslintConfig = [
             "src/components/**/*",
             "src/db/**/*",
             "src/lib/**/*",
+            "src/hooks/**/*",
             "src/providers/**/*",
             "src/env.ts",
+            "src/app/api/edgestore/**/*",
           ],
         },
         {

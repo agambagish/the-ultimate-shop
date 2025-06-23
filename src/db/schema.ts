@@ -51,7 +51,12 @@ export const products = pgTable("products", {
   longDescription: text().notNull(),
   price: decimal({ precision: 10, scale: 2 }).notNull().default("0"),
   discountPercentage: integer().notNull().default(0),
-  imageUrl: text().notNull(),
+  thumbnailImageURL: text().notNull(),
+  imageURL1: text().notNull(),
+  imageURL2: text().notNull(),
+  imageURL3: text(),
+  imageURL4: text(),
+  imageURL5: text(),
   fileTypes: json().$type<string[]>().notNull().default([]),
   rating: integer().notNull().default(0),
   storeId: integer()
