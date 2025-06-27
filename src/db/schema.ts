@@ -47,6 +47,7 @@ export const stores = pgTable("stores", {
 export const products = pgTable("products", {
   id: integer().primaryKey().generatedAlwaysAsIdentity(),
   title: varchar({ length: 255 }).notNull(),
+  slug: text().notNull().unique(),
   description: varchar({ length: 255 }).notNull(),
   longDescription: text().notNull(),
   price: decimal({ precision: 10, scale: 2 }).notNull().default("0"),
@@ -59,12 +60,45 @@ export const products = pgTable("products", {
   imageURL5: text(),
   fileTypes: json().$type<string[]>().notNull().default([]),
   rating: integer().notNull().default(0),
+  productFileId: integer()
+    .notNull()
+    .references(() => productFiles.id, { onDelete: "cascade" }),
   storeId: integer()
     .notNull()
     .references(() => stores.id, { onDelete: "cascade" }),
   updatedAt: timestamp()
     .defaultNow()
     .$onUpdate(() => new Date()),
+});
+
+export const productFiles = pgTable("product_files", {
+  id: integer().primaryKey().generatedAlwaysAsIdentity(),
+  pinataCid: text().notNull(),
+  fileName: text().notNull(),
+  mimeType: text().notNull(),
+  size: integer().notNull(),
+  productSlug: text().notNull(),
+});
+
+export const orders = pgTable("orders", {
+  id: integer().primaryKey().generatedAlwaysAsIdentity(),
+  userId: varchar({ length: 255 }).notNull(),
+  storeId: integer()
+    .notNull()
+    .references(() => stores.id, { onDelete: "cascade" }),
+  totalAmount: decimal({ precision: 10, scale: 2 }).notNull(),
+  createdAt: timestamp().defaultNow(),
+});
+
+export const orderItems = pgTable("order_items", {
+  id: integer().primaryKey().generatedAlwaysAsIdentity(),
+  orderId: integer()
+    .notNull()
+    .references(() => orders.id, { onDelete: "cascade" }),
+  productId: integer()
+    .notNull()
+    .references(() => products.id, { onDelete: "cascade" }),
+  priceAtPurchase: decimal({ precision: 10, scale: 2 }).notNull(),
 });
 
 export const usersRelations = relations(users, ({ one }) => ({
@@ -84,8 +118,41 @@ export const productsRelations = relations(products, ({ one }) => ({
     fields: [products.storeId],
     references: [stores.id],
   }),
+  productFiles: one(productFiles, {
+    fields: [products.productFileId],
+    references: [productFiles.id],
+  }),
+}));
+
+export const productFilesRelations = relations(productFiles, ({ one }) => ({
+  product: one(products, {
+    fields: [productFiles.productSlug],
+    references: [products.id],
+  }),
+}));
+
+export const ordersRelations = relations(orders, ({ one, many }) => ({
+  store: one(stores, {
+    fields: [orders.storeId],
+    references: [stores.id],
+  }),
+  orderItems: many(orderItems),
+}));
+
+export const orderItemsRelations = relations(orderItems, ({ one }) => ({
+  order: one(orders, {
+    fields: [orderItems.orderId],
+    references: [orders.id],
+  }),
+  product: one(products, {
+    fields: [orderItems.productId],
+    references: [products.id],
+  }),
 }));
 
 export type User = typeof users.$inferInsert;
 export type Store = typeof stores.$inferSelect;
 export type Product = typeof products.$inferSelect;
+export type ProductFile = typeof productFiles.$inferSelect;
+export type Order = typeof orders.$inferSelect;
+export type OrderItem = typeof orderItems.$inferSelect;

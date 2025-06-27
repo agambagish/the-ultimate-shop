@@ -1096,7 +1096,7 @@ function FileUploadItemPreview(props: FileUploadItemPreviewProps) {
       data-slot="file-upload-preview"
       {...previewProps}
       className={cn(
-        "bg-accent/50 relative flex size-10 shrink-0 items-center justify-center overflow-hidden rounded border [&>svg]:size-10",
+        "bg-accent/50 relative flex size-10 shrink-0 items-center justify-center overflow-hidden rounded [&>svg]:size-10",
         className
       )}
     >

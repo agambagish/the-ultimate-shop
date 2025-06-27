@@ -5,7 +5,7 @@ import { MAX_IMAGE_SIZE } from "@/lib/constants";
 
 const es = initEdgeStore.create();
 
-export const edgeStoreRouter = es.router({
+const edgeStoreRouter = es.router({
   thumbnailImages: es.imageBucket({
     accept: ["image/jpeg", "image/png"],
     maxSize: MAX_IMAGE_SIZE,

@@ -9,28 +9,26 @@ import { toast } from "sonner";
 
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
-import { useUploadFiles } from "@/hooks/use-upload-files";
+import { useEdgestore } from "@/hooks/use-edgestore";
 import { Heading } from "@/modules/dashboard/components/heading";
 import { ProductForm } from "@/modules/dashboard/components/product-form";
 import type { CreateProductSchema } from "@/modules/dashboard/schemas/create-product-schema";
 import { createProductSchema } from "@/modules/dashboard/schemas/create-product-schema";
 import { createProduct } from "@/modules/dashboard/server/create-product";
+import { createProductFile } from "@/modules/dashboard/server/create-product-file";
 
 export default function Page() {
   const [isLoading, setIsLoading] = useState<boolean>(false);
-  const { isUploading: isUploading1, uploadFiles: uploadThumbnailImage } =
-    useUploadFiles("thumbnailImages");
+  const { isUploading, uploadFiles } = useEdgestore();
 
-  const { isUploading: isUploading2, uploadFiles: uploadImages } =
-    useUploadFiles("productImages");
-
-  const disabled = isLoading || isUploading1 || isUploading2;
+  const disabled = isLoading || isUploading;
 
   const form = useForm<CreateProductSchema>({
     resolver: zodResolver(createProductSchema),
     mode: "onChange",
     defaultValues: {
       title: "",
+      slug: "",
       description: "",
       longDescription: "",
       price: "",
@@ -41,6 +39,7 @@ export default function Page() {
       image3: [],
       image4: [],
       image5: [],
+      productFile: [],
     },
   });
 
@@ -56,8 +55,19 @@ export default function Page() {
     ];
 
     toast.promise(
-      uploadThumbnailImage(values.thumbnailImage).then((thumbnailImageURLs) =>
-        uploadImages(allImages).then((imageURLs) => {
+      uploadFiles({
+        endpoint: "thumbnailImages",
+        files: values.thumbnailImage,
+      }).then((thumbnailImageURLs) =>
+        uploadFiles({
+          endpoint: "productImages",
+          files: allImages,
+        }).then(async (imageURLs) => {
+          const productFileId = await createProductFile({
+            file: values.productFile[0],
+            slug: values.slug,
+          });
+
           const [imageURL1, imageURL2, imageURL3, imageURL4, imageURL5] =
             imageURLs;
 
@@ -69,6 +79,7 @@ export default function Page() {
             imageURL3,
             imageURL4,
             imageURL5,
+            productFileId,
           });
         })
       ),

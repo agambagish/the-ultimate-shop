@@ -5,14 +5,20 @@ import { toast } from "sonner";
 import type { EdgeStoreRouter } from "@/app/api/edgestore/[...edgestore]/route";
 import { useEdgeStore } from "@/providers/edgestore-provider";
 
-export function useUploadFiles(endpoint: keyof EdgeStoreRouter["buckets"]) {
+export function useEdgestore() {
   const [uploadedFiles, setUploadedFiles] = useState<string[]>([]);
   const [progresses, setProgresses] = useState<Record<string, number>>({});
   const [isUploading, setIsUploading] = useState<boolean>(false);
 
   const { edgestore } = useEdgeStore();
 
-  async function uploadFiles(files: File[]) {
+  async function uploadFiles({
+    endpoint,
+    files,
+  }: {
+    endpoint: keyof EdgeStoreRouter["buckets"];
+    files: File[];
+  }) {
     setIsUploading(true);
 
     try {

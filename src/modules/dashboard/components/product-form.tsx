@@ -1,9 +1,20 @@
 "use client";
 
-import { PercentIcon } from "lucide-react";
+import { CloudUploadIcon, PercentIcon, XIcon } from "lucide-react";
 import type { FieldPath, FieldValues, UseFormReturn } from "react-hook-form";
 
-import { ImageField } from "@/components/image-field";
+import {
+  FileUpload,
+  FileUploadDropzone,
+  FileUploadItem,
+  FileUploadItemDelete,
+  FileUploadItemMetadata,
+  FileUploadItemPreview,
+  FileUploadList,
+  FileUploadTrigger,
+} from "@/components/file-upload";
+import { SingleImageField } from "@/components/single-image-field";
+import { Button } from "@/components/ui/button";
 import {
   Form,
   FormControl,
@@ -42,6 +53,23 @@ export function ProductForm<T extends FieldValues>({
               <FormControl>
                 <Input
                   placeholder="Star Icon Pack"
+                  disabled={disabled}
+                  {...field}
+                />
+              </FormControl>
+              <FormMessage />
+            </FormItem>
+          )}
+        />
+        <FormField
+          control={form.control}
+          name={"slug" as FieldPath<T>}
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel>Slug</FormLabel>
+              <FormControl>
+                <Input
+                  placeholder="star-icon-pack"
                   disabled={disabled}
                   {...field}
                 />
@@ -152,7 +180,11 @@ export function ProductForm<T extends FieldValues>({
               <FormItem>
                 <FormLabel>Thumbnail Image</FormLabel>
                 <FormControl>
-                  <ImageField field={field} form={form} disabled={disabled} />
+                  <SingleImageField
+                    field={field}
+                    form={form}
+                    disabled={disabled}
+                  />
                 </FormControl>
                 <FormMessage />
               </FormItem>
@@ -167,7 +199,11 @@ export function ProductForm<T extends FieldValues>({
                   Image 1 <span className="text-destructive">*</span>
                 </FormLabel>
                 <FormControl>
-                  <ImageField field={field} form={form} disabled={disabled} />
+                  <SingleImageField
+                    field={field}
+                    form={form}
+                    disabled={disabled}
+                  />
                 </FormControl>
                 <FormMessage />
               </FormItem>
@@ -182,7 +218,11 @@ export function ProductForm<T extends FieldValues>({
                   Image 2 <span className="text-destructive">*</span>
                 </FormLabel>
                 <FormControl>
-                  <ImageField field={field} form={form} disabled={disabled} />
+                  <SingleImageField
+                    field={field}
+                    form={form}
+                    disabled={disabled}
+                  />
                 </FormControl>
                 <FormMessage />
               </FormItem>
@@ -195,7 +235,11 @@ export function ProductForm<T extends FieldValues>({
               <FormItem>
                 <FormLabel>Image 3</FormLabel>
                 <FormControl>
-                  <ImageField field={field} form={form} disabled={disabled} />
+                  <SingleImageField
+                    field={field}
+                    form={form}
+                    disabled={disabled}
+                  />
                 </FormControl>
                 <FormMessage />
               </FormItem>
@@ -208,7 +252,11 @@ export function ProductForm<T extends FieldValues>({
               <FormItem>
                 <FormLabel>Image 4</FormLabel>
                 <FormControl>
-                  <ImageField field={field} form={form} disabled={disabled} />
+                  <SingleImageField
+                    field={field}
+                    form={form}
+                    disabled={disabled}
+                  />
                 </FormControl>
                 <FormMessage />
               </FormItem>
@@ -221,13 +269,71 @@ export function ProductForm<T extends FieldValues>({
               <FormItem>
                 <FormLabel>Image 5</FormLabel>
                 <FormControl>
-                  <ImageField field={field} form={form} disabled={disabled} />
+                  <SingleImageField
+                    field={field}
+                    form={form}
+                    disabled={disabled}
+                  />
                 </FormControl>
                 <FormMessage />
               </FormItem>
             )}
           />
         </div>
+        <FormField
+          control={form.control}
+          name={"productFile" as FieldPath<T>}
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel>Product File</FormLabel>
+              <FormControl>
+                <FileUpload
+                  value={field.value}
+                  onValueChange={field.onChange}
+                  accept="application/pdf"
+                  maxFiles={1}
+                  maxSize={30 * 1024 * 1024}
+                  onFileReject={(_, message) => {
+                    form.setError("productFile" as FieldPath<T>, {
+                      message,
+                    });
+                  }}
+                  multiple={false}
+                  disabled={disabled}
+                >
+                  <FileUploadDropzone className="flex-row flex-wrap border-dotted text-center">
+                    <CloudUploadIcon className="size-4" />
+                    Drag and drop or
+                    <FileUploadTrigger asChild>
+                      <Button variant="link" size="sm" className="p-0">
+                        Choose File
+                      </Button>
+                    </FileUploadTrigger>
+                    to upload
+                  </FileUploadDropzone>
+                  <FileUploadList>
+                    {field.value.map((file: File, i: number) => (
+                      <FileUploadItem key={i} value={file}>
+                        <FileUploadItemPreview />
+                        <FileUploadItemMetadata />
+                        <FileUploadItemDelete asChild>
+                          <Button
+                            variant="ghost"
+                            size="icon"
+                            className="size-7"
+                          >
+                            <XIcon />
+                          </Button>
+                        </FileUploadItemDelete>
+                      </FileUploadItem>
+                    ))}
+                  </FileUploadList>
+                </FileUpload>
+              </FormControl>
+              <FormMessage />
+            </FormItem>
+          )}
+        />
         {children}
       </form>
     </Form>

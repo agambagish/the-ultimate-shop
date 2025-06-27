@@ -11,7 +11,13 @@ import type { CreateProductSchema } from "../schemas/create-product-schema";
 export async function createProduct(
   values: Omit<
     CreateProductSchema,
-    "thumbnailImage" | "image1" | "image2" | "image3" | "image4" | "image5"
+    | "thumbnailImage"
+    | "image1"
+    | "image2"
+    | "image3"
+    | "image4"
+    | "image5"
+    | "productFile"
   > & {
     thumbnailImageURL: string;
     imageURL1: string;
@@ -19,6 +25,7 @@ export async function createProduct(
     imageURL3: string;
     imageURL4: string;
     imageURL5: string;
+    productFileId: number;
   }
 ) {
   const { userId } = await auth();
