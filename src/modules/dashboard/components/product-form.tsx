@@ -290,7 +290,7 @@ export function ProductForm<T extends FieldValues>({
                 <FileUpload
                   value={field.value}
                   onValueChange={field.onChange}
-                  accept="application/pdf"
+                  accept="image/svg+xml, image/png, application/pdf, application/postscript, image/vnd.adobe.photoshop, application/zip, application/x-zip-compressed"
                   maxFiles={1}
                   maxSize={30 * 1024 * 1024}
                   onFileReject={(_, message) => {

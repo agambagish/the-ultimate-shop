@@ -15,7 +15,6 @@ import { ProductForm } from "@/modules/dashboard/components/product-form";
 import type { CreateProductSchema } from "@/modules/dashboard/schemas/create-product-schema";
 import { createProductSchema } from "@/modules/dashboard/schemas/create-product-schema";
 import { createProduct } from "@/modules/dashboard/server/create-product";
-import { createProductFile } from "@/modules/dashboard/server/create-product-file";
 
 export default function Page() {
   const [isLoading, setIsLoading] = useState<boolean>(false);
@@ -62,24 +61,21 @@ export default function Page() {
         uploadFiles({
           endpoint: "productImages",
           files: allImages,
-        }).then(async (imageURLs) => {
-          const productFileId = await createProductFile({
-            file: values.productFile[0],
-            slug: values.slug,
-          });
-
+        }).then((imageURLs) => {
+          const [productFile] = values.productFile;
+          const [thumbnailImageURL] = thumbnailImageURLs;
           const [imageURL1, imageURL2, imageURL3, imageURL4, imageURL5] =
             imageURLs;
 
           createProduct({
             ...values,
-            thumbnailImageURL: thumbnailImageURLs[0],
+            productFile,
+            thumbnailImageURL,
             imageURL1,
             imageURL2,
             imageURL3,
             imageURL4,
             imageURL5,
-            productFileId,
           });
         })
       ),

@@ -1,9 +1,11 @@
 "use server";
 
 import { auth } from "@clerk/nextjs/server";
+import mime from "mime-types";
 
 import { db } from "@/db";
-import { products } from "@/db/schema";
+import { products, productsFiles } from "@/db/schema";
+import { pinata } from "@/lib/pinata";
 import { tryCatch } from "@/lib/try-catch";
 
 import type { CreateProductSchema } from "../schemas/create-product-schema";
@@ -25,7 +27,7 @@ export async function createProduct(
     imageURL3: string;
     imageURL4: string;
     imageURL5: string;
-    productFileId: number;
+    productFile: File;
   }
 ) {
   const { userId } = await auth();
@@ -45,23 +47,50 @@ export async function createProduct(
     throw new Error("Your store is deactivated");
   }
 
-  const { data, error } = await tryCatch(
-    db
-      .insert(products)
-      .values({
-        ...values,
-        storeId: store.id,
-      })
-      .returning({
-        title: products.title,
-      })
-  );
+  const extension = mime.extension(values.productFile.type).toString();
+  const upload = await pinata.upload.private
+    .file(values.productFile)
+    .name(`${crypto.randomUUID()}.${extension}`);
 
-  if (error) {
-    throw new Error("Something went wrong");
-  }
+  const data = await db.transaction(async (tx) => {
+    const productFile = await tryCatch(
+      tx
+        .insert(productsFiles)
+        .values({
+          pinataCid: upload.cid,
+          fileName: upload.name,
+          mimeType: upload.mime_type,
+          size: upload.size,
+          productSlug: values.slug,
+        })
+        .returning({
+          id: productsFiles.id,
+        })
+    );
 
-  return {
-    data: data[0].title,
-  };
+    if (productFile.error) {
+      throw new Error("Something went wrong");
+    }
+
+    const product = await tryCatch(
+      tx
+        .insert(products)
+        .values({
+          ...values,
+          productFileId: productFile.data[0].id,
+          storeId: store.id,
+        })
+        .returning({
+          title: products.title,
+        })
+    );
+
+    if (product.error) {
+      throw new Error("Something went wrong");
+    }
+
+    return product.data[0].title;
+  });
+
+  return { data };
 }

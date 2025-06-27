@@ -78,8 +78,8 @@ export const createProductSchema = createInsertSchema(products, {
       .array(z.custom<File>())
       .min(1, "Please select at least 1 file")
       .max(1, "You can select only 1 file")
-      .refine((files) => files.every((file) => file.size <= MAX_IMAGE_SIZE), {
-        message: "File size must be less than 5MB",
+      .refine((files) => files.every((file) => file.size <= 30 * 1024 * 1024), {
+        message: "File size must be less than 30MB",
         path: ["productFile"],
       }),
   });

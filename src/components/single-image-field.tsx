@@ -36,7 +36,7 @@ export function SingleImageField<T extends FieldValues>({
     <FileUpload
       value={field.value}
       onValueChange={field.onChange}
-      accept="image/*"
+      accept="image/jpeg, image/png"
       maxFiles={1}
       maxSize={MAX_IMAGE_SIZE}
       onFileReject={(_, message) => {
