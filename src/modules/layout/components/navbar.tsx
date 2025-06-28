@@ -3,10 +3,8 @@
 import Link from "next/link";
 import { useState } from "react";
 
-import { ShoppingBagIcon } from "lucide-react";
-
 import { ModeToggle } from "@/components/mode-toggle";
-import { Button, buttonVariants } from "@/components/ui/button";
+import { buttonVariants } from "@/components/ui/button";
 import {
   NavigationMenu,
   NavigationMenuItem,
@@ -14,7 +12,8 @@ import {
 } from "@/components/ui/navigation-menu";
 import { cn } from "@/lib/utils";
 
-import { AuthButton } from "../components/auth-button";
+import { AuthButton } from "./auth-button";
+import { CartSheet } from "./cart-sheet";
 import { NavbarSidebar } from "./navbar-sidebar";
 
 const navigationItems = [
@@ -72,9 +71,7 @@ export function Navbar({ storeSlug }: Props) {
           </Link>
         </div>
         <div className="flex w-full justify-end gap-4">
-          <Button variant="outline" size="icon">
-            <ShoppingBagIcon />
-          </Button>
+          <CartSheet />
           <ModeToggle />
           <div className="border-r" />
           <AuthButton storeSlug={storeSlug} />

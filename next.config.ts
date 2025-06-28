@@ -8,6 +8,9 @@ const nextConfig: NextConfig = {
       {
         hostname: "images.pexels.com",
       },
+      {
+        hostname: "files.edgestore.dev",
+      },
     ],
   },
   experimental: {

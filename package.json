@@ -45,7 +45,8 @@
     "sonner": "^2.0.5",
     "svix": "^1.67.0",
     "tailwind-merge": "^3.3.0",
-    "zod": "^3.25.55"
+    "zod": "^3.25.55",
+    "zustand": "^5.0.6"
   },
   "devDependencies": {
     "@eslint/eslintrc": "^3",

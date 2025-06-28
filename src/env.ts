@@ -12,6 +12,7 @@ export const env = createEnv({
     PINATA_JWT: z.string(),
   },
   client: {
+    NEXT_PUBLIC_APP_URL: z.string().url(),
     NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY: z.string(),
     NEXT_PUBLIC_CLERK_SIGN_IN_URL: z.string(),
     NEXT_PUBLIC_CLERK_SIGN_IN_FALLBACK_REDIRECT_URL: z.string(),
@@ -19,6 +20,7 @@ export const env = createEnv({
     NEXT_PUBLIC_GATEWAY_URL: z.string(),
   },
   runtimeEnv: {
+    NEXT_PUBLIC_APP_URL: process.env.NEXT_PUBLIC_APP_URL,
     CLERK_SECRET_KEY: process.env.CLERK_SECRET_KEY,
     DATABASE_URL: process.env.DATABASE_URL,
     NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY:
