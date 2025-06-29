@@ -7,7 +7,7 @@ import { Input } from "@/components/ui/input";
 
 export function HeroSection() {
   return (
-    <section className="flex flex-col items-center py-12 text-center md:py-24 lg:py-32">
+    <section className="flex flex-col items-center py-6 text-center md:py-12 lg:py-24">
       <div className="mx-auto max-w-3xl space-y-4 px-4">
         <h1 className="text-4xl font-bold tracking-tight sm:text-5xl md:text-6xl">
           Discover and Download Premium Digital Assets

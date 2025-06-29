@@ -63,13 +63,14 @@ export const products = pgTable("products", {
     .notNull()
     .references(() => stores.id, { onDelete: "cascade" }),
   updatedAt: timestamp()
+    .notNull()
     .defaultNow()
     .$onUpdate(() => new Date()),
 });
 
 export const productsFiles = pgTable("products_files", {
   id: integer().primaryKey().generatedAlwaysAsIdentity(),
-  pinataCid: text().notNull(),
+  pinataId: text().notNull().unique(),
   fileName: varchar({ length: 255 }).notNull(),
   mimeType: varchar({ length: 100 }).notNull(),
   size: integer().notNull(),

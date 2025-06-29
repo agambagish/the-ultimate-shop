@@ -14,7 +14,7 @@ import {
   FileVideoIcon,
 } from "lucide-react";
 
-import { cn } from "@/lib/utils";
+import { cn, formatBytes } from "@/lib/utils";
 
 /* eslint-disable jsx-a11y/role-supports-aria-props */
 
@@ -977,13 +977,6 @@ function FileUploadItem(props: FileUploadItemProps) {
       </ItemPrimitive>
     </FileUploadItemContext.Provider>
   );
-}
-
-function formatBytes(bytes: number) {
-  if (bytes === 0) return "0 B";
-  const sizes = ["B", "KB", "MB", "GB", "TB"];
-  const i = Math.floor(Math.log(bytes) / Math.log(1024));
-  return `${(bytes / 1024 ** i).toFixed(i ? 1 : 0)} ${sizes[i]}`;
 }
 
 function getFileIcon(file: File) {

@@ -16,7 +16,7 @@ export default async function Layout({ children }: React.PropsWithChildren) {
   );
 
   return (
-    <main className="flex min-h-screen flex-col">
+    <main className="flex min-h-screen flex-col pt-16">
       <Navbar storeSlug={store?.slug} />
       <div className="flex-1">{children}</div>
       <Footer />

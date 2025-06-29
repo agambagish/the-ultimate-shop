@@ -9,44 +9,30 @@ import { EyeIcon, HeartIcon, ShoppingBagIcon, StarIcon } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { Button, buttonVariants } from "@/components/ui/button";
 import { Card, CardContent, CardFooter } from "@/components/ui/card";
+import type { Product } from "@/db/schema";
+import { useCart } from "@/hooks/use-cart";
 import { cn, formatPrice } from "@/lib/utils";
 
-export interface Product {
-  id: string;
-  name: string;
-  description: string;
-  longDescription: string;
-  price: number;
-  discountPercentage: number;
-  thumbnailUrl: string;
-  previewImages?: string[];
-  fileType: string;
-  fileSize: string;
-  lastUpdated: string;
-  rating: number;
-  reviewCount: number;
-  vendorId: string;
-  vendor: {
-    id: string;
-    name: string;
-    avatarUrl: string;
-    verified: boolean;
-  };
-  categories: string[];
-}
-
 interface Props {
-  product: Product /* WIP: Replace it with drizzle-zod type */;
+  product: Pick<
+    Product,
+    | "title"
+    | "slug"
+    | "description"
+    | "price"
+    | "discountPercentage"
+    | "rating"
+    | "thumbnailImageURL"
+  > & {
+    storeName: string;
+    storeSlug: string;
+  };
   viewType?: "grid" | "list";
 }
 
 export function ProductCard({ product, viewType }: Props) {
   const [isHovered, setIsHovered] = useState<boolean>(false);
-
-  function handleAddToCart(e: React.MouseEvent) {
-    e.preventDefault();
-    e.stopPropagation();
-  }
+  const { addItem } = useCart();
 
   if (viewType === "list") {
     return (
@@ -54,8 +40,8 @@ export function ProductCard({ product, viewType }: Props) {
         <div className="flex flex-col md:flex-row">
           <div className="relative h-48 w-full md:w-56">
             <Image
-              src={product.thumbnailUrl}
-              alt={product.name}
+              src={product.thumbnailImageURL}
+              alt={product.title}
               fill
               className="object-cover"
               sizes="(max-width: 768px) 100vw, 224px"
@@ -72,19 +58,19 @@ export function ProductCard({ product, viewType }: Props) {
           <div className="flex flex-grow flex-col p-6">
             <div className="mb-2 flex items-center justify-between">
               <Link
-                href={`/vendors/${product.vendorId}`}
+                href={`/stores/${product.storeSlug}`}
                 className="text-muted-foreground text-sm hover:underline"
               >
-                {product.vendor.name}
+                {product.storeName}
               </Link>
               <div className="flex items-center">
                 <StarIcon className="mr-1 h-4 w-4 fill-yellow-400 text-yellow-400" />
                 <span className="text-sm">{product.rating}</span>
               </div>
             </div>
-            <Link href={`/products/${product.id}`}>
+            <Link href={`/products/${product.slug}`}>
               <h3 className="text-xl font-semibold hover:underline">
-                {product.name}
+                {product.title}
               </h3>
             </Link>
             <p className="text-muted-foreground mt-2 line-clamp-2 text-sm">
@@ -99,7 +85,7 @@ export function ProductCard({ product, viewType }: Props) {
                   <HeartIcon className="mr-2 h-4 w-4" />
                   Favorite
                 </Button>
-                <Button size="sm" onClick={handleAddToCart}>
+                <Button size="sm" onClick={() => addItem(product.slug)}>
                   <ShoppingBagIcon className="mr-2 h-4 w-4" />
                   Add to Cart
                 </Button>
@@ -117,10 +103,10 @@ export function ProductCard({ product, viewType }: Props) {
       onMouseEnter={() => setIsHovered(true)}
       onMouseLeave={() => setIsHovered(false)}
     >
-      <div className="relative aspect-[4/3] overflow-hidden">
+      <div className="relative aspect-square overflow-hidden">
         <Image
-          src={product.thumbnailUrl}
-          alt={product.name}
+          src={product.thumbnailImageURL}
+          alt={product.title}
           fill
           className="object-cover transition-transform duration-700 ease-in-out"
           style={{
@@ -130,7 +116,7 @@ export function ProductCard({ product, viewType }: Props) {
         {product.discountPercentage > 0 && (
           <Badge
             variant="secondary"
-            className="absolute top-2 left-2 text-green-600"
+            className="absolute top-2 left-2 bg-green-600 text-white"
           >
             {product.discountPercentage}% OFF
           </Badge>
@@ -142,7 +128,7 @@ export function ProductCard({ product, viewType }: Props) {
           )}
         >
           <Link
-            href={`/products/${product.id}`}
+            href={`/products/${product.slug}`}
             className={buttonVariants({
               size: "sm",
               variant: "secondary",
@@ -156,19 +142,19 @@ export function ProductCard({ product, viewType }: Props) {
       <CardContent className="flex-grow p-4">
         <div className="mb-2 flex items-center justify-between">
           <Link
-            href={`/vendors/${product.vendorId}`}
+            href={`/stores/${product.storeSlug}`}
             className="text-muted-foreground text-sm hover:underline"
           >
-            {product.vendor.name}
+            {product.storeName}
           </Link>
           <div className="flex items-center">
             <StarIcon className="mr-1 h-3 w-3 fill-yellow-400 text-yellow-400" />
             <span className="text-xs">{product.rating}</span>
           </div>
         </div>
-        <Link href={`/products/${product.id}`}>
+        <Link href={`/products/${product.slug}`}>
           <h3 className="line-clamp-1 font-semibold hover:underline">
-            {product.name}
+            {product.title}
           </h3>
         </Link>
         <p className="text-muted-foreground mt-2 line-clamp-2 text-sm">
@@ -179,8 +165,8 @@ export function ProductCard({ product, viewType }: Props) {
         <div className="text-lg font-semibold">
           {formatPrice(product.price)}
         </div>
-        <Button size="sm" onClick={handleAddToCart}>
-          <ShoppingBagIcon className="mr-2 h-4 w-4" />
+        <Button size="sm" onClick={() => addItem(product.slug)}>
+          <ShoppingBagIcon className="h-4 w-4" />
           Add
         </Button>
       </CardFooter>
