@@ -282,7 +282,7 @@ export function ProductForm<T extends FieldValues>({
         </div>
         <FormField
           control={form.control}
-          name={"productFile" as FieldPath<T>}
+          name={"productAsset" as FieldPath<T>}
           render={({ field }) => (
             <FormItem>
               <FormLabel>Product File</FormLabel>
@@ -294,7 +294,7 @@ export function ProductForm<T extends FieldValues>({
                   maxFiles={1}
                   maxSize={30 * 1024 * 1024}
                   onFileReject={(_, message) => {
-                    form.setError("productFile" as FieldPath<T>, {
+                    form.setError("productAsset" as FieldPath<T>, {
                       message,
                     });
                   }}

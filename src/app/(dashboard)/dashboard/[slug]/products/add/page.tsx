@@ -38,7 +38,7 @@ export default function Page() {
       image3: [],
       image4: [],
       image5: [],
-      productFile: [],
+      productAsset: [],
     },
   });
 
@@ -62,14 +62,14 @@ export default function Page() {
           endpoint: "productImages",
           files: allImages,
         }).then((imageURLs) => {
-          const [productFile] = values.productFile;
+          const [productAsset] = values.productAsset;
           const [thumbnailImageURL] = thumbnailImageURLs;
           const [imageURL1, imageURL2, imageURL3, imageURL4, imageURL5] =
             imageURLs;
 
           createProduct({
             ...values,
-            productFile,
+            productAsset,
             thumbnailImageURL,
             imageURL1,
             imageURL2,

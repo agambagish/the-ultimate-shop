@@ -8,7 +8,7 @@ import {
   orders,
   ordersItems,
   products,
-  productsFiles,
+  productsAssets,
   stores,
 } from "@/db/schema";
 import { pinata } from "@/lib/pinata";
@@ -34,12 +34,12 @@ export async function getProduct(slug: string) {
         imageURL4: products.imageURL4,
         imageURL5: products.imageURL5,
         updatedAt: products.updatedAt,
-        pinataId: productsFiles.pinataId,
+        pinataId: productsAssets.pinataId,
       })
       .from(products)
       .where(eq(products.slug, slug))
       .innerJoin(stores, eq(products.storeId, stores.id))
-      .innerJoin(productsFiles, eq(products.productFileId, productsFiles.id))
+      .innerJoin(productsAssets, eq(products.productAssetId, productsAssets.id))
   );
 
   if (product.error) {

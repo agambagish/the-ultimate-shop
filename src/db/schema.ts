@@ -56,9 +56,9 @@ export const products = pgTable("products", {
   imageURL5: text(),
   fileTypes: json().$type<string[]>().notNull().default([]),
   rating: integer().notNull().default(0),
-  productFileId: integer()
+  productAssetId: integer()
     .notNull()
-    .references(() => productsFiles.id, { onDelete: "cascade" }),
+    .references(() => productsAssets.id, { onDelete: "cascade" }),
   storeId: integer()
     .notNull()
     .references(() => stores.id, { onDelete: "cascade" }),
@@ -68,7 +68,7 @@ export const products = pgTable("products", {
     .$onUpdate(() => new Date()),
 });
 
-export const productsFiles = pgTable("products_files", {
+export const productsAssets = pgTable("products_assets", {
   id: integer().primaryKey().generatedAlwaysAsIdentity(),
   pinataId: text().notNull().unique(),
   fileName: varchar({ length: 255 }).notNull(),
@@ -104,15 +104,15 @@ export const storesRelations = relations(stores, ({ many }) => ({
 
 export const productsRelations = relations(products, ({ one }) => ({
   store: one(stores, { fields: [products.storeId], references: [stores.id] }),
-  productFiles: one(productsFiles, {
-    fields: [products.productFileId],
-    references: [productsFiles.id],
+  productAsset: one(productsAssets, {
+    fields: [products.productAssetId],
+    references: [productsAssets.id],
   }),
 }));
 
-export const productsFilesRelations = relations(productsFiles, ({ one }) => ({
+export const productsAssetsRelations = relations(productsAssets, ({ one }) => ({
   product: one(products, {
-    fields: [productsFiles.productSlug],
+    fields: [productsAssets.productSlug],
     references: [products.slug],
   }),
 }));
@@ -136,6 +136,6 @@ export const ordersItemsRelations = relations(ordersItems, ({ one }) => ({
 export type User = typeof users.$inferInsert;
 export type Store = typeof stores.$inferSelect;
 export type Product = typeof products.$inferSelect;
-export type ProductFile = typeof productsFiles.$inferSelect;
+export type ProductAsset = typeof productsAssets.$inferSelect;
 export type Order = typeof orders.$inferSelect;
 export type OrderItem = typeof ordersItems.$inferSelect;

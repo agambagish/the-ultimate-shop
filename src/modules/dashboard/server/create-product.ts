@@ -4,7 +4,7 @@ import { auth } from "@clerk/nextjs/server";
 import mime from "mime-types";
 
 import { db } from "@/db";
-import { products, productsFiles } from "@/db/schema";
+import { products, productsAssets } from "@/db/schema";
 import { pinata } from "@/lib/pinata";
 import { tryCatch } from "@/lib/try-catch";
 
@@ -19,7 +19,7 @@ export async function createProduct(
     | "image3"
     | "image4"
     | "image5"
-    | "productFile"
+    | "productAsset"
   > & {
     thumbnailImageURL: string;
     imageURL1: string;
@@ -27,7 +27,7 @@ export async function createProduct(
     imageURL3: string;
     imageURL4: string;
     imageURL5: string;
-    productFile: File;
+    productAsset: File;
   }
 ) {
   const { userId } = await auth();
@@ -47,15 +47,15 @@ export async function createProduct(
     throw new Error("Your store is deactivated");
   }
 
-  const extension = mime.extension(values.productFile.type).toString();
+  const extension = mime.extension(values.productAsset.type).toString();
   const upload = await pinata.upload.private
-    .file(values.productFile)
+    .file(values.productAsset)
     .name(`${crypto.randomUUID()}.${extension}`);
 
   const data = await db.transaction(async (tx) => {
-    const productFile = await tryCatch(
+    const productAsset = await tryCatch(
       tx
-        .insert(productsFiles)
+        .insert(productsAssets)
         .values({
           pinataId: upload.id,
           fileName: upload.name,
@@ -64,11 +64,11 @@ export async function createProduct(
           productSlug: values.slug,
         })
         .returning({
-          id: productsFiles.id,
+          id: productsAssets.id,
         })
     );
 
-    if (productFile.error) {
+    if (productAsset.error) {
       throw new Error("Something went wrong");
     }
 
@@ -77,7 +77,7 @@ export async function createProduct(
         .insert(products)
         .values({
           ...values,
-          productFileId: productFile.data[0].id,
+          productAssetId: productAsset.data[0].id,
           storeId: store.id,
         })
         .returning({
