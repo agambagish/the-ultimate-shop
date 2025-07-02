@@ -1,10 +1,10 @@
 import type { NextRequest } from "next/server";
 import { NextResponse } from "next/server";
 
-import { inArray } from "drizzle-orm";
+import { eq, inArray } from "drizzle-orm";
 
 import { db } from "@/db";
-import { products } from "@/db/schema";
+import { products, productsCategories } from "@/db/schema";
 
 export async function POST(req: NextRequest) {
   const data: { slug: string }[] = await req.json();
@@ -17,10 +17,15 @@ export async function POST(req: NextRequest) {
       title: products.title,
       slug: products.slug,
       price: products.price,
+      category: productsCategories.label,
       discountPercentage: products.discountPercentage,
       thumbnailImageURL: products.thumbnailImageURL,
     })
     .from(products)
+    .innerJoin(
+      productsCategories,
+      eq(products.productCategoryId, productsCategories.id)
+    )
     .where(inArray(products.slug, uniqueSlugs));
 
   const subtotal = productsData.reduce(

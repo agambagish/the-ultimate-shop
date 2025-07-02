@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Loader2Icon } from "lucide-react";
@@ -15,10 +15,29 @@ import { ProductForm } from "@/modules/dashboard/components/product-form";
 import type { CreateProductSchema } from "@/modules/dashboard/schemas/create-product-schema";
 import { createProductSchema } from "@/modules/dashboard/schemas/create-product-schema";
 import { createProduct } from "@/modules/dashboard/server/create-product";
+import { getCategories } from "@/modules/home/server/get-categories";
 
 export default function Page() {
+  const [isCategoriesLoading, setIsCategoriesLoading] =
+    useState<boolean>(false);
+  const [categories, setCategories] = useState<
+    Awaited<ReturnType<typeof getCategories>>
+  >([]);
   const [isLoading, setIsLoading] = useState<boolean>(false);
+
   const { isUploading, uploadFiles } = useEdgestore();
+
+  useEffect(() => {
+    (async () => {
+      setIsCategoriesLoading(true);
+      try {
+        const result = await getCategories();
+        setCategories(result);
+      } finally {
+        setIsCategoriesLoading(false);
+      }
+    })();
+  }, []);
 
   const disabled = isLoading || isUploading;
 
@@ -39,6 +58,7 @@ export default function Page() {
       image4: [],
       image5: [],
       productAsset: [],
+      productCategoryId: "",
     },
   });
 
@@ -102,7 +122,13 @@ export default function Page() {
       />
       <Card>
         <CardContent>
-          <ProductForm form={form} onSubmit={onSubmit} disabled={disabled}>
+          <ProductForm
+            form={form}
+            onSubmit={onSubmit}
+            categories={categories}
+            isCategoriesLoading={isCategoriesLoading}
+            disabled={disabled}
+          >
             <div className="flex justify-end">
               <Button disabled={disabled}>
                 {disabled && <Loader2Icon className="animate-spin" />}

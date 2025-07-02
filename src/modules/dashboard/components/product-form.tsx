@@ -24,7 +24,21 @@ import {
   FormMessage,
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import { Skeleton } from "@/components/ui/skeleton";
 import { Textarea } from "@/components/ui/textarea";
+import type { ProductCategory } from "@/db/schema";
+
+type CategoryType = Pick<
+  ProductCategory,
+  "id" | "label" | "slug" | "description" | "icon"
+>;
 
 interface Props<T extends FieldValues>
   extends Omit<React.ComponentPropsWithRef<"form">, "onSubmit"> {
@@ -32,6 +46,8 @@ interface Props<T extends FieldValues>
   form: UseFormReturn<T>;
   disabled: boolean;
   onSubmit: (values: T) => void;
+  categories: CategoryType[];
+  isCategoriesLoading: boolean;
   purpose?: "create" | "update";
 }
 
@@ -39,6 +55,8 @@ export function ProductForm<T extends FieldValues>({
   form,
   onSubmit,
   children,
+  categories,
+  isCategoriesLoading,
   disabled,
 }: Props<T>) {
   return (
@@ -90,6 +108,37 @@ export function ProductForm<T extends FieldValues>({
                   disabled={disabled}
                   {...field}
                 />
+              </FormControl>
+              <FormMessage />
+            </FormItem>
+          )}
+        />
+        <FormField
+          control={form.control}
+          name={"productCategoryId" as FieldPath<T>}
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel>Category</FormLabel>
+              <FormControl>
+                {isCategoriesLoading ? (
+                  <Skeleton className="h-9 w-full" />
+                ) : (
+                  <Select
+                    onValueChange={field.onChange}
+                    defaultValue={field.value}
+                  >
+                    <SelectTrigger className="w-full">
+                      <SelectValue placeholder="UI Kits" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      {categories.map((category, i) => (
+                        <SelectItem key={i} value={String(category.id)}>
+                          {category.label}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                )}
               </FormControl>
               <FormMessage />
             </FormItem>

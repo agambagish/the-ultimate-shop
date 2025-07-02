@@ -78,6 +78,7 @@ export async function createProduct(
         .values({
           ...values,
           productAssetId: productAsset.data[0].id,
+          productCategoryId: Number(values.productCategoryId),
           storeId: store.id,
         })
         .returning({

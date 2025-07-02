@@ -15,7 +15,7 @@ interface Props {
   item: Pick<
     Product,
     "title" | "slug" | "price" | "discountPercentage" | "thumbnailImageURL"
-  >;
+  > & { category: string };
 }
 
 export function CartItem({ item }: Props) {
@@ -40,7 +40,7 @@ export function CartItem({ item }: Props) {
         </Link>
         <div className="mt-1 flex items-center">
           <Badge variant="secondary" className="text-xs">
-            Icon Kits
+            {item.category}
           </Badge>
         </div>
         <div className="mt-2 flex items-center justify-between">

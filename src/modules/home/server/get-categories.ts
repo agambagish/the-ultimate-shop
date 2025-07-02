@@ -8,6 +8,7 @@ export async function getCategories() {
   const categories = await tryCatch(
     db
       .select({
+        id: productsCategories.id,
         label: productsCategories.label,
         slug: productsCategories.slug,
         description: productsCategories.description,

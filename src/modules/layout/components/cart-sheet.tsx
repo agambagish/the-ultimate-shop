@@ -34,10 +34,12 @@ export function CartSheet() {
   const [total, setTotal] = useState<number>(0);
 
   const [cart, setCart] = useState<
-    Pick<
+    (Pick<
       Product,
       "title" | "slug" | "price" | "discountPercentage" | "thumbnailImageURL"
-    >[]
+    > & {
+      category: string;
+    })[]
   >([]);
 
   const { items, getItemCount, clearCart } = useCart();

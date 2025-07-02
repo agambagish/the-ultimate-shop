@@ -6,7 +6,10 @@ import { MAX_IMAGE_SIZE } from "@/lib/constants";
 
 export const createProductSchema = createInsertSchema(products, {
   title: (s) => s.min(3, { message: "At least 3 characters required" }),
-  slug: (s) => s.regex(/^[a-z0-9]+(?:-[a-z0-9]+)*$/).min(5),
+  slug: (s) =>
+    s
+      .regex(/^[a-z0-9]+(?:-[a-z0-9]+)*$/, { message: "Must be valid slug" })
+      .min(5),
   description: (s) => s.min(7, { message: "At least 7 characters required" }),
   longDescription: (s) =>
     s.min(12, { message: "At least 12 characters required" }),
@@ -27,6 +30,7 @@ export const createProductSchema = createInsertSchema(products, {
     productAssetId: true,
     storeId: true,
     updatedAt: true,
+    productCategoryId: true,
   })
   .extend({
     thumbnailImage: z
@@ -82,6 +86,9 @@ export const createProductSchema = createInsertSchema(products, {
         message: "File size must be less than 30MB",
         path: ["productAsset"],
       }),
+    productCategoryId: z
+      .string()
+      .min(1, { message: "Category can't be empty" }),
   });
 
 export type CreateProductSchema = z.infer<typeof createProductSchema>;
