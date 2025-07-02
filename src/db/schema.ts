@@ -59,6 +59,9 @@ export const products = pgTable("products", {
   productAssetId: integer()
     .notNull()
     .references(() => productsAssets.id, { onDelete: "cascade" }),
+  productCategoryId: integer()
+    .notNull()
+    .references(() => productsCategories.id, { onDelete: "cascade" }),
   storeId: integer()
     .notNull()
     .references(() => stores.id, { onDelete: "cascade" }),
@@ -98,6 +101,14 @@ export const ordersItems = pgTable("orders_items", {
   priceAtPurchase: decimal({ precision: 10, scale: 2 }).notNull(),
 });
 
+export const productsCategories = pgTable("products_categories", {
+  id: integer().primaryKey().generatedAlwaysAsIdentity(),
+  label: varchar({ length: 255 }).notNull(),
+  slug: varchar({ length: 255 }).notNull().unique(),
+  description: varchar({ length: 500 }).notNull(),
+  icon: varchar({ length: 255 }).notNull(),
+});
+
 export const storesRelations = relations(stores, ({ many }) => ({
   products: many(products),
 }));
@@ -107,6 +118,10 @@ export const productsRelations = relations(products, ({ one }) => ({
   productAsset: one(productsAssets, {
     fields: [products.productAssetId],
     references: [productsAssets.id],
+  }),
+  productCategory: one(productsCategories, {
+    fields: [products.productCategoryId],
+    references: [productsCategories.id],
   }),
 }));
 
@@ -133,9 +148,17 @@ export const ordersItemsRelations = relations(ordersItems, ({ one }) => ({
   }),
 }));
 
-export type User = typeof users.$inferInsert;
+export const productsCategoriesRelations = relations(
+  productsCategories,
+  ({ many }) => ({
+    products: many(products),
+  })
+);
+
+export type User = typeof users.$inferSelect;
 export type Store = typeof stores.$inferSelect;
 export type Product = typeof products.$inferSelect;
 export type ProductAsset = typeof productsAssets.$inferSelect;
 export type Order = typeof orders.$inferSelect;
 export type OrderItem = typeof ordersItems.$inferSelect;
+export type ProductCategory = typeof productsCategories.$inferSelect;
