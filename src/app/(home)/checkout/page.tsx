@@ -92,18 +92,19 @@ export default function Page() {
 
   function onSubmit(values: BillingAddressSchema) {
     setIsLoading(true);
+    const transactionId = crypto.randomUUID();
 
     toast.promise(
       createOrder({
         billingAddress: values,
         cart,
+        transactionId,
         totalAmount: Math.round(total).toString(),
       }).then(async (orderId) => {
-        const txnid = crypto.randomUUID();
         const payload: HashParamSchema = {
           ...values,
           key: env.NEXT_PUBLIC_PAYU_KEY,
-          txnid,
+          txnid: transactionId,
           productinfo: orderId.toString(),
           amount: Math.round(total),
           surl: `${env.NEXT_PUBLIC_APP_URL}/checkout/success`,

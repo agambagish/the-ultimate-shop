@@ -84,6 +84,7 @@ export const productsAssets = pgTable("products_assets", {
 export const orders = pgTable("orders", {
   id: integer().primaryKey().generatedAlwaysAsIdentity(),
   isPaid: boolean().notNull().default(false),
+  transactionId: varchar({ length: 255 }).notNull().unique(),
   userId: varchar({ length: 255 }).notNull(),
   totalAmount: decimal({ precision: 10, scale: 2 }).notNull(),
   address: varchar({ length: 255 }).notNull(),
