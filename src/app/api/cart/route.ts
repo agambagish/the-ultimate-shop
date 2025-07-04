@@ -4,7 +4,7 @@ import { NextResponse } from "next/server";
 import { eq, inArray } from "drizzle-orm";
 
 import { db } from "@/db";
-import { products, productsCategories } from "@/db/schema";
+import { products, productsCategories, stores } from "@/db/schema";
 
 export async function POST(req: NextRequest) {
   const data: { slug: string }[] = await req.json();
@@ -20,12 +20,14 @@ export async function POST(req: NextRequest) {
       category: productsCategories.label,
       discountPercentage: products.discountPercentage,
       thumbnailImageURL: products.thumbnailImageURL,
+      storeId: stores.id,
     })
     .from(products)
     .innerJoin(
       productsCategories,
       eq(products.productCategoryId, productsCategories.id)
     )
+    .leftJoin(stores, eq(products.storeId, stores.id))
     .where(inArray(products.slug, uniqueSlugs));
 
   const subtotal = productsData.reduce(

@@ -10,6 +10,8 @@ export const env = createEnv({
     EDGE_STORE_ACCESS_KEY: z.string(),
     EDGE_STORE_SECRET_KEY: z.string(),
     PINATA_JWT: z.string(),
+    PAYU_SALT: z.string(),
+    ORDER_CLEANUP_WEBHOOK_SECRET: z.string(),
   },
   client: {
     NEXT_PUBLIC_APP_URL: z.string().url(),
@@ -18,6 +20,7 @@ export const env = createEnv({
     NEXT_PUBLIC_CLERK_SIGN_IN_FALLBACK_REDIRECT_URL: z.string(),
     NEXT_PUBLIC_CLERK_SIGN_UP_FALLBACK_REDIRECT_URL: z.string(),
     NEXT_PUBLIC_GATEWAY_URL: z.string(),
+    NEXT_PUBLIC_PAYU_KEY: z.string(),
   },
   runtimeEnv: {
     NEXT_PUBLIC_APP_URL: process.env.NEXT_PUBLIC_APP_URL,
@@ -35,6 +38,9 @@ export const env = createEnv({
     EDGE_STORE_SECRET_KEY: process.env.EDGE_STORE_SECRET_KEY,
     PINATA_JWT: process.env.PINATA_JWT,
     NEXT_PUBLIC_GATEWAY_URL: process.env.NEXT_PUBLIC_GATEWAY_URL,
+    PAYU_SALT: process.env.PAYU_SALT,
+    NEXT_PUBLIC_PAYU_KEY: process.env.NEXT_PUBLIC_PAYU_KEY,
+    ORDER_CLEANUP_WEBHOOK_SECRET: process.env.ORDER_CLEANUP_WEBHOOK_SECRET,
   },
   emptyStringAsUndefined: true,
   onValidationError: (issues) => {

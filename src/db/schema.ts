@@ -1,5 +1,6 @@
 import { relations } from "drizzle-orm";
 import {
+  boolean,
   decimal,
   integer,
   json,
@@ -82,16 +83,22 @@ export const productsAssets = pgTable("products_assets", {
 
 export const orders = pgTable("orders", {
   id: integer().primaryKey().generatedAlwaysAsIdentity(),
+  isPaid: boolean().notNull().default(false),
   userId: varchar({ length: 255 }).notNull(),
-  storeId: integer()
-    .notNull()
-    .references(() => stores.id, { onDelete: "cascade" }),
   totalAmount: decimal({ precision: 10, scale: 2 }).notNull(),
+  address: varchar({ length: 255 }).notNull(),
+  city: varchar({ length: 255 }).notNull(),
+  state: varchar({ length: 255 }).notNull(),
+  pinCode: varchar({ length: 20 }).notNull(),
+  country: varchar({ length: 255 }).notNull(),
   createdAt: timestamp().defaultNow(),
 });
 
 export const ordersItems = pgTable("orders_items", {
   id: integer().primaryKey().generatedAlwaysAsIdentity(),
+  storeId: integer()
+    .notNull()
+    .references(() => stores.id, { onDelete: "cascade" }),
   orderId: integer()
     .notNull()
     .references(() => orders.id, { onDelete: "cascade" }),
@@ -132,8 +139,7 @@ export const productsAssetsRelations = relations(productsAssets, ({ one }) => ({
   }),
 }));
 
-export const ordersRelations = relations(orders, ({ one, many }) => ({
-  store: one(stores, { fields: [orders.storeId], references: [stores.id] }),
+export const ordersRelations = relations(orders, ({ many }) => ({
   orderItems: many(ordersItems),
 }));
 
@@ -145,6 +151,10 @@ export const ordersItemsRelations = relations(ordersItems, ({ one }) => ({
   product: one(products, {
     fields: [ordersItems.productSlug],
     references: [products.slug],
+  }),
+  store: one(stores, {
+    fields: [ordersItems.storeId],
+    references: [stores.id],
   }),
 }));
 
