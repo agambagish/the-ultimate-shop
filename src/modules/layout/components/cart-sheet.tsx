@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { useEffect, useState } from "react";
+import { useEffect } from "react";
 
 import { Loader2Icon, ShoppingBagIcon, Trash2Icon } from "lucide-react";
 
@@ -17,66 +17,48 @@ import {
   SheetTitle,
   SheetTrigger,
 } from "@/components/ui/sheet";
-import type { Product } from "@/db/schema";
-import { env } from "@/env";
 import { useCart } from "@/hooks/use-cart";
 import { cn, formatPrice } from "@/lib/utils";
 
+import { useCartSheetStates } from "../hooks/use-cart-sheet-states";
+import { getCart } from "../server/get-cart";
 import { CartItem } from "./cart-item";
 
 export function CartSheet() {
-  const [isOpen, setIsOpen] = useState<boolean>(false);
-  const [isLoading, setIsLoading] = useState<boolean>(false);
-  const [isMounted, setIsMounted] = useState<boolean>(false);
-
-  const [subtotal, setSubtotal] = useState<number>(0);
-  const [discount, setDiscount] = useState<number>(0);
-  const [total, setTotal] = useState<number>(0);
-
-  const [cart, setCart] = useState<
-    (Pick<
-      Product,
-      "title" | "slug" | "price" | "discountPercentage" | "thumbnailImageURL"
-    > & {
-      category: string;
-    })[]
-  >([]);
+  const { state, setState } = useCartSheetStates();
 
   const { items, getItemCount, clearCart } = useCart();
   const itemCount = getItemCount();
 
   useEffect(() => {
-    if (isOpen) {
-      fetch(`${env.NEXT_PUBLIC_APP_URL}/api/cart`, {
-        method: "POST",
-        headers: {
-          Accept: "application/json",
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(items),
-      }).then(async (res) => {
-        const data = await res.json();
-        setCart(data.cart);
-        setIsLoading(false);
-        setSubtotal(data.subtotal);
-        setDiscount(data.discount);
-        setTotal(data.total);
-      });
+    if (state.isOpen) {
+      (async () => {
+        try {
+          const data = await getCart(items);
+
+          setState({ type: "SET_CART", payload: data.cart });
+          setState({ type: "SET_SUBTOTAL", payload: data.subtotal });
+          setState({ type: "SET_DISCOUNT", payload: data.discount });
+          setState({ type: "SET_TOTAL", payload: data.total });
+        } finally {
+          setState({ type: "SET_IS_LOADING", payload: false });
+        }
+      })();
     }
 
-    setIsMounted(true);
-  }, [items, isOpen, isLoading]);
+    setState({ type: "SET_IS_MOUNTED", payload: true });
+  }, [items, setState, state.isOpen]);
 
-  if (!isMounted) {
+  if (!state.isMounted) {
     return null;
   }
 
   return (
     <Sheet
-      open={isOpen}
+      open={state.isOpen}
       onOpenChange={(state) => {
-        setIsOpen(state);
-        setIsLoading(state);
+        setState({ type: "SET_IS_OPEN", payload: state });
+        setState({ type: "SET_IS_LOADING", payload: state });
       }}
     >
       <SheetTrigger asChild>
@@ -96,28 +78,30 @@ export function CartSheet() {
         <SheetHeader>
           <SheetTitle>Your Cart {`(${itemCount})`}</SheetTitle>
         </SheetHeader>
-        {isLoading ? (
+        {state.isLoading ? (
           <LoadingMessage />
-        ) : cart.length === 0 ? (
+        ) : state.cart.length === 0 ? (
           <EmptyCartMessage />
         ) : (
           <>
             <div className="mt-6 flex-grow space-y-6 overflow-y-auto px-4">
-              {cart.map((item, i) => (
+              {state.cart.map((item, i) => (
                 <div key={i}>
                   <CartItem item={item} />
-                  {cart.length !== i + 1 && <Separator className="my-4" />}
+                  {state.cart.length !== i + 1 && (
+                    <Separator className="my-4" />
+                  )}
                 </div>
               ))}
             </div>
             <div className="space-y-4 p-4">
               <div className="flex justify-between font-medium">
                 <span>Subtotal</span>
-                <span>{formatPrice(subtotal)}</span>
+                <span>{formatPrice(state.subtotal)}</span>
               </div>
               <div className="flex justify-between font-medium">
                 <span>Discount</span>
-                <span>{formatPrice(discount)}</span>
+                <span>{formatPrice(state.discount)}</span>
               </div>
               <div className="text-muted-foreground flex justify-between text-sm">
                 <span>Tax</span>
@@ -126,7 +110,7 @@ export function CartSheet() {
               <Separator />
               <div className="flex justify-between text-lg font-semibold">
                 <span>Total</span>
-                <span>{formatPrice(total)}</span>
+                <span>{formatPrice(state.total)}</span>
               </div>
             </div>
             <SheetFooter>

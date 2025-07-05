@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect } from "react";
 
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Loader2Icon } from "lucide-react";
@@ -17,64 +17,40 @@ import {
   FormMessage,
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
-import type { Product } from "@/db/schema";
 import { env } from "@/env";
 import { useCart } from "@/hooks/use-cart";
 import { CheckoutSummary } from "@/modules/checkout/components/checkout-summary";
+import { useCheckoutStates } from "@/modules/checkout/hooks/use-checkout-states";
 import { usePayment } from "@/modules/checkout/hooks/use-payment";
 import type { BillingAddressSchema } from "@/modules/checkout/schemas/billing-address-schema";
 import { billingAddressSchema } from "@/modules/checkout/schemas/billing-address-schema";
 import type { HashParamSchema } from "@/modules/checkout/schemas/hash-param-schema";
 import { createOrder } from "@/modules/checkout/server/create-order";
 import { generateHash } from "@/modules/checkout/server/generate-hash";
-
-type CartItem = Pick<
-  Product,
-  "title" | "slug" | "price" | "discountPercentage" | "thumbnailImageURL"
-> & {
-  category: string;
-  storeId: number;
-};
+import { getCart } from "@/modules/layout/server/get-cart";
 
 export default function Page() {
   const { items } = useCart();
   const { isLoading: paymentLoading, redirectToPayment } = usePayment();
+  const { state, setState } = useCheckoutStates();
 
-  const [isOrderSummaryLoading, setIsOrderSummaryLoading] =
-    useState<boolean>(false);
-  const [cart, setCart] = useState<CartItem[]>([]);
-  const [isLoading, setIsLoading] = useState<boolean>(false);
-
-  const [subtotal, setSubtotal] = useState<number>(0);
-  const [discount, setDiscount] = useState<number>(0);
-  const [total, setTotal] = useState<number>(0);
-
-  const disabled = isLoading || paymentLoading;
+  const disabled = state.isLoading || paymentLoading;
 
   useEffect(() => {
     (async () => {
-      setIsOrderSummaryLoading(true);
+      setState({ type: "SET_ORDER_SUMMARY_LOADING", payload: true });
 
       try {
-        const res = await fetch(`${env.NEXT_PUBLIC_APP_URL}/api/cart`, {
-          method: "POST",
-          headers: {
-            Accept: "application/json",
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify(items),
-        });
-
-        const data = await res.json();
-        setCart(data.cart);
-        setSubtotal(data.subtotal);
-        setDiscount(data.discount);
-        setTotal(data.total);
+        const data = await getCart(items);
+        setState({ type: "SET_CART", payload: data.cart });
+        setState({ type: "SET_SUBTOTAL", payload: data.subtotal });
+        setState({ type: "SET_DISCOUNT", payload: data.discount });
+        setState({ type: "SET_TOTAL", payload: data.total });
       } finally {
-        setIsOrderSummaryLoading(false);
+        setState({ type: "SET_ORDER_SUMMARY_LOADING", payload: false });
       }
     })();
-  }, [items]);
+  }, [items, setState]);
 
   const form = useForm<BillingAddressSchema>({
     resolver: zodResolver(billingAddressSchema),
@@ -91,22 +67,22 @@ export default function Page() {
   });
 
   function onSubmit(values: BillingAddressSchema) {
-    setIsLoading(true);
+    setState({ type: "SET_LOADING", payload: true });
     const transactionId = crypto.randomUUID();
 
     toast.promise(
       createOrder({
         billingAddress: values,
-        cart,
+        cart: state.cart,
         transactionId,
-        totalAmount: Math.round(total).toString(),
+        totalAmount: Math.round(state.total).toString(),
       }).then(async (orderId) => {
         const payload: HashParamSchema = {
           ...values,
           key: env.NEXT_PUBLIC_PAYU_KEY,
           txnid: transactionId,
           productinfo: orderId.toString(),
-          amount: Math.round(total),
+          amount: Math.round(state.total),
           surl: `${env.NEXT_PUBLIC_APP_URL}/checkout/success`,
           furl: `${env.NEXT_PUBLIC_APP_URL}/checkout/failed`,
           phone: 9876543210,
@@ -118,7 +94,7 @@ export default function Page() {
       {
         loading: "Processing order...",
         error: ({ message }: { message: string }) => {
-          setIsLoading(false);
+          setState({ type: "SET_LOADING", payload: false });
           return message;
         },
       }
@@ -290,11 +266,11 @@ export default function Page() {
         </div>
         <div className="lg:col-span-1">
           <CheckoutSummary
-            cart={cart}
-            discount={discount}
-            isLoading={isOrderSummaryLoading}
-            subtotal={subtotal}
-            total={total}
+            cart={state.cart}
+            discount={state.discount}
+            isLoading={state.isOrderSummaryLoading}
+            subtotal={state.subtotal}
+            total={state.total}
           />
         </div>
       </div>
