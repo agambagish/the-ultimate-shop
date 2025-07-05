@@ -75,6 +75,7 @@ export const products = pgTable("products", {
 export const productsAssets = pgTable("products_assets", {
   id: integer().primaryKey().generatedAlwaysAsIdentity(),
   pinataId: text().notNull().unique(),
+  pinataCID: text().notNull().unique(),
   fileName: varchar({ length: 255 }).notNull(),
   mimeType: varchar({ length: 100 }).notNull(),
   size: integer().notNull(),
@@ -92,7 +93,7 @@ export const orders = pgTable("orders", {
   state: varchar({ length: 255 }).notNull(),
   pinCode: varchar({ length: 20 }).notNull(),
   country: varchar({ length: 255 }).notNull(),
-  createdAt: timestamp().defaultNow(),
+  createdAt: timestamp().notNull().defaultNow(),
 });
 
 export const ordersItems = pgTable("orders_items", {

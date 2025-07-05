@@ -42,8 +42,8 @@ export async function POST(req: NextRequest) {
 
   return NextResponse.json({
     cart: productsData,
-    subtotal,
-    discount,
-    total: subtotal - discount,
+    subtotal: Math.round(subtotal),
+    discount: Math.round(discount),
+    total: Math.round(subtotal - discount),
   });
 }

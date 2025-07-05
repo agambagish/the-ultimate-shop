@@ -9,7 +9,7 @@ import {
   SignedOut,
   UserButton,
 } from "@clerk/nextjs";
-import { LayoutDashboardIcon, Loader2Icon } from "lucide-react";
+import { LayoutDashboardIcon, Loader2Icon, PackageIcon } from "lucide-react";
 
 import { Button, buttonVariants } from "@/components/ui/button";
 
@@ -37,6 +37,13 @@ export function AuthButton({ storeSlug }: Props) {
         <SignedIn>
           <Button size="icon" variant="secondary">
             <UserButton>
+              <UserButton.MenuItems>
+                <UserButton.Link
+                  label="Orders"
+                  href="/orders"
+                  labelIcon={<PackageIcon className="size-4" />}
+                />
+              </UserButton.MenuItems>
               <UserButton.MenuItems>
                 {!!storeSlug && (
                   <UserButton.Link

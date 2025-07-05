@@ -61,14 +61,16 @@ export function CheckoutSummary({
                         {item.discountPercentage > 0 ? (
                           <>
                             <span className="text-muted-foreground line-through">
-                              {formatPrice(item.price)}
+                              {formatPrice(Number(item.price))}
                             </span>
                             <span>
                               {formatPrice(
-                                Number(item.price) -
-                                  (Number(item.price) *
-                                    item.discountPercentage) /
-                                    100
+                                Math.round(
+                                  Number(item.price) -
+                                    (Number(item.price) *
+                                      item.discountPercentage) /
+                                      100
+                                )
                               )}
                             </span>
                           </>

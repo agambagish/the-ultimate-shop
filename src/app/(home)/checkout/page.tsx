@@ -118,6 +118,7 @@ export default function Page() {
       {
         loading: "Processing order...",
         error: ({ message }: { message: string }) => {
+          setIsLoading(false);
           return message;
         },
       }

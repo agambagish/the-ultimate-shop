@@ -11,7 +11,6 @@ import {
   productsAssets,
   stores,
 } from "@/db/schema";
-import { pinata } from "@/lib/pinata";
 import { tryCatch } from "@/lib/try-catch";
 
 export async function getProduct(slug: string) {
@@ -34,7 +33,10 @@ export async function getProduct(slug: string) {
         imageURL4: products.imageURL4,
         imageURL5: products.imageURL5,
         updatedAt: products.updatedAt,
-        pinataId: productsAssets.pinataId,
+        productAssetFileName: productsAssets.fileName,
+        productAssetMimeType: productsAssets.mimeType,
+        productAssetSize: productsAssets.size,
+        productAssetPinataCID: productsAssets.pinataCID,
       })
       .from(products)
       .where(eq(products.slug, slug))
@@ -43,16 +45,6 @@ export async function getProduct(slug: string) {
   );
 
   if (product.error) {
-    return null;
-  }
-
-  const file = await tryCatch(
-    pinata.files.private.get(
-      product.data.length !== 0 ? product.data[0].pinataId : ""
-    )
-  );
-
-  if (file.error) {
     return null;
   }
 
@@ -79,13 +71,5 @@ export async function getProduct(slug: string) {
   return {
     ...product.data[0],
     orderId: order.data.length !== 0 ? order.data[0].id : null,
-    assets: [
-      {
-        name: file.data.name,
-        size: file.data.size,
-        cid: file.data.cid,
-        type: file.data.mime_type,
-      },
-    ],
   };
 }

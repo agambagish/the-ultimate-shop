@@ -39,25 +39,47 @@ export async function createOrder({
 
   const newOrder = await tryCatch(
     db.transaction(async (tx) => {
-      const [order] = await tx
-        .insert(orders)
-        .values({
-          userId: session.userId,
-          totalAmount,
-          transactionId,
-          ...billingAddress,
-        })
-        .returning({ id: orders.id });
+      const storeIds = [...new Set(cart.map((item) => item.storeId))];
+
+      if (storeIds.length > 0) {
+        const ownStores = await tryCatch(
+          tx.query.stores.findMany({
+            where: (f, o) =>
+              o.and(o.eq(f.userId, session.userId), o.inArray(f.id, storeIds)),
+            columns: { id: true },
+          })
+        );
+
+        if (ownStores.error || ownStores.data.length > 0) {
+          throw new Error("You cannot place orders on your own products.");
+        }
+      }
+
+      const order = await tryCatch(
+        tx
+          .insert(orders)
+          .values({
+            userId: session.userId,
+            totalAmount,
+            transactionId,
+            ...billingAddress,
+          })
+          .returning({ id: orders.id })
+      );
+
+      if (order.error) {
+        throw new Error("Something went wrong, please try again");
+      }
 
       const orderItemPromises = cart.map(async (item) => {
         const [orderItems] = await tx
           .insert(ordersItems)
           .values({
-            orderId: order.id,
-            priceAtPurchase: String(
+            orderId: order.data[0].id,
+            priceAtPurchase: Math.round(
               Number(item.price) -
                 (Number(item.price) * item.discountPercentage) / 100
-            ),
+            ).toString(),
             productSlug: item.slug,
             storeId: item.storeId,
           })
@@ -67,12 +89,14 @@ export async function createOrder({
       });
 
       await Promise.all(orderItemPromises);
-      return order.id;
+      return order.data[0].id;
     })
   );
 
   if (newOrder.error) {
-    throw new Error("Something went wrong, please try again");
+    throw new Error(
+      newOrder.error.message || "Something went wrong, please try again"
+    );
   }
 
   return newOrder.data;

@@ -124,42 +124,39 @@ export default async function Page({ params }: Props) {
                 )}
               </CardHeader>
               <CardContent className="space-y-3">
-                {product.assets.map((asset, i) => (
-                  <div
-                    key={i}
-                    className={cn(
-                      "flex items-center justify-between rounded-lg border p-3 transition-all",
-                      isPurchased
-                        ? "bg-background hover:bg-muted/50"
-                        : "bg-muted/50 opacity-60"
-                    )}
-                  >
-                    <div className="flex items-center gap-3">
-                      <div
-                        className={cn(
-                          "rounded-md p-2",
-                          isPurchased
-                            ? "bg-primary/10 text-primary"
-                            : "bg-muted text-muted-foreground"
-                        )}
-                      >
-                        {getFileIcon(asset.type)}
+                <div
+                  className={cn(
+                    "flex items-center justify-between rounded-lg border p-3 transition-all",
+                    isPurchased
+                      ? "bg-background hover:bg-muted/50"
+                      : "bg-muted/50 opacity-60"
+                  )}
+                >
+                  <div className="flex items-center gap-3">
+                    <div
+                      className={cn(
+                        "rounded-md p-2",
+                        isPurchased
+                          ? "bg-primary/10 text-primary"
+                          : "bg-muted text-muted-foreground"
+                      )}
+                    >
+                      {getFileIcon(product.productAssetMimeType)}
+                    </div>
+                    <div>
+                      <div className="line-clamp-1 text-sm font-medium">
+                        {product.productAssetFileName}
                       </div>
-                      <div>
-                        <div className="line-clamp-1 text-sm font-medium">
-                          {asset.name}
-                        </div>
-                        <div className="text-muted-foreground text-xs">
-                          {formatBytes(asset.size)}
-                        </div>
+                      <div className="text-muted-foreground text-xs">
+                        {formatBytes(product.productAssetSize)}
                       </div>
                     </div>
-                    <AssetDownloadButton
-                      slug={_params.slug}
-                      assetCID={asset.cid}
-                    />
                   </div>
-                ))}
+                  <AssetDownloadButton
+                    slug={_params.slug}
+                    assetCID={product.productAssetPinataCID}
+                  />
+                </div>
                 {!isPurchased && (
                   <div className="border-t pt-3">
                     <p className="text-muted-foreground text-center text-xs">
@@ -248,7 +245,7 @@ export default async function Page({ params }: Props) {
   );
 }
 
-const getFileIcon = (fileType: string) => {
+function getFileIcon(fileType: string) {
   const type = fileType.toLowerCase();
   if (type.includes("pdf")) return <FileTextIcon className="h-5 w-5" />;
   if (type.includes("zip") || type.includes("rar"))
@@ -256,4 +253,4 @@ const getFileIcon = (fileType: string) => {
   if (type.includes("svg") || type.includes("png") || type.includes("jpg"))
     return <ImageIcon className="h-5 w-5" />;
   return <FileIcon className="h-5 w-5" />;
-};
+}

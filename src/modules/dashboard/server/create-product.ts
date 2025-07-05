@@ -58,6 +58,7 @@ export async function createProduct(
         .insert(productsAssets)
         .values({
           pinataId: upload.id,
+          pinataCID: upload.cid,
           fileName: upload.name,
           mimeType: upload.mime_type,
           size: upload.size,
