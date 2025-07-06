@@ -24,7 +24,8 @@ export async function getOrders() {
       .select({
         id: orders.id,
         isPaid: orders.isPaid,
-        totalAmount: orders.totalAmount,
+        totalAmount: orders.total,
+        transactionId: orders.transactionId,
         itemCount: count(ordersItems.id),
         createdAt: orders.createdAt,
         items: sql<Item[]>`

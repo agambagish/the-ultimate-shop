@@ -192,7 +192,7 @@ export default async function Page() {
                   </div>
                   <div className="flex gap-2">
                     <Button variant="outline" size="sm" asChild>
-                      <Link href={`/orders/${order.id}`}>
+                      <Link href={`/orders/${order.transactionId}`}>
                         <EyeIcon className="h-4 w-4" />
                         View Details
                       </Link>

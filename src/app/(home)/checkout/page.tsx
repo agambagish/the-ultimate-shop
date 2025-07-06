@@ -75,7 +75,9 @@ export default function Page() {
         billingAddress: values,
         cart: state.cart,
         transactionId,
-        totalAmount: Math.round(state.total).toString(),
+        subtotal: Math.round(state.subtotal).toString(),
+        total: Math.round(state.total).toString(),
+        discount: Math.round(state.discount).toString(),
       }).then(async (orderId) => {
         const payload: HashParamSchema = {
           ...values,
@@ -83,8 +85,8 @@ export default function Page() {
           txnid: transactionId,
           productinfo: orderId.toString(),
           amount: Math.round(state.total),
-          surl: `${env.NEXT_PUBLIC_APP_URL}/checkout/success`,
-          furl: `${env.NEXT_PUBLIC_APP_URL}/checkout/failed`,
+          surl: `${env.NEXT_PUBLIC_APP_URL}/orders/${transactionId}`,
+          furl: `${env.NEXT_PUBLIC_APP_URL}/orders/failed`,
           phone: 9876543210,
         };
 

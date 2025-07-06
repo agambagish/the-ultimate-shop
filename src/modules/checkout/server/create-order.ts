@@ -17,7 +17,9 @@ type CartItem = Pick<
 
 interface Props {
   cart: CartItem[];
-  totalAmount: string;
+  subtotal: string;
+  discount: string;
+  total: string;
   transactionId: string;
   billingAddress: Pick<
     Order,
@@ -28,8 +30,10 @@ interface Props {
 export async function createOrder({
   billingAddress,
   cart,
-  totalAmount,
   transactionId,
+  subtotal,
+  discount,
+  total,
 }: Props) {
   const session = await auth();
 
@@ -60,7 +64,9 @@ export async function createOrder({
           .insert(orders)
           .values({
             userId: session.userId,
-            totalAmount,
+            subtotal,
+            total,
+            discount,
             transactionId,
             ...billingAddress,
           })
