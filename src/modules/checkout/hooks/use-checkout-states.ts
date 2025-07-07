@@ -1,7 +1,14 @@
 import { useReducer } from "react";
 
-// eslint-disable-next-line boundaries/element-types
-import type { CartItem } from "@/modules/layout/lib/types";
+import type { Product } from "@/db/schema";
+
+export type CartItem = Pick<
+  Product,
+  "title" | "slug" | "price" | "discountPercentage" | "thumbnailImageURL"
+> & {
+  category: string;
+  storeId: number;
+};
 
 interface State {
   isOrderSummaryLoading: boolean;
