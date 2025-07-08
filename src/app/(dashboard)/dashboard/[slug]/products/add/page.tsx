@@ -1,5 +1,3 @@
-"use client";
-
 import { Card, CardContent } from "@/components/ui/card";
 import { CreateProductForm } from "@/modules/dashboard/components/create-product-form";
 import { Heading } from "@/modules/dashboard/components/heading";

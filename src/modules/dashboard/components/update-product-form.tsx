@@ -1,9 +1,16 @@
 "use client";
 
+import Link from "next/link";
+import { useRouter } from "next/navigation";
 import { useEffect } from "react";
 
 import { zodResolver } from "@hookform/resolvers/zod";
-import { Loader2Icon, PercentIcon } from "lucide-react";
+import {
+  ConstructionIcon,
+  Loader2Icon,
+  PercentIcon,
+  SquareArrowOutUpRightIcon,
+} from "lucide-react";
 import { useForm } from "react-hook-form";
 import { toast } from "sonner";
 
@@ -28,18 +35,44 @@ import {
 } from "@/components/ui/select";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Textarea } from "@/components/ui/textarea";
+import type { Product } from "@/db/schema";
 import { useEdgestore } from "@/hooks/use-edgestore";
 
-import { useCreateProductStates } from "../hooks/use-create-product-states";
-import type { CreateProductSchema } from "../schemas/create-product-schema";
-import { createProductSchema } from "../schemas/create-product-schema";
-import { createProduct } from "../server/create-product";
+import { useUpdateProductStates } from "../hooks/use-update-product-states";
+import type { UpdateProductSchema } from "../schemas/update-product-schema";
+import { updateProductSchema } from "../schemas/update-product-schema";
 import { getCategories } from "../server/get-categories";
+import { updateProduct } from "../server/update-product";
 
-export function CreateProductForm() {
-  const { state, setState } = useCreateProductStates();
+interface Props {
+  initialValues: Omit<
+    Product,
+    "id" | "rating" | "fileTypes" | "storeId" | "updatedAt"
+  >;
+}
 
-  const { isUploading, uploadFiles } = useEdgestore();
+export function UpdateProductForm({ initialValues }: Props) {
+  const router = useRouter();
+  const { state, setState } = useUpdateProductStates();
+  const { replaceFile, isUploading } = useEdgestore();
+
+  const isDisabled = state.isLoading || isUploading;
+
+  const form = useForm<UpdateProductSchema>({
+    resolver: zodResolver(updateProductSchema),
+    mode: "onChange",
+    defaultValues: {
+      ...initialValues,
+      productCategoryId: initialValues.productCategoryId.toString(),
+      thumbnailImage: [],
+      image1: [],
+      image2: [],
+      image3: [],
+      image4: [],
+      image5: [],
+      productAsset: [],
+    },
+  });
 
   useEffect(() => {
     (async () => {
@@ -54,64 +87,80 @@ export function CreateProductForm() {
     })();
   }, [setState]);
 
-  const form = useForm<CreateProductSchema>({
-    resolver: zodResolver(createProductSchema),
-    mode: "onChange",
-    defaultValues: {
-      title: "",
-      slug: "",
-      description: "",
-      longDescription: "",
-      price: "",
-      discountPercentage: NaN,
-      thumbnailImage: [],
-      image1: [],
-      image2: [],
-      image3: [],
-      image4: [],
-      image5: [],
-      productAsset: [],
-      productCategoryId: "",
+  const imageFields = [
+    {
+      field: "thumbnailImage",
+      endpoint: "thumbnailImages",
+      oldFileURL: initialValues.thumbnailImageURL,
     },
-  });
+    {
+      field: "image1",
+      endpoint: "productImages",
+      oldFileURL: initialValues.imageURL1,
+    },
+    {
+      field: "image2",
+      endpoint: "productImages",
+      oldFileURL: initialValues.imageURL2,
+    },
+    {
+      field: "image3",
+      endpoint: "productImages",
+      oldFileURL: initialValues.imageURL3,
+    },
+    {
+      field: "image4",
+      endpoint: "productImages",
+      oldFileURL: initialValues.imageURL4,
+    },
+    {
+      field: "image5",
+      endpoint: "productImages",
+      oldFileURL: initialValues.imageURL5,
+    },
+  ] as const;
 
-  const isDisabled = state.isLoading || isUploading;
+  type ImageField = (typeof imageFields)[number]["field"];
+  const updatedURLs: Partial<Record<ImageField, string>> = {};
+  const dirtyFields = form.formState.dirtyFields;
 
-  async function handleSubmit(values: CreateProductSchema) {
+  async function handleSubmit(values: UpdateProductSchema) {
     setState({ type: "SET_LOADING", payload: true });
 
     try {
-      const [thumbnailImageURL] = await uploadFiles({
-        endpoint: "thumbnailImages",
-        files: values.thumbnailImage,
+      for (const { field, endpoint, oldFileURL } of imageFields) {
+        if (dirtyFields[field]) {
+          const url = await replaceFile({
+            endpoint,
+            file: values[field] ?? [],
+            oldFileURL: oldFileURL ?? "",
+          });
+
+          updatedURLs[field] = url[0];
+        }
+      }
+
+      const filteredValues = Object.fromEntries(
+        (Object.keys(values) as (keyof typeof values)[])
+          .filter((key) => dirtyFields[key])
+          .map((key) => [key, values[key]])
+      );
+
+      await updateProduct({
+        slug: initialValues.slug,
+        values: {
+          ...filteredValues,
+          thumbnailImageURL: updatedURLs.thumbnailImage,
+          imageURL1: updatedURLs.image1,
+          imageURL2: updatedURLs.image2,
+          imageURL3: updatedURLs.image3,
+          imageURL4: updatedURLs.image4,
+          imageURL5: updatedURLs.image5,
+        },
       });
 
-      const imageURLs = await uploadFiles({
-        endpoint: "productImages",
-        files: [
-          ...values.image1,
-          ...values.image2,
-          ...values.image3,
-          ...values.image4,
-          ...values.image5,
-        ],
-      });
-
-      const [productAsset] = values.productAsset;
-
-      await createProduct({
-        ...values,
-        productAsset,
-        thumbnailImageURL,
-        imageURL1: imageURLs[0],
-        imageURL2: imageURLs[1],
-        imageURL3: imageURLs[2],
-        imageURL4: imageURLs[3],
-        imageURL5: imageURLs[4],
-      });
-
-      form.reset();
-      toast.success("Product created...");
+      toast.success("Product updated");
+      router.refresh();
     } catch (err) {
       // @ts-expect-error error message type error
       toast.error(err?.message || "Failed to create product");
@@ -121,8 +170,9 @@ export function CreateProductForm() {
   }
 
   function renderImageField(
-    name: keyof CreateProductSchema,
+    name: keyof UpdateProductSchema,
     label: string,
+    initialURL: string | null,
     required?: boolean
   ) {
     return (
@@ -133,6 +183,11 @@ export function CreateProductForm() {
           <FormItem>
             <FormLabel>
               {label} {required && <span className="text-destructive">*</span>}
+              {initialURL && (
+                <Link href={initialURL} target="_blank">
+                  <SquareArrowOutUpRightIcon className="text-muted-foreground ml-2 size-4" />
+                </Link>
+              )}
             </FormLabel>
             <FormControl>
               <SingleImageInput
@@ -165,7 +220,7 @@ export function CreateProductForm() {
             control={form.control}
             name={
               name as keyof Pick<
-                CreateProductSchema,
+                UpdateProductSchema,
                 "title" | "slug" | "description"
               >
             }
@@ -197,6 +252,7 @@ export function CreateProductForm() {
                   <Select
                     onValueChange={field.onChange}
                     defaultValue={field.value}
+                    disabled={isDisabled}
                   >
                     <SelectTrigger className="w-full">
                       <SelectValue placeholder="Select Category" />
@@ -289,13 +345,29 @@ export function CreateProductForm() {
             )}
           />
         </div>
+        <div className="rounded-md border px-4 py-3">
+          <p className="text-sm">
+            <ConstructionIcon
+              className="me-3 -mt-0.5 inline-flex text-amber-500"
+              size={16}
+            />
+            This is a work in progress; currently, existing images are rendered
+            as shown. To replace an image, simply select a new one in any field
+            below.
+          </p>
+        </div>
         <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
-          {renderImageField("thumbnailImage", "Thumbnail Image", true)}
-          {renderImageField("image1", "Image 1", true)}
-          {renderImageField("image2", "Image 2", true)}
-          {renderImageField("image3", "Image 3")}
-          {renderImageField("image4", "Image 4")}
-          {renderImageField("image5", "Image 5")}
+          {renderImageField(
+            "thumbnailImage",
+            "Thumbnail Image",
+            initialValues.thumbnailImageURL,
+            true
+          )}
+          {renderImageField("image1", "Image 1", initialValues.imageURL1, true)}
+          {renderImageField("image2", "Image 2", initialValues.imageURL2, true)}
+          {renderImageField("image3", "Image 3", initialValues.imageURL3)}
+          {renderImageField("image4", "Image 4", initialValues.imageURL4)}
+          {renderImageField("image5", "Image 5", initialValues.imageURL5)}
         </div>
         <FormField
           control={form.control}
@@ -314,9 +386,13 @@ export function CreateProductForm() {
             </FormItem>
           )}
         />
-        <Button type="submit" disabled={isDisabled} className="w-full">
+        <Button
+          type="submit"
+          disabled={isDisabled || !form.formState.isDirty}
+          className="w-full"
+        >
           {isDisabled && <Loader2Icon className="animate-spin" />}
-          Create Product
+          Update Product
         </Button>
       </form>
     </Form>

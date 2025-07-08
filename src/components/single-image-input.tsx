@@ -23,11 +23,11 @@ import { MAX_IMAGE_SIZE } from "@/lib/constants";
 
 interface Props<T extends FieldValues> {
   field: ControllerRenderProps<T, FieldPath<T>>;
-  disabled: boolean;
+  disabled?: boolean;
   form: UseFormReturn<T>;
 }
 
-export function SingleImageField<T extends FieldValues>({
+export function SingleImageInput<T extends FieldValues>({
   field,
   disabled,
   form,

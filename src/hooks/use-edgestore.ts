@@ -6,8 +6,6 @@ import type { EdgeStoreRouter } from "@/app/api/edgestore/[...edgestore]/route";
 import { useEdgeStore } from "@/providers/edgestore-provider";
 
 export function useEdgestore() {
-  const [uploadedFiles, setUploadedFiles] = useState<string[]>([]);
-  const [progresses, setProgresses] = useState<Record<string, number>>({});
   const [isUploading, setIsUploading] = useState<boolean>(false);
 
   const { edgestore } = useEdgeStore();
@@ -25,15 +23,8 @@ export function useEdgestore() {
       const uploadPromises = files.map(async (file) => {
         const { url } = await edgestore[endpoint].upload({
           file,
-          onProgressChange: (progress) => {
-            setProgresses((prev) => ({
-              ...prev,
-              [file.name]: progress,
-            }));
-          },
         });
 
-        setUploadedFiles((prev) => [...prev, url]);
         return url;
       });
 
@@ -42,15 +33,41 @@ export function useEdgestore() {
       toast.error("Unable to upload images");
       return [];
     } finally {
-      setProgresses({});
+      setIsUploading(false);
+    }
+  }
+
+  async function replaceFile({
+    endpoint,
+    file,
+    oldFileURL,
+  }: {
+    endpoint: keyof EdgeStoreRouter["buckets"];
+    file: File[];
+    oldFileURL: string;
+  }) {
+    setIsUploading(true);
+
+    try {
+      const { url } = await edgestore[endpoint].upload({
+        file: file[0],
+        options: {
+          replaceTargetUrl: oldFileURL,
+        },
+      });
+
+      return [url];
+    } catch {
+      toast.error("Unable to upload images");
+      return [];
+    } finally {
       setIsUploading(false);
     }
   }
 
   return {
-    uploadedFiles,
-    progresses,
     uploadFiles,
+    replaceFile,
     isUploading,
   };
 }
