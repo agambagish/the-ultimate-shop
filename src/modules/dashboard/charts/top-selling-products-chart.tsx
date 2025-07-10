@@ -12,60 +12,44 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
-import type { ChartConfig } from "@/components/ui/chart";
 import {
   ChartContainer,
   ChartTooltip,
   ChartTooltipContent,
 } from "@/components/ui/chart";
 
-export const description = "A donut chart with an active sector";
+interface Props {
+  data: {
+    title: string;
+    unitsSold: number;
+  }[];
+}
 
-const chartData = [
-  { browser: "chrome", visitors: 275, fill: "var(--color-chrome)" },
-  { browser: "safari", visitors: 200, fill: "var(--color-safari)" },
-  { browser: "firefox", visitors: 187, fill: "var(--color-firefox)" },
-  { browser: "edge", visitors: 173, fill: "var(--color-edge)" },
-  { browser: "other", visitors: 90, fill: "var(--color-other)" },
+const COLORS = [
+  "var(--chart-1)",
+  "var(--chart-2)",
+  "var(--chart-3)",
+  "var(--chart-4)",
+  "var(--chart-5)",
+  "var(--chart-6)",
 ];
 
-const chartConfig = {
-  visitors: {
-    label: "Visitors",
-  },
-  chrome: {
-    label: "Chrome",
-    color: "var(--chart-1)",
-  },
-  safari: {
-    label: "Safari",
-    color: "var(--chart-2)",
-  },
-  firefox: {
-    label: "Firefox",
-    color: "var(--chart-3)",
-  },
-  edge: {
-    label: "Edge",
-    color: "var(--chart-4)",
-  },
-  other: {
-    label: "Other",
-    color: "var(--chart-5)",
-  },
-} satisfies ChartConfig;
+export function TopSellingProductsChart({ data }: Props) {
+  const chartData = data.map((item, index) => ({
+    ...item,
+    fill: COLORS[index % COLORS.length],
+  }));
 
-export function TopSellingProductsChart() {
   return (
     <Card className="flex flex-col">
       <CardHeader className="items-center pb-0">
-        <CardTitle>Pie Chart - Donut Active</CardTitle>
-        <CardDescription>January - June 2024</CardDescription>
+        <CardTitle>Top Selling Products</CardTitle>
+        <CardDescription>Most sold products of your store</CardDescription>
       </CardHeader>
       <CardContent className="flex-1 pb-0">
         <ChartContainer
-          config={chartConfig}
           className="mx-auto aspect-square max-h-[250px]"
+          config={{}}
         >
           <PieChart>
             <ChartTooltip
@@ -74,16 +58,16 @@ export function TopSellingProductsChart() {
             />
             <Pie
               data={chartData}
-              dataKey="visitors"
-              nameKey="browser"
+              dataKey="unitsSold"
+              nameKey="title"
               innerRadius={60}
               strokeWidth={5}
               activeIndex={0}
-              activeShape={({
-                outerRadius = 0,
-                ...props
-              }: PieSectorDataItem) => (
-                <Sector {...props} outerRadius={outerRadius + 10} />
+              activeShape={(props: PieSectorDataItem) => (
+                <Sector
+                  {...props}
+                  outerRadius={(props.outerRadius ?? 0) + 10}
+                />
               )}
             />
           </PieChart>
@@ -91,10 +75,10 @@ export function TopSellingProductsChart() {
       </CardContent>
       <CardFooter className="flex-col gap-2 text-sm">
         <div className="flex items-center gap-2 leading-none font-medium">
-          Trending up by 5.2% this month <TrendingUp className="h-4 w-4" />
+          All-time top-selling products <TrendingUp className="h-4 w-4" />
         </div>
         <div className="text-muted-foreground leading-none">
-          Showing total visitors for the last 6 months
+          Based on total units sold since launch
         </div>
       </CardFooter>
     </Card>

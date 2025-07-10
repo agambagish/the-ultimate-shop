@@ -3,17 +3,17 @@
 import type { ColumnDef } from "@tanstack/react-table";
 
 import { Badge } from "@/components/ui/badge";
-import { formatPrice } from "@/lib/utils";
+import { cn, formatPrice } from "@/lib/utils";
 
-interface Sale {
-  id: string;
-  amount: string;
+interface Order {
+  id: number;
   customer: string;
   email: string;
-  status: "Yet to deliver" | "Delivered" | "Cancelled";
+  isPaid: boolean;
+  amount: string;
 }
 
-export const recentOrdersDataColumns: ColumnDef<Sale>[] = [
+export const recentOrdersDataColumns: ColumnDef<Order>[] = [
   {
     accessorKey: "id",
     header: "#",
@@ -27,18 +27,16 @@ export const recentOrdersDataColumns: ColumnDef<Sale>[] = [
     header: "Email",
   },
   {
-    accessorKey: "status",
+    accessorKey: "isPaid",
     header: "Status",
     cell: ({ row }) => (
       <Badge
-        variant={
-          (row.getValue("status") === "Yet to deliver" && "outline") ||
-          (row.getValue("status") === "Delivered" && "default") ||
-          (row.getValue("status") === "Cancelled" && "destructive") ||
-          "default"
-        }
+        className={cn(
+          (row.getValue("isPaid") as boolean) && "bg-green-600 text-white"
+        )}
+        variant="outline"
       >
-        {row.getValue("status")}
+        {(row.getValue("isPaid") as boolean) ? "Paid" : "Pending"}
       </Badge>
     ),
   },

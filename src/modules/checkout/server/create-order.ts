@@ -13,6 +13,7 @@ type CartItem = Pick<
 > & {
   category: string;
   storeId: number;
+  storeSlug: string;
 };
 
 interface Props {
@@ -87,7 +88,7 @@ export async function createOrder({
                 (Number(item.price) * item.discountPercentage) / 100
             ).toString(),
             productSlug: item.slug,
-            storeId: item.storeId,
+            storeSlug: item.storeSlug,
           })
           .returning({ id: ordersItems.id });
 

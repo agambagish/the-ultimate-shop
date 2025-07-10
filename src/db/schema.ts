@@ -21,6 +21,11 @@ export const storeStatusEnum = pgEnum("store_status", [
 export const users = pgTable("users", {
   clerkId: varchar({ length: 255 }).primaryKey(),
   role: userRoleEnum().notNull().default("user"),
+  createdAt: timestamp().notNull().defaultNow(),
+  updatedAt: timestamp()
+    .notNull()
+    .defaultNow()
+    .$onUpdate(() => new Date()),
 });
 
 export const stores = pgTable("stores", {
@@ -39,6 +44,11 @@ export const stores = pgTable("stores", {
   country: varchar({ length: 255 }).notNull(),
   pinCode: varchar({ length: 20 }).notNull(),
   userId: varchar({ length: 255 }).notNull().unique(),
+  createdAt: timestamp().notNull().defaultNow(),
+  updatedAt: timestamp()
+    .notNull()
+    .defaultNow()
+    .$onUpdate(() => new Date()),
 });
 
 export const products = pgTable("products", {
@@ -66,6 +76,7 @@ export const products = pgTable("products", {
   storeId: integer()
     .notNull()
     .references(() => stores.id, { onDelete: "cascade" }),
+  createdAt: timestamp().notNull().defaultNow(),
   updatedAt: timestamp()
     .notNull()
     .defaultNow()
@@ -80,6 +91,11 @@ export const productsAssets = pgTable("products_assets", {
   mimeType: varchar({ length: 100 }).notNull(),
   size: integer().notNull(),
   productSlug: varchar({ length: 255 }).notNull(),
+  createdAt: timestamp().notNull().defaultNow(),
+  updatedAt: timestamp()
+    .notNull()
+    .defaultNow()
+    .$onUpdate(() => new Date()),
 });
 
 export const orders = pgTable("orders", {
@@ -96,13 +112,17 @@ export const orders = pgTable("orders", {
   pinCode: varchar({ length: 20 }).notNull(),
   country: varchar({ length: 255 }).notNull(),
   createdAt: timestamp().notNull().defaultNow(),
+  updatedAt: timestamp()
+    .notNull()
+    .defaultNow()
+    .$onUpdate(() => new Date()),
 });
 
 export const ordersItems = pgTable("orders_items", {
   id: integer().primaryKey().generatedAlwaysAsIdentity(),
-  storeId: integer()
+  storeSlug: varchar({ length: 255 })
     .notNull()
-    .references(() => stores.id, { onDelete: "cascade" }),
+    .references(() => stores.slug, { onDelete: "cascade" }),
   orderId: integer()
     .notNull()
     .references(() => orders.id, { onDelete: "cascade" }),
@@ -110,6 +130,11 @@ export const ordersItems = pgTable("orders_items", {
     .notNull()
     .references(() => products.slug, { onDelete: "cascade" }),
   priceAtPurchase: decimal({ precision: 10, scale: 2 }).notNull(),
+  createdAt: timestamp().notNull().defaultNow(),
+  updatedAt: timestamp()
+    .notNull()
+    .defaultNow()
+    .$onUpdate(() => new Date()),
 });
 
 export const productsCategories = pgTable("products_categories", {
@@ -118,6 +143,11 @@ export const productsCategories = pgTable("products_categories", {
   slug: varchar({ length: 255 }).notNull().unique(),
   description: varchar({ length: 500 }).notNull(),
   icon: varchar({ length: 255 }).notNull(),
+  createdAt: timestamp().notNull().defaultNow(),
+  updatedAt: timestamp()
+    .notNull()
+    .defaultNow()
+    .$onUpdate(() => new Date()),
 });
 
 export const storesRelations = relations(stores, ({ many }) => ({
@@ -157,8 +187,8 @@ export const ordersItemsRelations = relations(ordersItems, ({ one }) => ({
     references: [products.slug],
   }),
   store: one(stores, {
-    fields: [ordersItems.storeId],
-    references: [stores.id],
+    fields: [ordersItems.storeSlug],
+    references: [stores.slug],
   }),
 }));
 

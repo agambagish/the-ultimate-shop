@@ -47,7 +47,7 @@ import { updateProduct } from "../server/update-product";
 interface Props {
   initialValues: Omit<
     Product,
-    "id" | "rating" | "fileTypes" | "storeId" | "updatedAt"
+    "id" | "rating" | "fileTypes" | "storeId" | "createdAt" | "updatedAt"
   >;
 }
 

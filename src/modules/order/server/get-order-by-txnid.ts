@@ -36,20 +36,20 @@ export async function getOrderByTxnid(txnid: string) {
         itemCount: count(ordersItems.id),
         createdAt: orders.createdAt,
         items: sql<Item[]>`
-                  json_agg(
-                    json_build_object(
-                      'id', ${ordersItems.id},
-                      'title', ${products.title},
-                      'slug', ${products.slug},
-                      'thumbnailImageURL', ${products.thumbnailImageURL},
-                      'priceAtPurchase', ${ordersItems.priceAtPurchase},
-                      'productAssetFileName', ${productsAssets.fileName},
-                      'productAssetSize', ${productsAssets.size},
-                      'productAssetMimeType', ${productsAssets.mimeType},
-                      'productAssetPinataCID', ${productsAssets.pinataCID}
-                    )
-                  )
-                `,
+          json_agg(
+            json_build_object(
+              'id', ${ordersItems.id},
+              'title', ${products.title},
+              'slug', ${products.slug},
+              'thumbnailImageURL', ${products.thumbnailImageURL},
+              'priceAtPurchase', ${ordersItems.priceAtPurchase},
+              'productAssetFileName', ${productsAssets.fileName},
+              'productAssetSize', ${productsAssets.size},
+              'productAssetMimeType', ${productsAssets.mimeType},
+              'productAssetPinataCID', ${productsAssets.pinataCID}
+            )
+          )
+        `,
       })
       .from(orders)
       .innerJoin(ordersItems, eq(ordersItems.orderId, orders.id))

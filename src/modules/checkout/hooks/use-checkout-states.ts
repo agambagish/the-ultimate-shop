@@ -8,6 +8,7 @@ export type CartItem = Pick<
 > & {
   category: string;
   storeId: number;
+  storeSlug: string;
 };
 
 interface State {

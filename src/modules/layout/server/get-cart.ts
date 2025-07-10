@@ -20,6 +20,7 @@ export async function getCart(items: { slug: string }[]) {
         discountPercentage: products.discountPercentage,
         thumbnailImageURL: products.thumbnailImageURL,
         storeId: stores.id,
+        storeSlug: stores.slug,
       })
       .from(products)
       .innerJoin(
