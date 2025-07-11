@@ -67,7 +67,7 @@ export function Navbar({ storeSlug }: Props) {
         </div>
         <div className="flex lg:justify-center">
           <Link href="/" className="text-xl font-bold whitespace-nowrap">
-            Shop Inc.
+            The Ult. Shop
           </Link>
         </div>
         <div className="flex w-full justify-end gap-4">
