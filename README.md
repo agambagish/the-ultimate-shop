@@ -13,7 +13,7 @@
 - **Product Uploads & Management** with Edgestore and Pinata.
 - **Shopping Cart, Orders & Checkout** functionality built-in.
 - **Drizzle ORM** for typed and maintainable PostgreSQL database queries.
-- Fully configured **Husky**, **ESLint**, **Prettier**, and **Git hooks** for development consistency
+- Fully configured **Husky**, **ESLint**, **Prettier**, and **Github Actions** for development consistency
 
 ## Screenshots
 
