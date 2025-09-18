@@ -13,7 +13,8 @@
       "!.next",
       "!dist",
       "!build",
-      "!src/components/ui/*"
+      "!src/components/ui/*",
+      "!**/importMap.js"
     ]
   },
   "assist": {
@@ -58,7 +59,10 @@
         "useAwait": "warn",
         "noUnknownAtRules": "off"
       },
-      "complexity": { "useArrowFunction": "warn" },
+      "complexity": {
+        "useArrowFunction": "warn",
+        "noBannedTypes": "off"
+      },
       "style": {
         "noUnusedTemplateLiteral": "warn",
         "useTemplate": "warn",

@@ -4,11 +4,13 @@ import { z } from "zod";
 
 export const env = createEnv({
   server: {
-    DATABASE_URL: z.url(),
+    PAYLOAD_SECRET: z.string(),
+    DATABASE_URI: z.url(),
   },
   client: {},
   runtimeEnv: {
-    DATABASE_URL: process.env.DATABASE_URL,
+    PAYLOAD_SECRET: process.env.PAYLOAD_SECRET,
+    DATABASE_URI: process.env.DATABASE_URI,
   },
   emptyStringAsUndefined: true,
   onValidationError: (issues) => {
