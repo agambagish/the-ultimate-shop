@@ -10,7 +10,8 @@
     "lint": "biome check",
     "format": "biome check --write",
     "prepare": "husky",
-    "generate:types": "payload generate:types"
+    "generate:types": "payload generate:types",
+    "migrate:fresh": "payload migrate:fresh"
   },
   "dependencies": {
     "@payloadcms/db-postgres": "^3.56.0",

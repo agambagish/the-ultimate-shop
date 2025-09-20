@@ -96,6 +96,9 @@
           "fix": "safe",
           "options": {}
         }
+      },
+      "a11y": {
+        "noStaticElementInteractions": "off"
       }
     }
   },

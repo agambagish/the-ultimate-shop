@@ -1,7 +1,6 @@
 "use client";
 
 import { useState } from "react";
-import { DM_Sans } from "next/font/google";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 
@@ -11,11 +10,6 @@ import { Button, buttonVariants } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 
 import { NavSidebar } from "./nav-sidebar";
-
-const dmSans = DM_Sans({
-  subsets: ["latin"],
-  weight: ["1000"],
-});
 
 const navItems = [
   { href: "/", label: "Home" },
@@ -32,9 +26,7 @@ export function Navbar() {
   return (
     <nav className="flex h-20 justify-between border-b bg-white font-medium">
       <Link href="/" className="flex items-center pl-6">
-        <span className={cn("text-4xl", dmSans.className)}>
-          The Ultimate Shop
-        </span>
+        <span className="font-extrabold text-4xl">The Ultimate Shop</span>
       </Link>
       <NavSidebar
         items={navItems}
@@ -94,9 +86,8 @@ function NavItem({ href, label, isActive }: NavItemProps) {
     <Button
       asChild
       variant="outline"
-      size="lg"
       className={cn(
-        "rounded-full border-transparent bg-transparent px-6 py-5 text-lg shadow-none hover:border-primary hover:bg-transparent",
+        "h-11 rounded-full border-transparent px-5 shadow-none transition-all hover:border-primary hover:bg-transparent",
         isActive && "bg-black text-white hover:bg-black hover:text-white",
       )}
     >
