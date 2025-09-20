@@ -44,8 +44,8 @@ export function CategoryDropdown({ category, isActive, isHovered }: Props) {
         <Button
           variant="outline"
           className={cn(
-            "h-11 rounded-full border-transparent bg-transparent px-4 text-black shadow-none hover:border-primary hover:bg-white",
-            isActive && !isHovered && "border-primary bg-white",
+            "h-11 border-transparent bg-transparent px-4 text-black shadow-none hover:bg-white hover:underline",
+            isActive && !isHovered && "bg-white underline",
           )}
         >
           <Link href={`/${category.slug === "all" ? "/" : category.slug}`}>

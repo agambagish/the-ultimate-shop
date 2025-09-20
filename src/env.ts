@@ -7,10 +7,13 @@ export const env = createEnv({
     PAYLOAD_SECRET: z.string(),
     DATABASE_URI: z.url(),
   },
-  client: {},
+  client: {
+    NEXT_PUBLIC_APP_URL: z.url(),
+  },
   runtimeEnv: {
     PAYLOAD_SECRET: process.env.PAYLOAD_SECRET,
     DATABASE_URI: process.env.DATABASE_URI,
+    NEXT_PUBLIC_APP_URL: process.env.NEXT_PUBLIC_APP_URL,
   },
   emptyStringAsUndefined: true,
   onValidationError: (issues) => {

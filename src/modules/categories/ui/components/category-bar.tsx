@@ -2,20 +2,20 @@
 
 import { useEffect, useRef, useState } from "react";
 
+import { useSuspenseQuery } from "@tanstack/react-query";
 import { ListFilter } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
-import type { CategoryWithSubCategory } from "@/lib/types";
 import { cn } from "@/lib/utils";
+import { useTRPC } from "@/trpc/client";
 
-import { CategoriesSidebar } from "./categories-sidebar";
 import { CategoryDropdown } from "./category-dropdown";
+import { CategorySidebar } from "./category-sidebar";
 
-interface Props {
-  data: CategoryWithSubCategory[];
-}
+export function CategoryBar() {
+  const trpc = useTRPC();
+  const { data } = useSuspenseQuery(trpc.categories.getMany.queryOptions());
 
-export function CategoryBar({ data }: Props) {
   const containerRef = useRef<HTMLDivElement>(null);
   const measureRef = useRef<HTMLDivElement>(null);
   const viewAllRef = useRef<HTMLDivElement>(null);
@@ -64,11 +64,7 @@ export function CategoryBar({ data }: Props) {
 
   return (
     <div className="relative w-full">
-      <CategoriesSidebar
-        open={isSidebarOpen}
-        onOpenChange={setIsSidebarOpen}
-        data={data}
-      />
+      <CategorySidebar open={isSidebarOpen} onOpenChange={setIsSidebarOpen} />
       <div
         ref={measureRef}
         className="pointer-events-none absolute flex opacity-0"
@@ -102,7 +98,7 @@ export function CategoryBar({ data }: Props) {
         <div ref={viewAllRef} className="shrink-0">
           <Button
             className={cn(
-              "h-11 rounded-full border-transparent bg-transparent px-4 text-black shadow-none hover:border-primary hover:bg-white",
+              "h-11 cursor-pointer rounded-full border-transparent bg-transparent px-4 text-black shadow-none hover:border-primary hover:bg-white",
               isActiveCategoryHidden &&
                 !isAnyHovered &&
                 "border-primary bg-white",

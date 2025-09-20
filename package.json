@@ -22,7 +22,12 @@
     "@radix-ui/react-scroll-area": "^1.2.10",
     "@radix-ui/react-slot": "^1.2.3",
     "@t3-oss/env-nextjs": "^0.13.8",
+    "@tanstack/react-query": "^5.89.0",
+    "@trpc/client": "^11.5.1",
+    "@trpc/server": "^11.5.1",
+    "@trpc/tanstack-react-query": "^11.5.1",
     "class-variance-authority": "^0.7.1",
+    "client-only": "^0.0.1",
     "clsx": "^2.1.1",
     "graphql": "^16.11.0",
     "lucide-react": "^0.544.0",
@@ -30,7 +35,9 @@
     "payload": "^3.56.0",
     "react": "19.1.0",
     "react-dom": "19.1.0",
+    "server-only": "^0.0.1",
     "sharp": "^0.34.4",
+    "superjson": "^2.2.2",
     "tailwind-merge": "^3.3.1",
     "zod": "^4.1.9"
   },
@@ -48,5 +55,11 @@
   },
   "lint-staged": {
     "*": "pnpm lint"
+  },
+  "pnpm": {
+    "allowedDeprecatedVersions": {
+      "@esbuild-kit/core-utils": "3.3.2",
+      "@esbuild-kit/esm-loader": "2.6.5"
+    }
   }
 }

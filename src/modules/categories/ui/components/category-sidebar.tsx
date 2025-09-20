@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 
+import { useSuspenseQuery } from "@tanstack/react-query";
 import { ChevronLeft, ChevronRight } from "lucide-react";
 
 import { ScrollArea } from "@/components/ui/scroll-area";
@@ -11,14 +12,17 @@ import {
   SheetTitle,
 } from "@/components/ui/sheet";
 import type { CategoryWithSubCategory } from "@/lib/types";
+import { useTRPC } from "@/trpc/client";
 
 interface Props {
   open: boolean;
   onOpenChange: (open: boolean) => void;
-  data: CategoryWithSubCategory[];
 }
 
-export function CategoriesSidebar({ open, onOpenChange, data }: Props) {
+export function CategorySidebar({ open, onOpenChange }: Props) {
+  const trpc = useTRPC();
+  const { data } = useSuspenseQuery(trpc.categories.getMany.queryOptions());
+
   const router = useRouter();
 
   const [parentCategories, setParentCategories] = useState<

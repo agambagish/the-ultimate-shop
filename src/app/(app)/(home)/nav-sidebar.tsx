@@ -24,9 +24,7 @@ export function NavSidebar({ items, open, onOpenChange }: Props) {
     <Sheet open={open} onOpenChange={onOpenChange}>
       <SheetContent side="left" className="p-0 transition-none">
         <SheetHeader className="border-b p-4">
-          <div className="flex items-center">
-            <SheetTitle>Menu</SheetTitle>
-          </div>
+          <SheetTitle>Menu</SheetTitle>
         </SheetHeader>
         <ScrollArea className="flex h-full flex-col overflow-y-auto pb-2">
           {items.map((item) => (
