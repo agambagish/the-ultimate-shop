@@ -24,6 +24,7 @@ export default buildConfig({
     },
   },
   collections: [Users, Media, Categories],
+  cookiePrefix: "tus",
   editor: lexicalEditor(),
   secret: env.PAYLOAD_SECRET,
   typescript: {

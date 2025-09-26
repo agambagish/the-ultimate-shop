@@ -7,6 +7,7 @@ import { usePathname } from "next/navigation";
 import { TextAlignEnd } from "lucide-react";
 
 import { Button, buttonVariants } from "@/components/ui/button";
+import { useSession } from "@/hooks/use-session";
 import { cn } from "@/lib/utils";
 
 import { NavSidebar } from "./nav-sidebar";
@@ -22,6 +23,7 @@ const navItems = [
 export function Navbar() {
   const pathname = usePathname();
   const [isSidebarOpen, setIsSidebarOpen] = useState<boolean>(false);
+  const { session } = useSession();
 
   return (
     <nav className="flex h-20 justify-between border-b bg-white font-medium">
@@ -42,26 +44,42 @@ export function Navbar() {
           />
         ))}
       </div>
-      <div className="hidden lg:flex">
-        <Link
-          href="/login"
-          className={cn(
-            buttonVariants({ variant: "secondary" }),
-            "h-full rounded-none border-t-0 border-r-0 border-b-0 border-l bg-secondary px-12 text-lg transition-colors hover:bg-white",
-          )}
-        >
-          Log in
-        </Link>
-        <Link
-          href="/register"
-          className={cn(
-            buttonVariants(),
-            "h-full rounded-none border-t-0 border-r-0 border-b-0 border-l-0 bg-black px-12 text-lg text-white transition-colors hover:bg-secondary hover:text-black",
-          )}
-        >
-          Start Selling
-        </Link>
-      </div>
+      {session.data?.user ? (
+        <div className="hidden lg:flex">
+          <Link
+            href="/admin"
+            className={cn(
+              buttonVariants(),
+              "h-full rounded-none border-t-0 border-r-0 border-b-0 border-l-0 bg-black px-12 text-lg text-white transition-colors hover:bg-secondary hover:text-black",
+            )}
+          >
+            Dashboard
+          </Link>
+        </div>
+      ) : (
+        <div className="hidden lg:flex">
+          <Link
+            prefetch
+            href="/login"
+            className={cn(
+              buttonVariants({ variant: "secondary" }),
+              "h-full rounded-none border-t-0 border-r-0 border-b-0 border-l bg-secondary px-12 text-lg transition-colors hover:bg-white",
+            )}
+          >
+            Log in
+          </Link>
+          <Link
+            prefetch
+            href="/register"
+            className={cn(
+              buttonVariants(),
+              "h-full rounded-none border-t-0 border-r-0 border-b-0 border-l-0 bg-black px-12 text-lg text-white transition-colors hover:bg-secondary hover:text-black",
+            )}
+          >
+            Start Selling
+          </Link>
+        </div>
+      )}
       <div className="flex items-center justify-center lg:hidden">
         <Button
           variant="ghost"
