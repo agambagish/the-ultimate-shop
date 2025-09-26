@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
+import { useParams } from "next/navigation";
 
 import { useSuspenseQuery } from "@tanstack/react-query";
 import { ListFilter } from "lucide-react";
@@ -9,10 +10,12 @@ import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 import { useTRPC } from "@/trpc/client";
 
+import { BreadcrumbNav } from "./breadcrumb-nav";
 import { CategoryDropdown } from "./category-dropdown";
 import { CategorySidebar } from "./category-sidebar";
 
 export function CategoryBar() {
+  const params = useParams();
   const trpc = useTRPC();
   const { data } = useSuspenseQuery(trpc.categories.getMany.queryOptions());
 
@@ -24,11 +27,21 @@ export function CategoryBar() {
   const [isAnyHovered, setIsAnyHovered] = useState<boolean>(false);
   const [isSidebarOpen, setIsSidebarOpen] = useState<boolean>(false);
 
-  const activeCategory = "all";
+  const categoryParam = params.category as string | undefined;
+  const activeCategory = categoryParam || "all";
 
   const activeCategoryIndex = data.findIndex((c) => c.slug === activeCategory);
   const isActiveCategoryHidden =
     activeCategoryIndex >= visibleCount && activeCategoryIndex !== -1;
+
+  const activeCategoryData = data.find((cat) => cat.slug === activeCategory);
+  const activeCategoryLabel = activeCategoryData?.label || null;
+
+  const activeSubcategory = params.subcategory as string | undefined;
+  const activeSubcategoryLabel =
+    activeCategoryData?.subcategories.find(
+      (subcat) => subcat.slug === activeSubcategory,
+    )?.label || null;
 
   // biome-ignore lint/correctness/useExhaustiveDependencies: _
   useEffect(() => {
@@ -110,6 +123,11 @@ export function CategoryBar() {
           </Button>
         </div>
       </div>
+      <BreadcrumbNav
+        activeCategoryLabel={activeCategoryLabel}
+        activeCategory={activeCategory}
+        activeSubcategoryLabel={activeSubcategoryLabel}
+      />
     </div>
   );
 }
