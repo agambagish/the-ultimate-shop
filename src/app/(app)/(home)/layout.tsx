@@ -1,5 +1,5 @@
-import { Footer } from "./footer";
-import { Navbar } from "./navbar";
+import { Footer } from "@/modules/home/ui/components/footer";
+import { Navbar } from "@/modules/home/ui/components/navbar";
 
 export default function ({ children }: React.PropsWithChildren) {
   return (
