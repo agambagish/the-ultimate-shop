@@ -42,12 +42,7 @@ export function CategoryHeader() {
         </div>
         <HydrationBoundary state={dehydrate(queryClient)}>
           <Suspense
-            fallback={
-              <>
-                <Skeleton className="h-11 w-full rounded-full" />
-                <Skeleton className="mt-2 h-8 w-[24rem] rounded-full" />
-              </>
-            }
+            fallback={<Skeleton className="h-11 w-full rounded-full" />}
           >
             <CategoryBar />
           </Suspense>

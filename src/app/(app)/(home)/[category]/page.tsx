@@ -1,15 +1,8 @@
-import { Suspense } from "react";
-
 import { dehydrate, HydrationBoundary } from "@tanstack/react-query";
 import type { SearchParams } from "nuqs/server";
 
-import { CategoryHeader } from "@/modules/categories/ui/components/category-header";
 import { loadProductFilters } from "@/modules/products/lib/search-params";
-import { ProductFilters } from "@/modules/products/ui/components/product-filters";
-import {
-  ProductList,
-  ProductListSkeleton,
-} from "@/modules/products/ui/components/product-list";
+import { ProductListView } from "@/modules/products/ui/views/product-list-view";
 import { getQueryClient, trpc } from "@/trpc/server";
 
 interface Props {
@@ -32,18 +25,8 @@ export default async function ({ params, searchParams }: Props) {
   );
 
   return (
-    <main className="min-h-screen">
-      <CategoryHeader />
-      <div className="mx-auto flex max-w-7xl gap-8 px-4 py-8 sm:px-6 lg:px-8">
-        <ProductFilters />
-        <div className="flex-1 space-y-6">
-          <HydrationBoundary state={dehydrate(queryClient)}>
-            <Suspense fallback={<ProductListSkeleton />}>
-              <ProductList category={category} />
-            </Suspense>
-          </HydrationBoundary>
-        </div>
-      </div>
-    </main>
+    <HydrationBoundary state={dehydrate(queryClient)}>
+      <ProductListView category={category} />
+    </HydrationBoundary>
   );
 }

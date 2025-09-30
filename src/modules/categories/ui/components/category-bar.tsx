@@ -10,7 +10,6 @@ import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 import { useTRPC } from "@/trpc/client";
 
-import { BreadcrumbNav } from "./breadcrumb-nav";
 import { CategoryDropdown } from "./category-dropdown";
 import { CategorySidebar } from "./category-sidebar";
 
@@ -33,15 +32,6 @@ export function CategoryBar() {
   const activeCategoryIndex = data.findIndex((c) => c.slug === activeCategory);
   const isActiveCategoryHidden =
     activeCategoryIndex >= visibleCount && activeCategoryIndex !== -1;
-
-  const activeCategoryData = data.find((cat) => cat.slug === activeCategory);
-  const activeCategoryLabel = activeCategoryData?.label || null;
-
-  const activeSubcategory = params.subcategory as string | undefined;
-  const activeSubcategoryLabel =
-    activeCategoryData?.subcategories.find(
-      (subcat) => subcat.slug === activeSubcategory,
-    )?.label || null;
 
   // biome-ignore lint/correctness/useExhaustiveDependencies: _
   useEffect(() => {
@@ -123,11 +113,6 @@ export function CategoryBar() {
           </Button>
         </div>
       </div>
-      <BreadcrumbNav
-        activeCategoryLabel={activeCategoryLabel}
-        activeCategory={activeCategory}
-        activeSubcategoryLabel={activeSubcategoryLabel}
-      />
     </div>
   );
 }
