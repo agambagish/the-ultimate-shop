@@ -3,6 +3,8 @@ import "dotenv/config";
 import config from "@payload-config";
 import { getPayload } from "payload";
 
+import { env } from "@/env";
+
 const categories = [
   {
     name: "All",
@@ -142,6 +144,16 @@ const categories = [
 (async () => {
   const payload = await getPayload({ config });
 
+  await payload.create({
+    collection: "users",
+    data: {
+      email: "admin@tus.in",
+      password: env.SUPER_ADMIN_PASSWORD,
+      roles: ["super_admin"],
+      subdomain: "admin",
+    },
+  });
+
   for (const category of categories) {
     const parentCategory = await payload.create({
       collection: "categories",
@@ -164,5 +176,7 @@ const categories = [
     }
   }
 
+  // biome-ignore lint/suspicious/noConsole: _
+  console.log("✅ DB seeded successfully");
   process.exit(0);
 })();

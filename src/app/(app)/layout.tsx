@@ -20,7 +20,7 @@ export const metadata: Metadata = {
 
 export default function ({ children }: React.PropsWithChildren) {
   return (
-    <html lang="en">
+    <html lang="en" className="scroll-smooth">
       <body className={cn("antialiased", font.className)}>
         <NuqsAdapter>
           <TRPCReactProvider>

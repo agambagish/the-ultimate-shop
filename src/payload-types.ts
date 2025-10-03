@@ -72,6 +72,7 @@ export interface Config {
     categories: Category;
     products: Product;
     tags: Tag;
+    stores: Store;
     "payload-locked-documents": PayloadLockedDocument;
     "payload-preferences": PayloadPreference;
     "payload-migrations": PayloadMigration;
@@ -87,6 +88,7 @@ export interface Config {
     categories: CategoriesSelect<false> | CategoriesSelect<true>;
     products: ProductsSelect<false> | ProductsSelect<true>;
     tags: TagsSelect<false> | TagsSelect<true>;
+    stores: StoresSelect<false> | StoresSelect<true>;
     "payload-locked-documents":
       | PayloadLockedDocumentsSelect<false>
       | PayloadLockedDocumentsSelect<true>;
@@ -136,6 +138,13 @@ export interface UserAuthOperations {
 export interface User {
   id: number;
   subdomain: string;
+  roles?: ("user" | "super_admin")[] | null;
+  tenants?:
+    | {
+        tenant: number | Store;
+        id?: string | null;
+      }[]
+    | null;
   updatedAt: string;
   createdAt: string;
   email: string;
@@ -153,6 +162,29 @@ export interface User {
       }[]
     | null;
   password?: string | null;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "stores".
+ */
+export interface Store {
+  id: number;
+  /**
+   * This is the name of the store (e.g. Akash's Store)
+   */
+  name: string;
+  /**
+   * This is the subdomain for the store (e.g. [subdomain].tus.in)
+   */
+  subdomain: string;
+  avatar?: (number | null) | Media;
+  cashfreeVendorId: string;
+  /**
+   * You can't create products until you submit your KYC details
+   */
+  kycDetailsSubmitted?: boolean | null;
+  updatedAt: string;
+  createdAt: string;
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
@@ -196,6 +228,7 @@ export interface Category {
  */
 export interface Product {
   id: number;
+  tenant?: (number | null) | Store;
   title: string;
   description?: string | null;
   /**
@@ -245,6 +278,10 @@ export interface PayloadLockedDocument {
     | ({
         relationTo: "tags";
         value: number | Tag;
+      } | null)
+    | ({
+        relationTo: "stores";
+        value: number | Store;
       } | null);
   globalSlug?: string | null;
   user: {
@@ -294,6 +331,13 @@ export interface PayloadMigration {
  */
 export interface UsersSelect<T extends boolean = true> {
   subdomain?: T;
+  roles?: T;
+  tenants?:
+    | T
+    | {
+        tenant?: T;
+        id?: T;
+      };
   updatedAt?: T;
   createdAt?: T;
   email?: T;
@@ -346,6 +390,7 @@ export interface CategoriesSelect<T extends boolean = true> {
  * via the `definition` "products_select".
  */
 export interface ProductsSelect<T extends boolean = true> {
+  tenant?: T;
   title?: T;
   description?: T;
   price?: T;
@@ -362,6 +407,19 @@ export interface ProductsSelect<T extends boolean = true> {
 export interface TagsSelect<T extends boolean = true> {
   label?: T;
   products?: T;
+  updatedAt?: T;
+  createdAt?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "stores_select".
+ */
+export interface StoresSelect<T extends boolean = true> {
+  name?: T;
+  subdomain?: T;
+  avatar?: T;
+  cashfreeVendorId?: T;
+  kycDetailsSubmitted?: T;
   updatedAt?: T;
   createdAt?: T;
 }

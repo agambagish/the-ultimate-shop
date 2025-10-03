@@ -1,28 +1,35 @@
-import { Suspense } from "react";
-
 import { dehydrate, HydrationBoundary } from "@tanstack/react-query";
+import type { SearchParams } from "nuqs/server";
 
-import { Skeleton } from "@/components/ui/skeleton";
-import { CategoryBar } from "@/modules/categories/ui/components/category-bar";
 import { Hero } from "@/modules/home/ui/components/hero";
+import { DEFAULT_LIMIT } from "@/modules/products/lib/constants";
+import { loadProductFilters } from "@/modules/products/lib/search-params";
+import { ProductListView } from "@/modules/products/ui/views/product-list-view";
 import { getQueryClient, trpc } from "@/trpc/server";
 
-export default function Page() {
+interface Props {
+  searchParams: Promise<SearchParams>;
+}
+
+export default async function Page({ searchParams }: Props) {
+  const filters = await loadProductFilters(searchParams);
+
   const queryClient = getQueryClient();
-  void queryClient.prefetchQuery(trpc.categories.getMany.queryOptions());
+  void queryClient.prefetchInfiniteQuery(
+    trpc.products.getMany.infiniteQueryOptions({
+      minPrice: filters.minPrice,
+      maxPrice: filters.maxPrice,
+      tags: filters.tags,
+      limit: DEFAULT_LIMIT,
+    }),
+  );
 
   return (
-    <main className="relative min-h-screen">
-      <div className="mx-auto max-w-7xl px-4 py-8 sm:px-6 lg:px-8">
-        <Hero />
-        <HydrationBoundary state={dehydrate(queryClient)}>
-          <Suspense
-            fallback={<Skeleton className="h-11 w-full rounded-full" />}
-          >
-            <CategoryBar />
-          </Suspense>
-        </HydrationBoundary>
-      </div>
+    <main className="min-h-screen">
+      <Hero />
+      <HydrationBoundary state={dehydrate(queryClient)}>
+        <ProductListView />
+      </HydrationBoundary>
     </main>
   );
 }

@@ -34,12 +34,22 @@ export const authRouter = createTRPCRouter({
         });
       }
 
+      const store = await ctx.payload.create({
+        collection: "stores",
+        data: {
+          name: input.subdomain,
+          subdomain: input.subdomain,
+          cashfreeVendorId: "testid_1234",
+        },
+      });
+
       await ctx.payload.create({
         collection: "users",
         data: {
           email: input.email,
           password: input.password,
           subdomain: input.subdomain,
+          tenants: [{ tenant: store.id }],
         },
       });
 

@@ -10,8 +10,8 @@ interface Props {
   id: number;
   title: string;
   imageUrl?: string | null;
-  shopSubdomain: string;
-  shopAvatarUrl?: string | null;
+  storeSubdomain: string;
+  storeAvatarUrl?: string | null;
   reviewRating: number;
   reviewCount: number;
   price: number;
@@ -22,10 +22,10 @@ export function ProductCard({
   price,
   reviewCount,
   reviewRating,
-  shopSubdomain,
+  storeSubdomain,
   title,
   imageUrl,
-  shopAvatarUrl,
+  storeAvatarUrl,
 }: Props) {
   return (
     <Link href={`/products/${id}`}>
@@ -43,16 +43,16 @@ export function ProductCard({
             {title}
           </h3>
           <div className="flex items-center gap-2">
-            {shopAvatarUrl && (
+            {storeAvatarUrl && (
               <Image
-                alt={shopSubdomain}
-                src={shopAvatarUrl}
+                alt={storeSubdomain}
+                src={storeAvatarUrl}
                 width={16}
                 height={16}
                 className="size-[16px] shrink-0 rounded-full border"
               />
             )}
-            <p className="text-muted-foreground text-sm">{shopSubdomain}</p>
+            <p className="text-muted-foreground text-sm">{storeSubdomain}</p>
           </div>
           <div className="flex items-center space-x-2">
             <div className="flex items-center space-x-1">

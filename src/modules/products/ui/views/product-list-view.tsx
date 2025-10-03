@@ -11,7 +11,8 @@ interface Props {
 
 export function ProductListView({ category }: Props) {
   return (
-    <main className="min-h-screen">
+    // biome-ignore lint/correctness/useUniqueElementIds: _
+    <div id="products">
       <CategoryHeader />
       <div className="mx-auto flex max-w-7xl gap-8 px-4 py-8 sm:px-6 lg:px-8">
         <ProductFilters />
@@ -21,6 +22,6 @@ export function ProductListView({ category }: Props) {
           </Suspense>
         </div>
       </div>
-    </main>
+    </div>
   );
 }

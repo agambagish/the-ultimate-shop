@@ -2,6 +2,7 @@
 
 import { postgresAdapter } from "@payloadcms/db-postgres";
 import { payloadCloudPlugin } from "@payloadcms/payload-cloud";
+import { multiTenantPlugin } from "@payloadcms/plugin-multi-tenant";
 import { lexicalEditor } from "@payloadcms/richtext-lexical";
 import { buildConfig } from "payload";
 import sharp from "sharp";
@@ -9,6 +10,7 @@ import sharp from "sharp";
 import { Categories } from "./collections/categories";
 import { Media } from "./collections/media";
 import { Products } from "./collections/products";
+import { Stores } from "./collections/stores";
 import { Tags } from "./collections/tags";
 import { Users } from "./collections/users";
 import { env } from "./env";
@@ -25,7 +27,7 @@ export default buildConfig({
       baseDir: path.resolve(dirname),
     },
   },
-  collections: [Users, Media, Categories, Products, Tags],
+  collections: [Users, Media, Categories, Products, Tags, Stores],
   cookiePrefix: "tus",
   editor: lexicalEditor(),
   secret: env.PAYLOAD_SECRET,
@@ -40,6 +42,17 @@ export default buildConfig({
   sharp,
   plugins: [
     payloadCloudPlugin(),
+    multiTenantPlugin({
+      tenantsSlug: "stores",
+      collections: {
+        products: {},
+      },
+      tenantsArrayField: {
+        includeDefaultField: false,
+      },
+      userHasAccessToAllTenants: (user) =>
+        Boolean(user?.roles?.includes("super_admin")),
+    }),
     // storage-adapter-placeholder
   ],
 });

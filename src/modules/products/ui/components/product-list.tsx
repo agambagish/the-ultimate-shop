@@ -55,8 +55,8 @@ export function ProductList({ category }: Props) {
               id={product.id}
               title={product.title}
               imageUrl={product.image?.url}
-              shopSubdomain="agambagish"
-              shopAvatarUrl={undefined}
+              storeSubdomain="agambagish"
+              storeAvatarUrl={undefined}
               reviewRating={3}
               reviewCount={5}
               price={product.price}
