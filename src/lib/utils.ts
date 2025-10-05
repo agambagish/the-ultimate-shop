@@ -28,3 +28,11 @@ export function formatAsCurrency(value: string) {
 export function generateStoreURL(subdomain: string) {
   return `/stores/${subdomain}`;
 }
+
+export function formatCurrency(value: number | string) {
+  return new Intl.NumberFormat("en-IN", {
+    style: "currency",
+    currency: "INR",
+    maximumFractionDigits: 0,
+  }).format(Number(value));
+}

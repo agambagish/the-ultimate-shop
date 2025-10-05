@@ -5,7 +5,7 @@ import { useRouter } from "next/navigation";
 import { Star } from "lucide-react";
 
 import { Skeleton } from "@/components/ui/skeleton";
-import { formatAsCurrency, generateStoreURL } from "@/lib/utils";
+import { formatCurrency, generateStoreURL } from "@/lib/utils";
 
 interface Props {
   id: number;
@@ -39,7 +39,7 @@ export function ProductCard({
 
   return (
     <div className="group overflow-hidden rounded-2xl border border-border/40 bg-white/60 p-4 backdrop-blur-sm transition-all duration-300 hover:scale-[1.02] hover:bg-white/80 hover:shadow-xl">
-      <Link href={`/products/${id}`}>
+      <Link href={`${generateStoreURL(storeSubdomain)}/products/${id}`}>
         <div className="relative mb-4 aspect-square overflow-hidden rounded-xl">
           <Image
             src={imageUrl || "/placeholder.png"}
@@ -51,7 +51,9 @@ export function ProductCard({
       </Link>
       <div className="space-y-3">
         <h3 className="font-bold text-lg leading-tight underline-offset-2 hover:underline">
-          <Link href={`/products/${id}`}>{title}</Link>
+          <Link href={`${generateStoreURL(storeSubdomain)}/products/${id}`}>
+            {title}
+          </Link>
         </h3>
         {/** biome-ignore lint/a11y/useKeyWithClickEvents: _ */}
         <div
@@ -78,9 +80,7 @@ export function ProductCard({
           </div>
           <span className="text-muted-foreground text-sm">({reviewCount})</span>
         </div>
-        <div className="pt-2 font-bold text-xl">
-          {formatAsCurrency(`${price}`)}
-        </div>
+        <div className="pt-2 font-bold text-xl">{formatCurrency(price)}</div>
       </div>
     </div>
   );
