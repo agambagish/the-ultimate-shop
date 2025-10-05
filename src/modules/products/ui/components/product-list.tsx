@@ -12,9 +12,10 @@ import { ProductCard, ProductCardSkeleton } from "./product-card";
 
 interface Props {
   category?: string;
+  storeSubdomain?: string;
 }
 
-export function ProductList({ category }: Props) {
+export function ProductList({ category, storeSubdomain }: Props) {
   const [filters] = useProductFilters();
 
   const trpc = useTRPC();
@@ -23,6 +24,7 @@ export function ProductList({ category }: Props) {
       trpc.products.getMany.infiniteQueryOptions(
         {
           category,
+          storeSubdomain,
           minPrice: filters.minPrice,
           maxPrice: filters.maxPrice,
           tags: filters.tags,
@@ -46,7 +48,7 @@ export function ProductList({ category }: Props) {
 
   return (
     <>
-      <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 md:grid-cols-2 xl:grid-cols-3">
+      <div className="grid grid-cols-2 gap-6 sm:grid-cols-2 md:grid-cols-2 xl:grid-cols-3">
         {data.pages
           .flatMap((page) => page.docs)
           .map((product) => (
@@ -55,8 +57,8 @@ export function ProductList({ category }: Props) {
               id={product.id}
               title={product.title}
               imageUrl={product.image?.url}
-              storeSubdomain="agambagish"
-              storeAvatarUrl={undefined}
+              storeSubdomain={product.tenant.subdomain}
+              storeAvatarUrl={product.tenant.avatar?.url}
               reviewRating={3}
               reviewCount={5}
               price={product.price}
@@ -82,7 +84,7 @@ export function ProductList({ category }: Props) {
 
 export function ProductListSkeleton() {
   return (
-    <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 md:grid-cols-2 xl:grid-cols-3">
+    <div className="grid grid-cols-2 gap-6 sm:grid-cols-2 md:grid-cols-2 xl:grid-cols-3">
       {Array.from({ length: DEFAULT_LIMIT }).map((_, i) => (
         <ProductCardSkeleton key={i.toString()} />
       ))}

@@ -1,7 +1,7 @@
 import type { Where } from "payload";
 import z from "zod";
 
-import type { Category, Media } from "@/payload-types";
+import type { Category, Media, Store } from "@/payload-types";
 import { baseProcedure, createTRPCRouter } from "@/trpc/init";
 
 import { DEFAULT_LIMIT } from "../lib/constants";
@@ -16,6 +16,7 @@ export const productsRouter = createTRPCRouter({
         minPrice: z.string().nullable().optional(),
         maxPrice: z.string().nullable().optional(),
         tags: z.array(z.string()).nullable().optional(),
+        storeSubdomain: z.string().nullable().optional(),
       }),
     )
     .query(async ({ ctx, input }) => {
@@ -33,6 +34,12 @@ export const productsRouter = createTRPCRouter({
       } else if (input.maxPrice) {
         where.price = {
           less_than_equal: input.maxPrice,
+        };
+      }
+
+      if (input.storeSubdomain) {
+        where["tenant.subdomain"] = {
+          equals: input.storeSubdomain,
         };
       }
 
@@ -81,7 +88,7 @@ export const productsRouter = createTRPCRouter({
 
       const data = await ctx.payload.find({
         collection: "products",
-        depth: 1,
+        depth: 2,
         where,
         page: input.cursor,
         limit: input.limit,
@@ -92,6 +99,7 @@ export const productsRouter = createTRPCRouter({
         docs: data.docs.map((doc) => ({
           ...doc,
           image: doc.image as Media | null,
+          tenant: doc.tenant as Store & { avatar: Media | null },
         })),
       };
     }),

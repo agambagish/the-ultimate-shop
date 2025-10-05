@@ -52,11 +52,7 @@ export function ProductFilters() {
               </Button>
             )}
           </div>
-          <Accordion
-            defaultValue={["price", "tags"]}
-            type="multiple"
-            className="w-full"
-          >
+          <Accordion type="multiple" className="w-full">
             <AccordionItem value="price" className="border-border/40">
               <AccordionTrigger className="py-3 font-medium text-sm hover:no-underline">
                 Price Range

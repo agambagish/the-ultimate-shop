@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { Jost } from "next/font/google";
+import { Josefin_Sans } from "next/font/google";
 
 import { NuqsAdapter } from "nuqs/adapters/next/app";
 
@@ -9,7 +9,7 @@ import { TRPCReactProvider } from "@/trpc/client";
 
 import "./globals.css";
 
-const font = Jost({
+const font = Josefin_Sans({
   subsets: ["latin"],
 });
 

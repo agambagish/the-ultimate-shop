@@ -24,3 +24,7 @@ export function formatAsCurrency(value: string) {
     maximumFractionDigits: 2,
   }).format(numberValue);
 }
+
+export function generateStoreURL(subdomain: string) {
+  return `/stores/${subdomain}`;
+}
