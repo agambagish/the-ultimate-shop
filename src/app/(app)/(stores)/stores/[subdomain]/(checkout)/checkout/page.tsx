@@ -7,5 +7,9 @@ interface Props {
 export default async function ({ params }: Props) {
   const { subdomain } = await params;
 
-  return <CheckoutView storeSubdomain={subdomain} />;
+  return (
+    <main className="min-h-screen">
+      <CheckoutView storeSubdomain={subdomain} />
+    </main>
+  );
 }
