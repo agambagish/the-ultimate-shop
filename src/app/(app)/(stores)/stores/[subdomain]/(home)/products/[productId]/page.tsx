@@ -6,11 +6,12 @@ import { getQueryClient, trpc } from "@/trpc/server";
 interface Props {
   params: Promise<{
     productId: string;
+    subdomain: string;
   }>;
 }
 
 export default async function ({ params }: Props) {
-  const { productId } = await params;
+  const { productId, subdomain } = await params;
 
   const queryClient = getQueryClient();
   void queryClient.prefetchQuery(
@@ -22,7 +23,7 @@ export default async function ({ params }: Props) {
   return (
     <main className="min-h-screen">
       <HydrationBoundary state={dehydrate(queryClient)}>
-        <ProductView productId={productId} />
+        <ProductView productId={productId} storeSubdomain={subdomain} />
       </HydrationBoundary>
     </main>
   );

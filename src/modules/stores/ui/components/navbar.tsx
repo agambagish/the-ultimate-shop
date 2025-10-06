@@ -1,5 +1,6 @@
 "use client";
 
+import dynamic from "next/dynamic";
 import Image from "next/image";
 import Link from "next/link";
 
@@ -8,6 +9,17 @@ import { useSuspenseQuery } from "@tanstack/react-query";
 import { Skeleton } from "@/components/ui/skeleton";
 import { generateStoreURL } from "@/lib/utils";
 import { useTRPC } from "@/trpc/client";
+
+const CheckoutButton = dynamic(
+  () =>
+    import("@/modules/checkout/ui/components/checkout-button").then(
+      (mod) => mod.CheckoutButton,
+    ),
+  {
+    ssr: false,
+    loading: () => <Skeleton className="size-9" />,
+  },
+);
 
 interface Props {
   subdomain: string;
@@ -39,6 +51,7 @@ export function Navbar({ subdomain }: Props) {
           )}
           <p className="font-bold text-xl">{data.name}</p>
         </Link>
+        <CheckoutButton storeSubdomain={subdomain} hideIfEmpty />
       </div>
     </nav>
   );

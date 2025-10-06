@@ -1,5 +1,6 @@
 "use client";
 
+import dynamic from "next/dynamic";
 import Image from "next/image";
 import Link from "next/link";
 
@@ -29,14 +30,24 @@ import {
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Progress } from "@/components/ui/progress";
+import { Skeleton } from "@/components/ui/skeleton";
 import { formatCurrency } from "@/lib/utils";
 import { useTRPC } from "@/trpc/client";
 
+const CartButton = dynamic(
+  () => import("../components/cart-button").then((mod) => mod.CartButton),
+  {
+    ssr: false,
+    loading: () => <Skeleton className="h-14 w-full" />,
+  },
+);
+
 interface Props {
   productId: string;
+  storeSubdomain: string;
 }
 
-export function ProductView({ productId }: Props) {
+export function ProductView({ productId, storeSubdomain }: Props) {
   const trpc = useTRPC();
   const { data } = useSuspenseQuery(
     trpc.products.getOne.queryOptions({
@@ -133,9 +144,10 @@ export function ProductView({ productId }: Props) {
                   </div>
                 </div>
                 <div className="space-y-3">
-                  <Button className="h-14 w-full font-semibold text-lg shadow-lg">
-                    Add to Cart
-                  </Button>
+                  <CartButton
+                    storeSubdomain={storeSubdomain}
+                    productId={productId}
+                  />
                   <div className="flex space-x-3">
                     <Button
                       variant="outline"
