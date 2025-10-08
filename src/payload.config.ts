@@ -9,6 +9,7 @@ import sharp from "sharp";
 
 import { Categories } from "./collections/categories";
 import { Media } from "./collections/media";
+import { Orders } from "./collections/orders";
 import { Products } from "./collections/products";
 import { Stores } from "./collections/stores";
 import { Tags } from "./collections/tags";
@@ -27,7 +28,7 @@ export default buildConfig({
       baseDir: path.resolve(dirname),
     },
   },
-  collections: [Users, Media, Categories, Products, Tags, Stores],
+  collections: [Users, Media, Categories, Products, Tags, Stores, Orders],
   cookiePrefix: "tus",
   editor: lexicalEditor(),
   secret: env.PAYLOAD_SECRET,

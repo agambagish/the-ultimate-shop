@@ -73,6 +73,7 @@ export interface Config {
     products: Product;
     tags: Tag;
     stores: Store;
+    orders: Order;
     "payload-locked-documents": PayloadLockedDocument;
     "payload-preferences": PayloadPreference;
     "payload-migrations": PayloadMigration;
@@ -89,6 +90,7 @@ export interface Config {
     products: ProductsSelect<false> | ProductsSelect<true>;
     tags: TagsSelect<false> | TagsSelect<true>;
     stores: StoresSelect<false> | StoresSelect<true>;
+    orders: OrdersSelect<false> | OrdersSelect<true>;
     "payload-locked-documents":
       | PayloadLockedDocumentsSelect<false>
       | PayloadLockedDocumentsSelect<true>;
@@ -254,6 +256,19 @@ export interface Tag {
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "orders".
+ */
+export interface Order {
+  id: number;
+  title: string;
+  user: number | User;
+  product: number | Product;
+  cashfreeOrderId: string;
+  updatedAt: string;
+  createdAt: string;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "payload-locked-documents".
  */
 export interface PayloadLockedDocument {
@@ -282,6 +297,10 @@ export interface PayloadLockedDocument {
     | ({
         relationTo: "stores";
         value: number | Store;
+      } | null)
+    | ({
+        relationTo: "orders";
+        value: number | Order;
       } | null);
   globalSlug?: string | null;
   user: {
@@ -420,6 +439,18 @@ export interface StoresSelect<T extends boolean = true> {
   avatar?: T;
   cashfreeVendorId?: T;
   kycDetailsSubmitted?: T;
+  updatedAt?: T;
+  createdAt?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "orders_select".
+ */
+export interface OrdersSelect<T extends boolean = true> {
+  title?: T;
+  user?: T;
+  product?: T;
+  cashfreeOrderId?: T;
   updatedAt?: T;
   createdAt?: T;
 }

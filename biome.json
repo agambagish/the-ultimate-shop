@@ -88,7 +88,8 @@
           "level": "warn",
           "fix": "safe",
           "options": {}
-        }
+        },
+        "noSwitchDeclarations": "off"
       },
       "nursery": {
         "useSortedClasses": {

@@ -1,8 +1,9 @@
 "use client";
 
 import { useEffect } from "react";
+import { useRouter } from "next/navigation";
 
-import { useQuery } from "@tanstack/react-query";
+import { useMutation, useQuery } from "@tanstack/react-query";
 import {
   File,
   HeadphonesIcon,
@@ -19,6 +20,7 @@ import { formatCurrency, generateStoreURL } from "@/lib/utils";
 import { useTRPC } from "@/trpc/client";
 
 import { useCart } from "../../hooks/use-cart";
+import { useCheckoutStates } from "../../hooks/use-checkout-states";
 import { CheckoutItem } from "../components/checkout-item";
 import { CheckoutSidebar } from "../components/checkout-sidebar";
 
@@ -27,7 +29,9 @@ interface Props {
 }
 
 export function CheckoutView({ storeSubdomain }: Props) {
-  const { productIds, clearAllCarts, totalItems, removeProduct } =
+  const router = useRouter();
+  const [states, setStates] = useCheckoutStates();
+  const { productIds, totalItems, removeProduct, clearCart } =
     useCart(storeSubdomain);
 
   const trpc = useTRPC();
@@ -37,12 +41,40 @@ export function CheckoutView({ storeSubdomain }: Props) {
     }),
   );
 
+  const purchase = useMutation(
+    trpc.checkout.purchase.mutationOptions({
+      onMutate: () => {
+        setStates({ success: false, cancel: false });
+      },
+      onSuccess: (data) => {
+        window.location.href = data.url;
+      },
+      onError: (error) => {
+        if (error.data?.code === "UNAUTHORIZED") {
+          // TODO: Modify when subdomains enabled
+          router.push("/login");
+        }
+
+        toast.error(error.message);
+      },
+    }),
+  );
+
+  useEffect(() => {
+    if (states.success) {
+      setStates({ success: false, cancel: false });
+      clearCart();
+      // TODO: Invalidate library
+      // router.push("/products");
+    }
+  }, [states.success, clearCart, setStates]);
+
   useEffect(() => {
     if (error?.data?.code === "NOT_FOUND") {
-      clearAllCarts();
+      clearCart();
       toast.warning("Invalid products found, cart cleared");
     }
-  }, [error, clearAllCarts]);
+  }, [error, clearCart]);
 
   if (data?.totalDocs === 0) {
     return (
@@ -126,9 +158,18 @@ export function CheckoutView({ storeSubdomain }: Props) {
           subtotal={data?.subtotal || 0}
           totalItems={totalItems}
           onCardCheckout={() => {}}
-          onUPICheckout={() => {}}
-          isCancelled={false}
-          disabled={false}
+          onUPICheckout={({ vpa }) =>
+            purchase.mutate({
+              productIds,
+              storeSubdomain,
+              credentials: {
+                type: "upi",
+                vpa,
+              },
+            })
+          }
+          isCancelled={states.cancel}
+          disabled={purchase.isPending}
         />
       </div>
     </div>

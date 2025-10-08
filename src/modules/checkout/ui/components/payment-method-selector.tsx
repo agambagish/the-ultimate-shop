@@ -1,7 +1,7 @@
 import { useState } from "react";
 
 import { zodResolver } from "@hookform/resolvers/zod";
-import { CreditCard } from "lucide-react";
+import { CreditCard, TriangleAlert } from "lucide-react";
 import { useForm } from "react-hook-form";
 
 import { Button } from "@/components/ui/button";
@@ -134,6 +134,14 @@ export function PaymentMethodSelector({
               </p>
             </div>
           </div>
+          {method === "card" && (
+            <div className="flex w-full items-center rounded-lg border border-amber-400 bg-amber-100 px-4 py-3 font-medium">
+              <div className="flex items-center">
+                <TriangleAlert className="mr-2 size-6 fill-amber-500 text-amber-100" />
+                <span>Card payments temporarily unavailable.</span>
+              </div>
+            </div>
+          )}
         </RadioGroup>
       </div>
       <Button

@@ -37,6 +37,7 @@
     "@trpc/client": "^11.5.1",
     "@trpc/server": "^11.5.1",
     "@trpc/tanstack-react-query": "^11.5.1",
+    "cashfree-pg": "^5.0.8",
     "class-variance-authority": "^0.7.1",
     "client-only": "^0.0.1",
     "clsx": "^2.1.1",
