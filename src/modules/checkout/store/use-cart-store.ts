@@ -11,12 +11,11 @@ interface CartState {
   removeProduct: (storeSubdomain: string, productId: string) => void;
   clearCart: (storeSubdomain: string) => void;
   clearAllCarts: () => void;
-  getCartByStore: (storeSubdomain: string) => string[];
 }
 
 export const useCartStore = create<CartState>()(
   persist(
-    (set, get) => ({
+    (set) => ({
       storeCarts: {},
       addProduct: (storeSubdomain, productId) =>
         set((state) => ({
@@ -55,8 +54,6 @@ export const useCartStore = create<CartState>()(
         set({
           storeCarts: {},
         }),
-      getCartByStore: (storeSubdomain) =>
-        get().storeCarts[storeSubdomain]?.productIds || [],
     }),
     {
       name: "tus-cart",

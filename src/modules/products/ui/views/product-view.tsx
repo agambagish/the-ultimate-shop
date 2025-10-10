@@ -145,6 +145,7 @@ export function ProductView({ productId, storeSubdomain }: Props) {
                 </div>
                 <div className="space-y-3">
                   <CartButton
+                    isPurchased={data.isPurchased}
                     storeSubdomain={storeSubdomain}
                     productId={productId}
                   />

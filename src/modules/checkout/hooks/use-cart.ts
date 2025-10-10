@@ -1,37 +1,59 @@
+import { useCallback } from "react";
+
+import { useShallow } from "zustand/react/shallow";
+
 import { useCartStore } from "../store/use-cart-store";
 
 export function useCart(storeSubdomain: string) {
-  const {
-    addProduct,
-    clearAllCarts,
-    clearCart,
-    getCartByStore,
-    removeProduct,
-  } = useCartStore();
+  const addProduct = useCartStore((state) => state.addProduct);
+  const clearAllCarts = useCartStore((state) => state.clearAllCarts);
+  const clearCart = useCartStore((state) => state.clearCart);
+  const removeProduct = useCartStore((state) => state.removeProduct);
 
-  const productIds = getCartByStore(storeSubdomain);
+  const productIds = useCartStore(
+    useShallow((state) => state.storeCarts[storeSubdomain]?.productIds || []),
+  );
 
-  function toggleProduct(productId: string) {
-    if (productIds.includes(productId)) {
-      removeProduct(storeSubdomain, productId);
-    } else {
-      addProduct(storeSubdomain, productId);
-    }
-  }
+  const toggleProduct = useCallback(
+    (productId: string) => {
+      if (productIds.includes(productId)) {
+        removeProduct(storeSubdomain, productId);
+      } else {
+        addProduct(storeSubdomain, productId);
+      }
+    },
+    [addProduct, removeProduct, productIds, storeSubdomain],
+  );
 
-  function isProductInCart(productId: string) {
-    return productIds.includes(productId);
-  }
+  const isProductInCart = useCallback(
+    (productId: string) => {
+      return productIds.includes(productId);
+    },
+    [productIds],
+  );
 
-  function clearStoreCart() {
+  const clearStoreCart = useCallback(() => {
     clearCart(storeSubdomain);
-  }
+  }, [storeSubdomain, clearCart]);
+
+  const handleAddProduct = useCallback(
+    (productId: string) => {
+      addProduct(storeSubdomain, productId);
+    },
+    [addProduct, storeSubdomain],
+  );
+
+  const handleRemoveProduct = useCallback(
+    (productId: string) => {
+      removeProduct(storeSubdomain, productId);
+    },
+    [removeProduct, storeSubdomain],
+  );
 
   return {
     productIds,
-    addProduct: (productId: string) => addProduct(storeSubdomain, productId),
-    removeProduct: (productId: string) =>
-      removeProduct(storeSubdomain, productId),
+    addProduct: handleAddProduct,
+    removeProduct: handleRemoveProduct,
     clearCart: clearStoreCart,
     clearAllCarts,
     toggleProduct,
