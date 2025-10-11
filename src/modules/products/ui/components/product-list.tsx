@@ -59,8 +59,8 @@ export function ProductList({ category, storeSubdomain }: Props) {
               imageUrl={product.image?.url}
               storeSubdomain={product.tenant.subdomain}
               storeAvatarUrl={product.tenant.avatar?.url}
-              reviewRating={3}
-              reviewCount={5}
+              reviewRating={product.reviewRating}
+              reviewCount={product.reviewCount}
               price={product.price}
             />
           ))}

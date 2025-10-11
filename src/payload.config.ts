@@ -11,6 +11,7 @@ import { Categories } from "./collections/categories";
 import { Media } from "./collections/media";
 import { Orders } from "./collections/orders";
 import { Products } from "./collections/products";
+import { Reviews } from "./collections/reviews";
 import { Stores } from "./collections/stores";
 import { Tags } from "./collections/tags";
 import { Users } from "./collections/users";
@@ -28,7 +29,16 @@ export default buildConfig({
       baseDir: path.resolve(dirname),
     },
   },
-  collections: [Users, Media, Categories, Products, Tags, Stores, Orders],
+  collections: [
+    Users,
+    Media,
+    Categories,
+    Products,
+    Tags,
+    Stores,
+    Orders,
+    Reviews,
+  ],
   cookiePrefix: "tus",
   editor: lexicalEditor(),
   secret: env.PAYLOAD_SECRET,

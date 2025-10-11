@@ -1,20 +1,10 @@
-import { redirect } from "next/navigation";
-
 import { dehydrate, HydrationBoundary } from "@tanstack/react-query";
 
 import { LibraryView } from "@/modules/library/ui/views/library-view";
 import { DEFAULT_LIMIT } from "@/modules/products/lib/constants";
-import { caller, getQueryClient, trpc } from "@/trpc/server";
-
-export const dynamic = "force-dynamic";
+import { getQueryClient, trpc } from "@/trpc/server";
 
 export default async function () {
-  const session = await caller.auth.session();
-
-  if (!session.user) {
-    redirect("/login");
-  }
-
   const queryClient = getQueryClient();
   await queryClient.prefetchInfiniteQuery(
     trpc.library.getMany.infiniteQueryOptions({

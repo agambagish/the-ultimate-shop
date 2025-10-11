@@ -117,7 +117,10 @@ export function ProductView({ productId, storeSubdomain }: Props) {
                 <h1 className="font-bold text-3xl leading-tight">
                   {data.title}
                 </h1>
-                <StarRating reviewRating={3} reviewCount={5} />
+                <StarRating
+                  reviewRating={data.reviewRating}
+                  reviewCount={data.reviewCount}
+                />
                 <div className="flex items-baseline space-x-2">
                   <span className="font-bold text-4xl">
                     {formatCurrency(data.price)}
@@ -224,10 +227,13 @@ export function ProductView({ productId, storeSubdomain }: Props) {
                     </span>
                   </div>
                   <div className="flex-1">
-                    <Progress value={0} className="h-2" />
+                    <Progress
+                      value={data.ratingDistribution[stars]}
+                      className="h-2"
+                    />
                   </div>
                   <span className="w-12 text-right text-muted-foreground text-sm">
-                    {0}%
+                    {data.ratingDistribution[stars]}%
                   </span>
                 </div>
               ))}

@@ -74,6 +74,7 @@ export interface Config {
     tags: Tag;
     stores: Store;
     orders: Order;
+    reviews: Review;
     "payload-locked-documents": PayloadLockedDocument;
     "payload-preferences": PayloadPreference;
     "payload-migrations": PayloadMigration;
@@ -91,6 +92,7 @@ export interface Config {
     tags: TagsSelect<false> | TagsSelect<true>;
     stores: StoresSelect<false> | StoresSelect<true>;
     orders: OrdersSelect<false> | OrdersSelect<true>;
+    reviews: ReviewsSelect<false> | ReviewsSelect<true>;
     "payload-locked-documents":
       | PayloadLockedDocumentsSelect<false>
       | PayloadLockedDocumentsSelect<true>;
@@ -269,6 +271,19 @@ export interface Order {
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "reviews".
+ */
+export interface Review {
+  id: number;
+  description: string;
+  rating: number;
+  product: number | Product;
+  user: number | User;
+  updatedAt: string;
+  createdAt: string;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "payload-locked-documents".
  */
 export interface PayloadLockedDocument {
@@ -301,6 +316,10 @@ export interface PayloadLockedDocument {
     | ({
         relationTo: "orders";
         value: number | Order;
+      } | null)
+    | ({
+        relationTo: "reviews";
+        value: number | Review;
       } | null);
   globalSlug?: string | null;
   user: {
@@ -451,6 +470,18 @@ export interface OrdersSelect<T extends boolean = true> {
   user?: T;
   product?: T;
   cashfreeOrderId?: T;
+  updatedAt?: T;
+  createdAt?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "reviews_select".
+ */
+export interface ReviewsSelect<T extends boolean = true> {
+  description?: T;
+  rating?: T;
+  product?: T;
+  user?: T;
   updatedAt?: T;
   createdAt?: T;
 }

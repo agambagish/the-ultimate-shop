@@ -1,10 +1,20 @@
 import Link from "next/link";
+import { redirect } from "next/navigation";
 
 import { ArrowBigLeftDash } from "lucide-react";
 
 import { buttonVariants } from "@/components/ui/button";
+import { caller } from "@/trpc/server";
 
-export default function ({ children }: React.PropsWithChildren) {
+export const dynamic = "force-dynamic";
+
+export default async function ({ children }: React.PropsWithChildren) {
+  const session = await caller.auth.session();
+
+  if (!session.user) {
+    redirect("/login");
+  }
+
   return (
     <div className="flex min-h-screen flex-col">
       <nav className="h-20 border-b bg-white font-medium">

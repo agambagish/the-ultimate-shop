@@ -3,7 +3,7 @@
 import { useEffect } from "react";
 import { useRouter } from "next/navigation";
 
-import { useMutation, useQuery } from "@tanstack/react-query";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import {
   File,
   HeadphonesIcon,
@@ -35,6 +35,8 @@ export function CheckoutView({ storeSubdomain }: Props) {
     useCart(storeSubdomain);
 
   const trpc = useTRPC();
+  const queryClient = useQueryClient();
+
   const { data, error, isLoading } = useQuery(
     trpc.checkout.getProducts.queryOptions({
       productIds,
@@ -64,10 +66,17 @@ export function CheckoutView({ storeSubdomain }: Props) {
     if (states.success) {
       setStates({ success: false, cancel: false });
       clearCart();
-      // TODO: Invalidate library
-      // router.push("/products");
+      queryClient.invalidateQueries(trpc.library.getMany.infiniteQueryFilter());
+      router.push("/library");
     }
-  }, [states.success, clearCart, setStates]);
+  }, [
+    states.success,
+    clearCart,
+    setStates,
+    queryClient,
+    trpc.library.getMany,
+    router.push,
+  ]);
 
   useEffect(() => {
     if (error?.data?.code === "NOT_FOUND") {
