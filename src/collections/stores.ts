@@ -1,9 +1,16 @@
 import type { CollectionConfig } from "payload";
 
+import { isSuperAdmin } from "@/lib/access";
+
 export const Stores: CollectionConfig = {
   slug: "stores",
+  access: {
+    create: ({ req }) => isSuperAdmin(req.user),
+    delete: ({ req }) => isSuperAdmin(req.user),
+  },
   admin: {
     useAsTitle: "subdomain",
+    hidden: ({ user }) => !isSuperAdmin(user),
   },
   fields: [
     {
@@ -21,6 +28,9 @@ export const Stores: CollectionConfig = {
       index: true,
       required: true,
       unique: true,
+      access: {
+        update: ({ req }) => isSuperAdmin(req.user),
+      },
       admin: {
         description:
           "This is the subdomain for the store (e.g. [subdomain].tus.in)",
@@ -35,15 +45,20 @@ export const Stores: CollectionConfig = {
       name: "cashfreeVendorId",
       type: "text",
       required: true,
+      access: {
+        update: ({ req }) => isSuperAdmin(req.user),
+      },
       admin: {
-        readOnly: true,
+        description: "Cashfree Easy Split vendor ID associated with your store",
       },
     },
     {
       name: "kycDetailsSubmitted",
       type: "checkbox",
+      access: {
+        update: ({ req }) => isSuperAdmin(req.user),
+      },
       admin: {
-        readOnly: true,
         description:
           "You can't create products until you submit your KYC details",
       },

@@ -182,6 +182,9 @@ export interface Store {
    */
   subdomain: string;
   avatar?: (number | null) | Media;
+  /**
+   * Cashfree Easy Split vendor ID associated with your store
+   */
   cashfreeVendorId: string;
   /**
    * You can't create products until you submit your KYC details
@@ -242,6 +245,10 @@ export interface Product {
   category?: (number | null) | Category;
   tags?: (number | Tag)[] | null;
   image?: (number | null) | Media;
+  /**
+   * This is protected content (only visible to customers after purchase). You can add product documentation, downloadable files, getting started guides & bonus materials. Supports Markdown formatting
+   */
+  content?: string | null;
   updatedAt: string;
   createdAt: string;
 }
@@ -435,6 +442,7 @@ export interface ProductsSelect<T extends boolean = true> {
   category?: T;
   tags?: T;
   image?: T;
+  content?: T;
   updatedAt?: T;
   createdAt?: T;
 }

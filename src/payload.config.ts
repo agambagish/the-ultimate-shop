@@ -16,6 +16,7 @@ import { Stores } from "./collections/stores";
 import { Tags } from "./collections/tags";
 import { Users } from "./collections/users";
 import { env } from "./env";
+import { isSuperAdmin } from "./lib/access";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
 
@@ -61,8 +62,7 @@ export default buildConfig({
       tenantsArrayField: {
         includeDefaultField: false,
       },
-      userHasAccessToAllTenants: (user) =>
-        Boolean(user?.roles?.includes("super_admin")),
+      userHasAccessToAllTenants: (user) => isSuperAdmin(user),
     }),
     // storage-adapter-placeholder
   ],

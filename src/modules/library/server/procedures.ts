@@ -71,6 +71,7 @@ export const libraryRouter = createTRPCRouter({
 
       const productsData = await ctx.payload.find({
         collection: "products",
+        select: { content: false },
         pagination: false,
         where: {
           id: { in: productIds },

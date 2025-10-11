@@ -33,6 +33,7 @@ export const checkoutRouter = createTRPCRouter({
     .mutation(async ({ ctx, input }) => {
       const products = await ctx.payload.find({
         collection: "products",
+        select: { content: false },
         depth: 2,
         where: {
           and: [
@@ -150,6 +151,7 @@ export const checkoutRouter = createTRPCRouter({
     .query(async ({ ctx, input }) => {
       const data = await ctx.payload.find({
         collection: "products",
+        select: { content: false },
         depth: 2,
         where: {
           id: { in: input.productIds },

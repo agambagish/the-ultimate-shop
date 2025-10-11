@@ -13,6 +13,7 @@ export const reviewsRouter = createTRPCRouter({
     .query(async ({ ctx, input }) => {
       const product = await ctx.payload.findByID({
         collection: "products",
+        select: { content: false },
         id: input.productId,
       });
 
@@ -51,6 +52,7 @@ export const reviewsRouter = createTRPCRouter({
     .mutation(async ({ ctx, input }) => {
       const product = await ctx.payload.findByID({
         collection: "products",
+        select: { content: false },
         id: input.productId,
       });
 
