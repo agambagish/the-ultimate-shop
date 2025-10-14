@@ -141,8 +141,8 @@ export interface UserAuthOperations {
  */
 export interface User {
   id: number;
-  subdomain: string;
-  roles?: ("user" | "super_admin")[] | null;
+  fullname: string;
+  role?: ("user" | "seller" | "super_admin") | null;
   tenants?:
     | {
         tenant: number | Store;
@@ -375,8 +375,8 @@ export interface PayloadMigration {
  * via the `definition` "users_select".
  */
 export interface UsersSelect<T extends boolean = true> {
-  subdomain?: T;
-  roles?: T;
+  fullname?: T;
+  role?: T;
   tenants?:
     | T
     | {

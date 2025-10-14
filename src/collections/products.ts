@@ -1,6 +1,6 @@
 import type { CollectionConfig } from "payload";
 
-import { isSuperAdmin } from "@/lib/access";
+import { isSeller, isSuperAdmin } from "@/lib/access";
 import type { Store } from "@/payload-types";
 
 export const Products: CollectionConfig = {
@@ -15,6 +15,7 @@ export const Products: CollectionConfig = {
   },
   admin: {
     useAsTitle: "title",
+    hidden: ({ user }) => !isSeller(user),
   },
   fields: [
     {

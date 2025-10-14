@@ -147,10 +147,10 @@ const categories = [
   await payload.create({
     collection: "users",
     data: {
+      fullname: "Admin Account",
       email: "admin@tus.in",
       password: env.SUPER_ADMIN_PASSWORD,
-      roles: ["super_admin"],
-      subdomain: "admin",
+      role: "super_admin",
     },
   });
 

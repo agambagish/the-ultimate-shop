@@ -21,35 +21,23 @@ export const authRouter = createTRPCRouter({
         collection: "users",
         limit: 1,
         where: {
-          subdomain: {
-            equals: input.subdomain,
-          },
+          email: { equals: input.email },
         },
       });
 
       if (existingData.totalDocs === 1) {
         throw new TRPCError({
           code: "CONFLICT",
-          message: "Subdomain already taken",
+          message: "An account with this email already exists",
         });
       }
-
-      const store = await ctx.payload.create({
-        collection: "stores",
-        data: {
-          name: input.subdomain,
-          subdomain: input.subdomain,
-          cashfreeVendorId: "testid_1234",
-        },
-      });
 
       await ctx.payload.create({
         collection: "users",
         data: {
+          fullname: input.fullname,
           email: input.email,
           password: input.password,
-          subdomain: input.subdomain,
-          tenants: [{ tenant: store.id }],
         },
       });
 
@@ -63,8 +51,9 @@ export const authRouter = createTRPCRouter({
 
       if (!data.token) {
         throw new TRPCError({
-          code: "UNAUTHORIZED",
-          message: "Failed to login",
+          code: "INTERNAL_SERVER_ERROR",
+          message:
+            "Your account was created successfully, but automatic login failed. Please login using your credentials",
         });
       }
 

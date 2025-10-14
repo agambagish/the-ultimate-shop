@@ -1,25 +1,21 @@
 import z from "zod";
 
 export const registerSchema = z.object({
-  email: z.email(),
-  password: z.string(),
-  subdomain: z
+  fullname: z
     .string()
-    .min(3, "Subdomain must be at least 3 characters")
-    .max(24, "Subdomain must be less than 64 characters")
+    .min(3, "Full Name must be at least 3 characters long")
+    .max(64, "Full Name must be at most 64 characters long"),
+  email: z.email("Must be a valid email"),
+  password: z
+    .string()
     .regex(
-      /^[a-z0-9][a-z0-9-]*[a-z0-9]$/,
-      "Subdomain can only contain lowercase letters, numbers & hyphens. It must start and ends with a letter or number",
-    )
-    .refine(
-      (value) => !value.includes("--"),
-      "Subdomain can't contain consecutive hyphens",
-    )
-    .transform((value) => value.toLowerCase()),
+      /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/,
+      "Password must be at least 8 characters long and include uppercase, lowercase, number, and symbol.",
+    ),
 });
 
 export const loginSchema = z.object({
-  email: z.email(),
+  email: z.email("Must be a valid email"),
   password: z.string(),
 });
 
