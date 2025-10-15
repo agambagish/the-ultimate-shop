@@ -46,15 +46,12 @@ export function CategorySidebar({ open, onOpenChange }: Props) {
       setSelectedCategory(category);
     } else {
       if (parentCategories && selectedCategory) {
-        router.push(`/${selectedCategory.slug}/${category.slug}`);
+        router.push(`/products/${selectedCategory.slug}/${category.slug}`);
       } else {
-        if (category.slug === "all") {
-          router.push("/");
-        } else {
-          router.push(`/${category.slug}`);
-        }
+        router.push(
+          category.slug === "all" ? "/products" : `/products/${category.slug}`,
+        );
       }
-
       handleOpenChange(false);
     }
   }
@@ -66,6 +63,13 @@ export function CategorySidebar({ open, onOpenChange }: Props) {
     }
   }
 
+  function handleViewAllClick() {
+    if (selectedCategory) {
+      router.push(`/products/${selectedCategory.slug}`);
+      handleOpenChange(false);
+    }
+  }
+
   return (
     <Sheet open={open} onOpenChange={handleOpenChange}>
       <SheetContent side="left" className="p-0 transition-none">
@@ -73,14 +77,40 @@ export function CategorySidebar({ open, onOpenChange }: Props) {
           <SheetTitle>Categories</SheetTitle>
         </SheetHeader>
         <ScrollArea className="flex h-full flex-col overflow-y-auto pb-2">
-          {parentCategories && (
+          {parentCategories ? (
+            <>
+              <button
+                type="button"
+                onClick={handleBackClick}
+                className="flex w-full cursor-pointer items-center p-4 text-left font-medium text-base hover:bg-secondary"
+              >
+                <ChevronLeft className="mr-2 size-4" />
+                Back
+              </button>
+              <button
+                type="button"
+                onClick={handleViewAllClick}
+                className="flex w-full cursor-pointer items-center justify-between p-4 text-left font-semibold text-primary hover:bg-secondary"
+              >
+                View all in {selectedCategory?.label}
+              </button>
+            </>
+          ) : (
             <button
+              onClick={() =>
+                handleCategoryClick({
+                  id: NaN,
+                  label: "All",
+                  slug: "all",
+                  createdAt: "",
+                  updatedAt: "",
+                  subcategories: [],
+                })
+              }
               type="button"
-              onClick={handleBackClick}
-              className="flex w-full cursor-pointer items-center p-4 text-left font-medium text-base hover:bg-black hover:text-white"
+              className="flex w-full cursor-pointer items-center justify-between p-4 text-left font-medium text-base hover:bg-secondary"
             >
-              <ChevronLeft className="mr-2 size-4" />
-              Back
+              All
             </button>
           )}
           {currentCategories.map((category) => (
@@ -88,7 +118,7 @@ export function CategorySidebar({ open, onOpenChange }: Props) {
               key={category.id}
               onClick={() => handleCategoryClick(category)}
               type="button"
-              className="flex w-full cursor-pointer items-center justify-between p-4 text-left font-medium text-base hover:bg-black hover:text-white"
+              className="flex w-full cursor-pointer items-center justify-between p-4 text-left font-medium text-base hover:bg-secondary"
             >
               {category.label}
               {category.subcategories && category.subcategories.length > 0 && (

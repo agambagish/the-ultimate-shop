@@ -4,16 +4,15 @@ import { dehydrate, HydrationBoundary } from "@tanstack/react-query";
 
 import { Skeleton } from "@/components/ui/skeleton";
 import { cn } from "@/lib/utils";
+import { CategoryBar } from "@/modules/categories/ui/components/category-bar";
 import { SearchBar } from "@/modules/home/ui/components/search-bar";
 import { getQueryClient, trpc } from "@/trpc/server";
-
-import { CategoryBar } from "./category-bar";
 
 interface Props {
   storeSubdomain?: string;
 }
 
-export function CategoryHeader({ storeSubdomain }: Props) {
+export function ProductListHeader({ storeSubdomain }: Props) {
   const queryClient = getQueryClient();
   void queryClient.prefetchQuery(trpc.categories.getMany.queryOptions());
 

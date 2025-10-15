@@ -89,6 +89,20 @@ export function CategoryBar() {
         onMouseEnter={() => setIsAnyHovered(true)}
         onMouseLeave={() => setIsAnyHovered(false)}
       >
+        <div>
+          <CategoryDropdown
+            category={{
+              id: NaN,
+              label: "All",
+              slug: "all",
+              createdAt: "",
+              updatedAt: "",
+              subcategories: [],
+            }}
+            isActive={activeCategory === "all"}
+            isHovered={isAnyHovered}
+          />
+        </div>
         {data.slice(0, visibleCount).map((category) => (
           <div key={category.id}>
             <CategoryDropdown
@@ -100,11 +114,10 @@ export function CategoryBar() {
         ))}
         <div ref={viewAllRef} className="shrink-0">
           <Button
+            variant="link"
             className={cn(
-              "h-11 cursor-pointer rounded-full border-transparent bg-transparent px-4 text-black shadow-none hover:border-primary hover:bg-white",
-              isActiveCategoryHidden &&
-                !isAnyHovered &&
-                "border-primary bg-white",
+              "cursor-pointer text-black",
+              isActiveCategoryHidden && !isAnyHovered && "underline",
             )}
             onClick={() => setIsSidebarOpen(true)}
           >

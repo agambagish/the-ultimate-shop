@@ -15,7 +15,10 @@ export const Products: CollectionConfig = {
   },
   admin: {
     useAsTitle: "title",
-    hidden: ({ user }) => !isSeller(user),
+    hidden: ({ user }) => {
+      if (isSuperAdmin(user)) return false;
+      return !isSeller(user);
+    },
   },
   fields: [
     {

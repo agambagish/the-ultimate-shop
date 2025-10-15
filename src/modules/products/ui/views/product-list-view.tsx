@@ -1,10 +1,10 @@
 import { Suspense } from "react";
 
 import { cn } from "@/lib/utils";
-import { CategoryHeader } from "@/modules/categories/ui/components/category-header";
 
 import { ProductFilters } from "../components/product-filters";
 import { ProductList, ProductListSkeleton } from "../components/product-list";
+import { ProductListHeader } from "../components/product-list-header";
 
 interface Props {
   category?: string;
@@ -14,7 +14,7 @@ interface Props {
 export function ProductListView({ category, storeSubdomain }: Props) {
   return (
     <div className="bg-background">
-      <CategoryHeader storeSubdomain={storeSubdomain} />
+      <ProductListHeader storeSubdomain={storeSubdomain} />
       <div
         className={cn(
           "mx-auto flex gap-8 px-4 py-8 sm:px-6 lg:px-8",

@@ -3,7 +3,7 @@
 import { useRef, useState } from "react";
 import Link from "next/link";
 
-import { Button } from "@/components/ui/button";
+import { buttonVariants } from "@/components/ui/button";
 import type { CategoryWithSubCategory } from "@/lib/types";
 import { cn } from "@/lib/utils";
 
@@ -37,25 +37,16 @@ export function CategoryDropdown({ category, isActive, isHovered }: Props) {
       onMouseLeave={onMouseLeave}
     >
       <div className="relative">
-        <Button
-          variant="outline"
+        <Link
+          href={`/products/${category.slug === "all" ? "/" : category.slug}`}
           className={cn(
-            "h-11 border-transparent bg-transparent px-4 text-black shadow-none hover:bg-white hover:underline",
-            isActive && !isHovered && "bg-white underline",
+            buttonVariants({ variant: "link" }),
+            "text-black",
+            isActive && !isHovered && "underline",
           )}
         >
-          <Link href={`/${category.slug === "all" ? "/" : category.slug}`}>
-            {category.label}
-          </Link>
-        </Button>
-        {category.subcategories && category.subcategories.length > 0 && (
-          <div
-            className={cn(
-              "-bottom-3 -translate-x-1/2 absolute left-1/2 h-0 w-0 border-r-[10px] border-r-transparent border-b-[10px] border-b-black border-l-[10px] border-l-transparent opacity-0",
-              isOpen && "opacity-100",
-            )}
-          />
-        )}
+          {category.label}
+        </Link>
       </div>
       <SubcategoryMenu category={category} isOpen={isOpen} />
     </div>

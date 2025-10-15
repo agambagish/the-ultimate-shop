@@ -14,7 +14,8 @@
       "!dist",
       "!build",
       "!src/components/ui/*",
-      "!**/importMap.js"
+      "!**/importMap.js",
+      "!src/migrations/*"
     ]
   },
   "assist": {

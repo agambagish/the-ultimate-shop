@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import Link from "next/link";
-import { usePathname } from "next/navigation";
+import { useSelectedLayoutSegment } from "next/navigation";
 
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { AlignRight, LogOut, Package, Store, UserCircle2 } from "lucide-react";
@@ -25,15 +25,14 @@ import { useTRPC } from "@/trpc/client";
 import { NavSidebar } from "./nav-sidebar";
 
 const navItems = [
-  { href: "/", label: "Home" },
-  { href: "/products", label: "Products" },
-  { href: "/pricing", label: "Pricing" },
-  { href: "/about", label: "About" },
-  { href: "/blog", label: "Blog" },
+  { slug: "products", label: "Products" },
+  { slug: "pricing", label: "Pricing" },
+  { slug: "about", label: "About" },
+  { slug: "blog", label: "Blog" },
 ];
 
 export function Navbar() {
-  const pathname = usePathname();
+  const activeSegment = useSelectedLayoutSegment();
   const { session } = useSession();
   const trpc = useTRPC();
   const queryClient = useQueryClient();
@@ -55,8 +54,8 @@ export function Navbar() {
         <div className="hidden items-center gap-4 lg:flex">
           {navItems.map((item) => (
             <NavItem
-              key={item.href}
-              isActive={pathname === item.href}
+              key={item.slug}
+              isActive={activeSegment === item.slug}
               {...item}
             />
           ))}
@@ -142,15 +141,15 @@ export function Navbar() {
 }
 
 interface NavItemProps {
-  href: string;
+  slug: string;
   label: string;
   isActive?: boolean;
 }
 
-function NavItem({ href, label, isActive }: NavItemProps) {
+function NavItem({ slug, label, isActive }: NavItemProps) {
   return (
     <Link
-      href={href}
+      href={`/${slug}`}
       className={cn(
         buttonVariants({ variant: "link" }),
         isActive && "underline",

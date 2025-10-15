@@ -11,7 +11,7 @@ import {
 import { useSession } from "@/hooks/use-session";
 
 interface NavItem {
-  href: string;
+  slug: string;
   label: string;
 }
 
@@ -34,8 +34,8 @@ export function NavSidebar({ items, open, onOpenChange }: Props) {
         <ScrollArea className="flex h-full flex-col overflow-y-auto">
           {items.map((item) => (
             <Link
-              key={item.href}
-              href={item.href}
+              key={item.slug}
+              href={`/${item.slug}`}
               className="flex w-full items-center p-4 text-left font-medium text-base hover:bg-secondary"
               onClick={() => onOpenChange(false)}
             >
