@@ -18,7 +18,7 @@ export function CategoryHeader({ storeSubdomain }: Props) {
   void queryClient.prefetchQuery(trpc.categories.getMany.queryOptions());
 
   return (
-    <div className="border-border/40 border-b bg-white/80 shadow-sm backdrop-blur-md">
+    <div className="border-border/40 border-b bg-background/80 shadow-sm backdrop-blur-md">
       <div
         className={cn(
           "mx-auto px-4 py-6 sm:px-6 lg:px-8",

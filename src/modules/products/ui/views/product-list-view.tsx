@@ -13,8 +13,7 @@ interface Props {
 
 export function ProductListView({ category, storeSubdomain }: Props) {
   return (
-    // biome-ignore lint/correctness/useUniqueElementIds: _
-    <div id="products">
+    <div className="bg-background">
       <CategoryHeader storeSubdomain={storeSubdomain} />
       <div
         className={cn(

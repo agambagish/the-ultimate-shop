@@ -39,7 +39,7 @@ export function ProductList({ category, storeSubdomain }: Props) {
 
   if (data.pages?.[0]?.docs.length === 0) {
     return (
-      <div className="flex w-full flex-col items-center justify-center gap-y-4 rounded-2xl border border-border/40 bg-white/60 p-8 text-muted-foreground backdrop-blur-sm">
+      <div className="flex w-full flex-col items-center justify-center gap-y-4 rounded-2xl border border-border/40 bg-background/60 p-8 text-muted-foreground backdrop-blur-sm">
         <File />
         <p className="font-medium text-base">No products found</p>
       </div>

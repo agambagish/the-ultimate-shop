@@ -43,7 +43,7 @@ export function PriceFilter({
           placeholder="₹0"
           value={minPrice ? formatAsCurrency(minPrice) : ""}
           onChange={handleMinPriceChange}
-          className="h-9 border-border/40 bg-white/70 text-sm transition-all focus:border-primary/60 focus:bg-white/90"
+          className="h-9 border-border/40 bg-background/70 text-sm transition-all focus:border-primary/60 focus:bg-background/90"
         />
       </div>
       <div className="space-y-1">
@@ -58,7 +58,7 @@ export function PriceFilter({
           placeholder="∞"
           value={maxPrice ? formatAsCurrency(maxPrice) : ""}
           onChange={handleMaxPriceChange}
-          className="h-9 border-border/40 bg-white/70 text-sm transition-all focus:border-primary/60 focus:bg-white/90"
+          className="h-9 border-border/40 bg-background/70 text-sm transition-all focus:border-primary/60 focus:bg-background/90"
         />
       </div>
     </div>

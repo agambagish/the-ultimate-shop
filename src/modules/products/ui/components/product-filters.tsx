@@ -37,7 +37,7 @@ export function ProductFilters() {
 
   return (
     <div className="hidden flex-shrink-0 lg:block">
-      <div className="sticky top-24 h-fit w-72 rounded-2xl border border-border/40 bg-white/60 p-6 backdrop-blur-sm">
+      <div className="sticky top-24 h-fit w-72 rounded-2xl border border-border/40 bg-background/60 p-6 backdrop-blur-sm">
         <div className="space-y-6">
           <div className="flex items-center justify-between">
             <h3 className="font-semibold text-foreground text-lg">Filters</h3>

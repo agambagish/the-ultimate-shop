@@ -4,92 +4,140 @@ import { useState } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 
-import { TextAlignEnd } from "lucide-react";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
+import { AlignRight, LogOut, Package, Store, UserCircle2 } from "lucide-react";
 
+import { Logo } from "@/components/logo";
 import { Button, buttonVariants } from "@/components/ui/button";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuLabel,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
+import { Skeleton } from "@/components/ui/skeleton";
 import { useSession } from "@/hooks/use-session";
 import { cn } from "@/lib/utils";
+import { useTRPC } from "@/trpc/client";
 
 import { NavSidebar } from "./nav-sidebar";
 
 const navItems = [
   { href: "/", label: "Home" },
+  { href: "/products", label: "Products" },
   { href: "/pricing", label: "Pricing" },
-  { href: "/features", label: "Features" },
   { href: "/about", label: "About" },
   { href: "/blog", label: "Blog" },
 ];
 
 export function Navbar() {
   const pathname = usePathname();
-  const [isSidebarOpen, setIsSidebarOpen] = useState<boolean>(false);
   const { session } = useSession();
+  const trpc = useTRPC();
+  const queryClient = useQueryClient();
+
+  const [isSidebarOpen, setIsSidebarOpen] = useState<boolean>(false);
+
+  const logout = useMutation(
+    trpc.auth.logout.mutationOptions({
+      onSuccess: () => {
+        queryClient.invalidateQueries(trpc.auth.session.queryOptions());
+      },
+    }),
+  );
 
   return (
-    <nav className="flex h-20 justify-between border-b bg-white font-medium">
-      <Link href="/" className="flex items-center pl-6">
-        <span className="font-extrabold text-4xl">The Ultimate Shop</span>
-      </Link>
+    <>
+      <nav className="flex h-20 items-center justify-between border-b px-4">
+        <Logo className="w-[20rem]" />
+        <div className="hidden items-center gap-4 lg:flex">
+          {navItems.map((item) => (
+            <NavItem
+              key={item.href}
+              isActive={pathname === item.href}
+              {...item}
+            />
+          ))}
+        </div>
+        <div className="flex w-[14rem] items-center justify-end space-x-2">
+          {session.isLoading ? (
+            <Skeleton className="h-10 w-30" />
+          ) : session.data?.user ? (
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+                <Button variant="ghost" className="size-10">
+                  <UserCircle2 className="size-6 text-muted-foreground" />
+                </Button>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent align="end" className="w-56">
+                <DropdownMenuLabel className="flex flex-col">
+                  <span className="font-medium text-sm leading-none">
+                    {session.data.user.fullname}
+                  </span>
+                  <span className="text-muted-foreground text-xs leading-none">
+                    {session.data.user.email}
+                  </span>
+                </DropdownMenuLabel>
+                <DropdownMenuSeparator />
+                {session.data.user.tenants?.[0]?.id ? (
+                  <DropdownMenuItem asChild>
+                    <Link href="/admin">
+                      <Package />
+                      Dashboard
+                    </Link>
+                  </DropdownMenuItem>
+                ) : (
+                  <DropdownMenuItem asChild>
+                    <Link href="/sell">
+                      <Store />
+                      Start Selling
+                    </Link>
+                  </DropdownMenuItem>
+                )}
+                <DropdownMenuItem onClick={() => logout.mutate()}>
+                  <LogOut />
+                  Logout
+                </DropdownMenuItem>
+              </DropdownMenuContent>
+            </DropdownMenu>
+          ) : (
+            <div className="hidden space-x-2 lg:flex">
+              <Link
+                href="/login"
+                prefetch
+                className={buttonVariants({
+                  variant: "outline",
+                  size: "lg",
+                })}
+              >
+                Login
+              </Link>
+              <Link
+                href="/register"
+                prefetch
+                className={cn(buttonVariants({ size: "lg" }), "shiny-button")}
+              >
+                Register
+              </Link>
+            </div>
+          )}
+          <Button
+            variant="ghost"
+            className="flex size-10 lg:hidden"
+            onClick={() => setIsSidebarOpen(true)}
+          >
+            <AlignRight />
+          </Button>
+        </div>
+      </nav>
       <NavSidebar
         items={navItems}
         open={isSidebarOpen}
         onOpenChange={setIsSidebarOpen}
       />
-      <div className="hidden items-center gap-4 lg:flex">
-        {navItems.map((item) => (
-          <NavItem
-            key={item.href}
-            isActive={pathname === item.href}
-            {...item}
-          />
-        ))}
-      </div>
-      {session.data?.user ? (
-        <div className="hidden lg:flex">
-          <Link
-            href="/admin"
-            className={cn(
-              buttonVariants(),
-              "h-full rounded-none border-t-0 border-r-0 border-b-0 border-l-0 bg-black px-12 text-lg text-white transition-colors hover:bg-secondary hover:text-black",
-            )}
-          >
-            Dashboard
-          </Link>
-        </div>
-      ) : (
-        <div className="hidden lg:flex">
-          <Link
-            prefetch
-            href="/login"
-            className={cn(
-              buttonVariants({ variant: "secondary" }),
-              "h-full rounded-none border-t-0 border-r-0 border-b-0 border-l bg-secondary px-12 text-lg transition-colors hover:bg-white",
-            )}
-          >
-            Log in
-          </Link>
-          <Link
-            prefetch
-            href="/register"
-            className={cn(
-              buttonVariants(),
-              "h-full rounded-none border-t-0 border-r-0 border-b-0 border-l-0 bg-black px-12 text-lg text-white transition-colors hover:bg-secondary hover:text-black",
-            )}
-          >
-            Start Selling
-          </Link>
-        </div>
-      )}
-      <div className="flex items-center justify-center lg:hidden">
-        <Button
-          variant="ghost"
-          className="mr-2 size-12 border-transparent bg-white"
-          onClick={() => setIsSidebarOpen(true)}
-        >
-          <TextAlignEnd className="size-5" />
-        </Button>
-      </div>
-    </nav>
+    </>
   );
 }
 
@@ -101,15 +149,14 @@ interface NavItemProps {
 
 function NavItem({ href, label, isActive }: NavItemProps) {
   return (
-    <Button
-      asChild
-      variant="outline"
+    <Link
+      href={href}
       className={cn(
-        "h-11 rounded-full border-transparent px-5 shadow-none transition-all hover:border-primary hover:bg-transparent",
-        isActive && "bg-black text-white hover:bg-black hover:text-white",
+        buttonVariants({ variant: "link" }),
+        isActive && "underline",
       )}
     >
-      <Link href={href}>{label}</Link>
-    </Button>
+      {label}
+    </Link>
   );
 }
