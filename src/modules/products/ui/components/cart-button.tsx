@@ -19,7 +19,7 @@ export function CartButton({ storeSubdomain, productId, isPurchased }: Props) {
         href={`/library/${productId}`}
         className={cn(
           buttonVariants({ variant: "outline" }),
-          "h-14 w-full cursor-pointer font-semibold text-lg shadow-lg",
+          "h-14 w-full flex-1 cursor-pointer font-semibold text-lg",
         )}
       >
         View in Library
@@ -29,7 +29,10 @@ export function CartButton({ storeSubdomain, productId, isPurchased }: Props) {
 
   return (
     <Button
-      className="h-14 w-full cursor-pointer font-semibold text-lg shadow-lg"
+      className={cn(
+        "h-14 w-full flex-1 cursor-pointer font-semibold text-lg",
+        !cart.isProductInCart(productId) && "shiny-button",
+      )}
       onClick={() => cart.toggleProduct(productId)}
       variant={cart.isProductInCart(productId) ? "outline" : "default"}
     >

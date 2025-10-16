@@ -37,6 +37,7 @@ export const Users: CollectionConfig = {
   fields: [
     {
       name: "fullname",
+      label: "Full Name",
       required: true,
       type: "text",
       access: {
@@ -52,8 +53,13 @@ export const Users: CollectionConfig = {
       },
       name: "role",
       type: "radio",
-      options: ["user", "seller", "super_admin"],
+      options: [
+        { label: "User", value: "user" },
+        { label: "Seller", value: "seller" },
+        { label: "Super Admin", value: "super_admin" },
+      ],
       defaultValue: "user",
+      required: true,
       access: {
         update: ({ req }) => isSuperAdmin(req.user),
       },

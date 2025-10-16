@@ -57,6 +57,7 @@ export function ProductList({ category, storeSubdomain }: Props) {
               id={product.id}
               title={product.title}
               imageUrl={product.image?.url}
+              storeName={product.tenant.name}
               storeSubdomain={product.tenant.subdomain}
               storeAvatarUrl={product.tenant.avatar?.url}
               reviewRating={product.reviewRating}

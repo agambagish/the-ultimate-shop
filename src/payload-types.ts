@@ -142,7 +142,7 @@ export interface UserAuthOperations {
 export interface User {
   id: number;
   fullname: string;
-  role?: ("user" | "seller" | "super_admin") | null;
+  role: "user" | "seller" | "super_admin";
   tenants?:
     | {
         tenant: number | Store;
@@ -242,6 +242,8 @@ export interface Product {
    * in Indian National Rupee (INR)
    */
   price: number;
+  discountType: "flat" | "percentage";
+  discountValue: number;
   category?: (number | null) | Category;
   tags?: (number | Tag)[] | null;
   image?: (number | null) | Media;
@@ -439,6 +441,8 @@ export interface ProductsSelect<T extends boolean = true> {
   title?: T;
   description?: T;
   price?: T;
+  discountType?: T;
+  discountValue?: T;
   category?: T;
   tags?: T;
   image?: T;

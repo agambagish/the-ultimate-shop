@@ -1,7 +1,7 @@
-import type { CollectionConfig } from "payload";
+import type { CollectionConfig, NumberFieldSingleValidation } from "payload";
 
 import { isSeller, isSuperAdmin } from "@/lib/access";
-import type { Store } from "@/payload-types";
+import type { Product, Store } from "@/payload-types";
 
 export const Products: CollectionConfig = {
   slug: "products",
@@ -38,6 +38,51 @@ export const Products: CollectionConfig = {
       admin: {
         description: "in Indian National Rupee (INR)",
       },
+    },
+    {
+      name: "discountType",
+      type: "radio",
+      options: [
+        { label: "Flat", value: "flat" },
+        { label: "Percentage", value: "percentage" },
+      ],
+      defaultValue: "flat",
+      required: true,
+    },
+    {
+      name: "discountValue",
+      type: "number",
+      defaultValue: 0,
+      min: 0,
+      validate: ((
+        value,
+        { siblingData }: { siblingData: Partial<Product> },
+      ) => {
+        const discountType = siblingData.discountType;
+        const price = siblingData.price;
+
+        if (typeof value !== "number" || value < 0) {
+          return "Discount must be a positive number.";
+        }
+
+        if (discountType === "percentage") {
+          if (value > 100) {
+            return "Percentage discount cannot exceed 100%.";
+          }
+          if (price != null && value > 0 && (value / 100) * price > price) {
+            return "Discount cannot exceed product price.";
+          }
+        }
+
+        if (discountType === "flat") {
+          if (price != null && value > price) {
+            return "Flat discount cannot exceed product price.";
+          }
+        }
+
+        return true;
+      }) as NumberFieldSingleValidation,
+      required: true,
     },
     {
       name: "category",

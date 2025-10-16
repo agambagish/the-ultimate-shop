@@ -1,13 +1,13 @@
-import Link from "next/link";
+import { Logo } from "@/components/logo";
 
 export function Footer() {
   return (
     <footer className="border-t bg-white font-medium">
-      <div className="mx-auto flex h-full max-w-6xl items-center gap-2 px-4 py-6 sm:px-6 lg:px-8">
-        <p className="text-xl">Powered by</p>
-        <Link href="/">
-          <span className="font-bold text-2xl">The Ultimate Shop</span>
-        </Link>
+      <div className="mx-auto flex h-full max-w-7xl items-center gap-2 px-4 py-6 sm:px-6 lg:px-8">
+        <p className="font-semibold text-muted-foreground text-xl tracking-tight">
+          Powered by
+        </p>
+        <Logo className="w-56" />
       </div>
     </footer>
   );

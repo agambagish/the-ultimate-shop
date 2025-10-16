@@ -1,3 +1,6 @@
+"use client";
+
+import type React from "react";
 import Image from "next/image";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
@@ -11,6 +14,7 @@ interface Props {
   id: number;
   title: string;
   imageUrl?: string | null;
+  storeName: string;
   storeSubdomain: string;
   storeAvatarUrl?: string | null;
   reviewRating: number;
@@ -23,6 +27,7 @@ export function ProductCard({
   price,
   reviewCount,
   reviewRating,
+  storeName,
   storeSubdomain,
   title,
   imageUrl,
@@ -38,9 +43,9 @@ export function ProductCard({
   }
 
   return (
-    <div className="group overflow-hidden rounded-2xl border border-border/40 bg-white/60 p-4 backdrop-blur-sm transition-all duration-300 hover:scale-[1.02] hover:bg-white/80 hover:shadow-xl">
-      <Link href={`${generateStoreURL(storeSubdomain)}/products/${id}`}>
-        <div className="relative mb-4 aspect-square overflow-hidden rounded-xl">
+    <Link href={`${generateStoreURL(storeSubdomain)}/products/${id}`}>
+      <div className="group relative flex h-full flex-col overflow-hidden rounded-2xl border border-border/40 bg-background/60 p-4 backdrop-blur-sm transition-all duration-300 hover:scale-[1.02] hover:border-border/60 hover:bg-background/90 hover:shadow-2xl active:scale-[0.98]">
+        <div className="relative mb-3 aspect-square overflow-hidden rounded-xl bg-muted">
           <Image
             src={imageUrl || "/placeholder.png"}
             alt={title}
@@ -48,41 +53,43 @@ export function ProductCard({
             fill
           />
         </div>
-      </Link>
-      <div className="space-y-3">
-        <h3 className="font-bold text-lg leading-tight underline-offset-2 hover:underline">
-          <Link href={`${generateStoreURL(storeSubdomain)}/products/${id}`}>
+        <div className="flex flex-1 flex-col justify-between space-y-2">
+          <h3 className="line-clamp-2 font-bold text-lg leading-tight transition-colors duration-200 group-hover:text-primary">
             {title}
-          </Link>
-        </h3>
-        {/** biome-ignore lint/a11y/useKeyWithClickEvents: _ */}
-        <div
-          className="flex items-center gap-2 hover:cursor-pointer"
-          onClick={handleClick}
-        >
-          {storeAvatarUrl && (
-            <Image
-              alt={storeSubdomain}
-              src={storeAvatarUrl}
-              width={17}
-              height={17}
-              className="size-[17px] shrink-0 rounded-full border border-black"
-            />
-          )}
-          <p className="text-muted-foreground text-sm underline underline-offset-2 hover:text-muted-foreground/85">
-            {storeSubdomain}
-          </p>
-        </div>
-        <div className="flex items-center space-x-2">
-          <div className="flex items-center space-x-1">
-            <Star className="size-4 fill-yellow-400 text-yellow-400" />
-            <span className="font-medium text-sm">{reviewRating}</span>
+          </h3>
+          {/** biome-ignore lint/a11y/useKeyWithClickEvents: _ */}
+          <div
+            className="flex items-center gap-1.5 transition-opacity duration-200 group-hover:opacity-80"
+            onClick={handleClick}
+          >
+            {storeAvatarUrl && (
+              <Image
+                alt={storeSubdomain}
+                src={storeAvatarUrl}
+                width={16}
+                height={16}
+                className="size-4 shrink-0 rounded-full"
+              />
+            )}
+            <p className="truncate text-muted-foreground text-sm transition-colors duration-200 hover:underline group-hover:text-foreground">
+              {storeName}
+            </p>
           </div>
-          <span className="text-muted-foreground text-sm">({reviewCount})</span>
+          <div className="flex items-center gap-2">
+            <div className="flex items-center gap-1">
+              <Star className="size-3.5 fill-yellow-400 text-yellow-400" />
+              <span className="font-semibold text-xs">{reviewRating}</span>
+            </div>
+            <span className="text-muted-foreground text-xs">
+              ({reviewCount})
+            </span>
+          </div>
+          <div className="pt-1 font-bold text-foreground text-lg">
+            {formatCurrency(price)}
+          </div>
         </div>
-        <div className="pt-2 font-bold text-xl">{formatCurrency(price)}</div>
       </div>
-    </div>
+    </Link>
   );
 }
 
