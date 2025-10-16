@@ -272,6 +272,8 @@ export interface Tag {
 export interface Order {
   id: number;
   title: string;
+  price: number;
+  discountedPrice: number;
   user: number | User;
   product: number | Product;
   cashfreeOrderId: string;
@@ -479,6 +481,8 @@ export interface StoresSelect<T extends boolean = true> {
  */
 export interface OrdersSelect<T extends boolean = true> {
   title?: T;
+  price?: T;
+  discountedPrice?: T;
   user?: T;
   product?: T;
   cashfreeOrderId?: T;

@@ -155,7 +155,7 @@ export function PaymentMethodSelector({
             ? !cardForm.formState.isValid
             : !upiForm.formState.isValid || disabled
         }
-        className="h-14 w-full cursor-pointer font-semibold text-lg shadow-lg"
+        className="shiny-button h-14 w-full cursor-pointer font-semibold text-lg shadow-lg"
       >
         Continue to Payment
       </Button>

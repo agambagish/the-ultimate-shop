@@ -3,6 +3,7 @@ import type { CartItem } from "cashfree-pg";
 import z from "zod";
 
 import { env } from "@/env";
+import { calculatePricing } from "@/lib/calculate";
 import { cashfree } from "@/lib/cashfree";
 import { tryCatch } from "@/lib/try-catch";
 import type { Media, Store } from "@/payload-types";
@@ -77,16 +78,20 @@ export const checkoutRouter = createTRPCRouter({
       const cart_items: CartItem[] = products.docs.map((product) => ({
         item_quantity: 1,
         item_original_unit_price: product.price,
+        item_discounted_unit_price:
+          product.discountType === "flat"
+            ? Math.round(product.price - product.discountValue)
+            : Math.round(
+                product.price - (product.price * product.discountValue) / 100,
+              ),
         item_currency: "INR",
         item_name: product.title,
         item_id: product.id.toString(),
+        item_details_url: `${env.NEXT_PUBLIC_APP_URL}/stores/${store.subdomain}/products/${product.id}`,
       }));
 
+      const { total: order_amount } = calculatePricing(products.docs);
       const order_id = crypto.randomUUID();
-      const order_amount = products.docs.reduce(
-        (acc, product) => acc + product.price,
-        0,
-      );
 
       const { data: order } = await tryCatch(
         cashfree.PGCreateOrder({
@@ -95,6 +100,7 @@ export const checkoutRouter = createTRPCRouter({
           order_currency: "INR",
           customer_details: {
             customer_id: ctx.session.user.id.toString(),
+            customer_name: ctx.session.user.fullname,
             customer_phone: "9876543210",
             customer_email: ctx.session.user.email,
           },
@@ -165,9 +171,13 @@ export const checkoutRouter = createTRPCRouter({
         });
       }
 
+      const { subtotal, total, totalSavings } = calculatePricing(data.docs);
+
       return {
         ...data,
-        subtotal: data.docs.reduce((acc, product) => acc + product.price, 0),
+        subtotal,
+        totalSavings,
+        total,
         docs: data.docs.map((doc) => ({
           ...doc,
           image: doc.image as Media | null,

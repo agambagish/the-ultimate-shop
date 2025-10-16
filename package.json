@@ -14,7 +14,9 @@
     "db:migrate": "payload migrate",
     "db:generate": "payload migrate:create",
     "db:reset": "payload migrate:fresh",
-    "db:seed": "tsx scripts/seed.ts"
+    "db:seed": "tsx scripts/seed.ts",
+    "tunnel": "ngrok http --domain wired-keen-herring.ngrok-free.app 3000",
+    "dev:all": "mprocs"
   },
   "dependencies": {
     "@hookform/resolvers": "^5.2.2",
@@ -71,6 +73,7 @@
     "@types/react-dom": "^19",
     "husky": "^9.1.7",
     "lint-staged": "^16.1.6",
+    "mprocs": "^0.7.3",
     "tailwindcss": "^4",
     "tw-animate-css": "^1.3.8",
     "typescript": "^5"

@@ -4,14 +4,7 @@ import { useEffect } from "react";
 import { useRouter } from "next/navigation";
 
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import {
-  File,
-  HeadphonesIcon,
-  Loader2,
-  RotateCcw,
-  Shield,
-  Truck,
-} from "lucide-react";
+import { File, Loader2 } from "lucide-react";
 import { toast } from "sonner";
 
 import { Badge } from "@/components/ui/badge";
@@ -88,7 +81,7 @@ export function CheckoutView({ storeSubdomain }: Props) {
   if (data?.totalDocs === 0) {
     return (
       <div className="mx-auto max-w-6xl px-4 py-8 sm:px-6 lg:px-8">
-        <Card className="flex items-center border-border/40 bg-white/70 shadow-lg backdrop-blur-sm">
+        <Card className="flex items-center border-border/40 bg-background/70 shadow-lg backdrop-blur-sm">
           <File className="text-muted-foreground" />
           <p className="font-medium text-base text-muted-foreground">
             No products found
@@ -101,7 +94,7 @@ export function CheckoutView({ storeSubdomain }: Props) {
   if (isLoading) {
     return (
       <div className="mx-auto max-w-6xl px-4 py-8 sm:px-6 lg:px-8">
-        <Card className="flex items-center border-border/40 bg-white/70 shadow-lg backdrop-blur-sm">
+        <Card className="flex items-center border-border/40 bg-background/70 shadow-lg backdrop-blur-sm">
           <Loader2 className="animate-spin text-muted-foreground" />
           <p className="font-medium text-base text-muted-foreground">
             Just a moment...
@@ -114,16 +107,18 @@ export function CheckoutView({ storeSubdomain }: Props) {
   return (
     <div className="mx-auto max-w-6xl px-4 py-8 sm:px-6 lg:px-8">
       <div className="grid grid-cols-1 gap-8 lg:grid-cols-12">
-        <div className="space-y-6 lg:col-span-7">
-          <Card className="border-border/40 bg-white/70 shadow-lg backdrop-blur-sm">
+        <div className="lg:col-span-7">
+          <Card className="border-border/40 bg-background/70 shadow-lg backdrop-blur-sm">
             <CardHeader>
               <CardTitle className="flex items-center justify-between">
-                <span>Your Cart ({totalItems} items)</span>
+                <span className="font-bold tracking-tight">
+                  Your Cart ({totalItems} items)
+                </span>
                 <Badge
                   variant="outline"
-                  className="border-green-200 bg-green-50 text-green-600"
+                  className="h-8 border-green-200 bg-green-50 font-semibold text-green-600 text-sm"
                 >
-                  You saved {formatCurrency(20)}
+                  You saved {formatCurrency(data?.totalSavings || 0)}
                 </Badge>
               </CardTitle>
             </CardHeader>
@@ -138,33 +133,19 @@ export function CheckoutView({ storeSubdomain }: Props) {
                   storeUrl={generateStoreURL(product.tenant.subdomain)}
                   storeName={product.tenant.name}
                   price={product.price}
+                  discountType={product.discountType}
+                  discountValue={product.discountValue}
                   onRemove={() => removeProduct(product.id.toString())}
                   disabled={false}
                 />
               ))}
             </CardContent>
           </Card>
-          <div className="grid grid-cols-2 gap-4 md:grid-cols-4">
-            <div className="flex items-center space-x-2 rounded-xl border border-border/40 bg-white/60 p-3 backdrop-blur-sm">
-              <Shield className="h-5 w-5 text-green-600" />
-              <span className="font-medium text-xs">Secure Payment</span>
-            </div>
-            <div className="flex items-center space-x-2 rounded-xl border border-border/40 bg-white/60 p-3 backdrop-blur-sm">
-              <Truck className="h-5 w-5 text-blue-600" />
-              <span className="font-medium text-xs">Instant Download</span>
-            </div>
-            <div className="flex items-center space-x-2 rounded-xl border border-border/40 bg-white/60 p-3 backdrop-blur-sm">
-              <RotateCcw className="h-5 w-5 text-orange-600" />
-              <span className="font-medium text-xs">30-Day Refund</span>
-            </div>
-            <div className="flex items-center space-x-2 rounded-xl border border-border/40 bg-white/60 p-3 backdrop-blur-sm">
-              <HeadphonesIcon className="h-5 w-5 text-purple-600" />
-              <span className="font-medium text-xs">24/7 Support</span>
-            </div>
-          </div>
         </div>
         <CheckoutSidebar
           subtotal={data?.subtotal || 0}
+          totalSavings={data?.totalSavings || 0}
+          total={data?.total || 0}
           totalItems={totalItems}
           onCardCheckout={() => {}}
           onUPICheckout={({ vpa }) =>

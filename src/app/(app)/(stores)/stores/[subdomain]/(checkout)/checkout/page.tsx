@@ -8,8 +8,8 @@ export default async function ({ params }: Props) {
   const { subdomain } = await params;
 
   return (
-    <main className="min-h-screen">
+    <div className="min-h-screen">
       <CheckoutView storeSubdomain={subdomain} />
-    </main>
+    </div>
   );
 }

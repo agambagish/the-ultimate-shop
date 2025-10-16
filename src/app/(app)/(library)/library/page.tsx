@@ -13,10 +13,10 @@ export default async function () {
   );
 
   return (
-    <main className="min-h-screen">
+    <div className="min-h-screen">
       <HydrationBoundary state={dehydrate(queryClient)}>
         <LibraryView />
       </HydrationBoundary>
-    </main>
+    </div>
   );
 }

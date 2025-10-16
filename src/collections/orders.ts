@@ -20,6 +20,16 @@ export const Orders: CollectionConfig = {
       required: true,
     },
     {
+      name: "price",
+      type: "number",
+      required: true,
+    },
+    {
+      name: "discountedPrice",
+      type: "number",
+      required: true,
+    },
+    {
       name: "user",
       type: "relationship",
       relationTo: "users",
@@ -37,7 +47,6 @@ export const Orders: CollectionConfig = {
       name: "cashfreeOrderId",
       type: "text",
       required: true,
-      unique: true,
     },
   ],
 };

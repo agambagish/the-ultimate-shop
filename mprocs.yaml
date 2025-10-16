@@ -1,0 +1,6 @@
+procs:
+  next:
+    shell: "pnpm dev"
+
+  tunnel:
+    shell: "pnpm tunnel"

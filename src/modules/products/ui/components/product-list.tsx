@@ -63,6 +63,8 @@ export function ProductList({ category, storeSubdomain }: Props) {
               reviewRating={product.reviewRating}
               reviewCount={product.reviewCount}
               price={product.price}
+              discountType={product.discountType}
+              discountValue={product.discountValue}
             />
           ))}
       </div>

@@ -15,6 +15,8 @@ interface Props {
   storeUrl: string;
   storeName: string;
   price: number;
+  discountType: "flat" | "percentage";
+  discountValue: number;
   onRemove: () => void;
   disabled?: boolean;
 }
@@ -29,6 +31,8 @@ export function CheckoutItem({
   imageUrl,
   isLast,
   disabled,
+  discountType,
+  discountValue,
 }: Props) {
   return (
     <>
@@ -44,10 +48,10 @@ export function CheckoutItem({
         <div className="min-w-0 flex-1">
           <div className="flex items-start justify-between">
             <div className="space-y-1">
-              <h3 className="font-semibold leading-tight underline-offset-2 hover:underline">
+              <h3 className="line-clamp-2 font-bold leading-tight transition-colors duration-200 hover:text-primary">
                 <Link href={productUrl}>{title}</Link>
               </h3>
-              <p className="text-muted-foreground text-sm underline underline-offset-2 hover:text-muted-foreground/85">
+              <p className="truncate text-muted-foreground text-sm transition-colors duration-200 hover:text-foreground hover:underline">
                 <Link href={storeUrl}>by {storeName}</Link>
               </p>
             </div>
@@ -63,10 +67,18 @@ export function CheckoutItem({
           </div>
           <div className="mt-3">
             <div className="flex items-center space-x-2">
-              <span className="font-bold text-lg">{formatCurrency(price)}</span>
-              <span className="text-muted-foreground text-sm line-through">
-                {formatCurrency(Math.round(price * 1.4))}
+              <span className="font-bold text-lg">
+                {discountType === "flat"
+                  ? formatCurrency(Math.round(price - discountValue))
+                  : formatCurrency(
+                      Math.round(price - (price * discountValue) / 100),
+                    )}
               </span>
+              {discountValue > 0 && (
+                <span className="text-muted-foreground text-sm line-through">
+                  {formatCurrency(Math.round(price))}
+                </span>
+              )}
             </div>
           </div>
         </div>

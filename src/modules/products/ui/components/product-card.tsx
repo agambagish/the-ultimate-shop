@@ -20,6 +20,8 @@ interface Props {
   reviewRating: number;
   reviewCount: number;
   price: number;
+  discountType: "flat" | "percentage";
+  discountValue: number;
 }
 
 export function ProductCard({
@@ -32,6 +34,8 @@ export function ProductCard({
   title,
   imageUrl,
   storeAvatarUrl,
+  discountType,
+  discountValue,
 }: Props) {
   const router = useRouter();
 
@@ -84,8 +88,19 @@ export function ProductCard({
               ({reviewCount})
             </span>
           </div>
-          <div className="pt-1 font-bold text-foreground text-lg">
-            {formatCurrency(price)}
+          <div className="flex items-center space-x-2 pt-1">
+            <span className="font-bold text-foreground text-lg">
+              {discountType === "flat"
+                ? formatCurrency(Math.round(price - discountValue))
+                : formatCurrency(
+                    Math.round(price - (price * discountValue) / 100),
+                  )}
+            </span>
+            {discountValue > 0 && (
+              <span className="font-bold text-lg text-muted-foreground line-through">
+                {formatCurrency(Math.round(price))}
+              </span>
+            )}
           </div>
         </div>
       </div>
