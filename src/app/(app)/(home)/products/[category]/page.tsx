@@ -27,10 +27,8 @@ export default async function ({ params, searchParams }: Props) {
   );
 
   return (
-    <div className="min-h-screen">
-      <HydrationBoundary state={dehydrate(queryClient)}>
-        <ProductListView category={category} />
-      </HydrationBoundary>
-    </div>
+    <HydrationBoundary state={dehydrate(queryClient)}>
+      <ProductListView category={category} />
+    </HydrationBoundary>
   );
 }

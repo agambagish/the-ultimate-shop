@@ -21,10 +21,8 @@ export default async function ({ params }: Props) {
   );
 
   return (
-    <div className="min-h-screen">
-      <HydrationBoundary state={dehydrate(queryClient)}>
-        <ProductView productId={productId} storeSubdomain={subdomain} />
-      </HydrationBoundary>
-    </div>
+    <HydrationBoundary state={dehydrate(queryClient)}>
+      <ProductView productId={productId} storeSubdomain={subdomain} />
+    </HydrationBoundary>
   );
 }

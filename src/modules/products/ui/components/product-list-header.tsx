@@ -16,9 +16,7 @@ export function ProductListHeader() {
       <div className="mx-auto max-w-7xl px-4 py-6 sm:px-6 lg:px-8">
         <SearchBar />
         <HydrationBoundary state={dehydrate(queryClient)}>
-          <Suspense
-            fallback={<Skeleton className="h-11 w-full rounded-full" />}
-          >
+          <Suspense fallback={<Skeleton className="h-9 w-full rounded-full" />}>
             <CategoryBar />
           </Suspense>
         </HydrationBoundary>

@@ -80,6 +80,10 @@ export const libraryRouter = createTRPCRouter({
 
       return {
         ...productsData,
+        totalSpent: ordersData.docs.reduce(
+          (acc, order) => acc + order.discountedPrice,
+          0,
+        ),
         docs: productsData.docs.map((doc) => ({
           ...doc,
           image: doc.image as Media | null,
