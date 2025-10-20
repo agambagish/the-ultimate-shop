@@ -7,35 +7,34 @@ export const reviewsRouter = createTRPCRouter({
   getOne: protectedProcedure
     .input(
       z.object({
-        productId: z.string(),
+        orderId: z.string(),
       }),
     )
     .query(async ({ ctx, input }) => {
-      const product = await ctx.payload.findByID({
-        collection: "products",
-        select: { content: false },
-        id: input.productId,
+      const order = await ctx.payload.findByID({
+        collection: "orders",
+        id: input.orderId,
       });
 
-      if (!product) {
+      if (!order) {
         throw new TRPCError({
           code: "NOT_FOUND",
-          message: "Product not found",
+          message: "Order not found",
         });
       }
 
-      const reviewsData = await ctx.payload.find({
-        collection: "reviews",
-        limit: 1,
-        where: {
-          and: [
-            { product: { equals: product.id } },
-            { user: { equals: ctx.session.user.id } },
-          ],
-        },
-      });
-
-      const review = reviewsData.docs[0];
+      const review = await ctx.payload
+        .find({
+          collection: "reviews",
+          limit: 1,
+          where: {
+            and: [
+              { order: { equals: order.id } },
+              { user: { equals: ctx.session.user.id } },
+            ],
+          },
+        })
+        .then(({ docs }) => docs[0]);
 
       if (!review) return null;
 
@@ -44,16 +43,29 @@ export const reviewsRouter = createTRPCRouter({
   create: protectedProcedure
     .input(
       z.object({
-        productId: z.string(),
+        orderId: z.string(),
         rating: z.number().min(1).max(5),
         description: z.string().min(1),
       }),
     )
     .mutation(async ({ ctx, input }) => {
+      const order = await ctx.payload.findByID({
+        collection: "orders",
+        id: input.orderId,
+        depth: 0,
+      });
+
+      if (!order) {
+        throw new TRPCError({
+          code: "NOT_FOUND",
+          message: "Order not found",
+        });
+      }
+
       const product = await ctx.payload.findByID({
         collection: "products",
         select: { content: false },
-        id: input.productId,
+        id: order.product as number,
       });
 
       if (!product) {
@@ -67,7 +79,7 @@ export const reviewsRouter = createTRPCRouter({
         collection: "reviews",
         where: {
           and: [
-            { product: { equals: input.productId } },
+            { product: { equals: order.product } },
             { user: { equals: ctx.session.user.id } },
           ],
         },
@@ -87,6 +99,7 @@ export const reviewsRouter = createTRPCRouter({
           product: product.id,
           rating: input.rating,
           description: input.description,
+          order: order.id,
         },
       });
 

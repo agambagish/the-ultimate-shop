@@ -16,6 +16,7 @@ import {
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
+import { UPILogo } from "@/components/upi-logo";
 
 import type { CardSchema, UPISchema } from "../../lib/schemas";
 import { cardSchema, upiSchema } from "../../lib/schemas";
@@ -74,26 +75,16 @@ export function PaymentMethodSelector({
           onValueChange={(value) => handleMethodChange(value as "card" | "upi")}
           disabled={disabled}
         >
-          <div className="flex items-center space-x-3 rounded-lg border border-border/40 p-3 transition-colors hover:bg-white/60">
+          <div className="flex items-center space-x-3 rounded-lg border border-border/40 p-3 transition-colors hover:bg-background/60">
             <RadioGroupItem value="upi" disabled={disabled} />
-            <svg
-              xmlns="http://www.w3.org/2000/svg"
-              x="0px"
-              y="0px"
-              viewBox="0 0 48 48"
-              className="size-6"
-            >
-              <title>UPI</title>
-              <polygon fill="#388e3c" points="29,4 18,45 40,24" />
-              <polygon fill="#f57c00" points="21,3 10,44 32,23" />
-            </svg>
+            <UPILogo className="size-6" />
             <div className="flex-1">
               <Label className="cursor-pointer font-medium">UPI</Label>
               <p className="text-muted-foreground text-xs">Pay using VPA</p>
             </div>
           </div>
           {method === "upi" && (
-            <div className="flex items-center space-x-3 rounded-lg border border-border/40 p-4 transition-colors hover:bg-white/60">
+            <div className="flex items-center space-x-3 rounded-lg border border-border/40 p-4 transition-colors hover:bg-background/60">
               <Form {...upiForm}>
                 <form
                   onSubmit={upiForm.handleSubmit(handleUpiSubmit)}
@@ -122,7 +113,7 @@ export function PaymentMethodSelector({
               </Form>
             </div>
           )}
-          <div className="flex items-center space-x-3 rounded-lg border border-border/40 p-3 transition-colors hover:bg-white/60">
+          <div className="flex items-center space-x-3 rounded-lg border border-border/40 p-3 transition-colors hover:bg-background/60">
             <RadioGroupItem value="card" disabled={disabled} />
             <CreditCard className="size-5" />
             <div className="flex-1">

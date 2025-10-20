@@ -277,6 +277,23 @@ export interface Order {
   user: number | User;
   product: number | Product;
   cashfreeOrderId: string;
+  cashfreePaymentId: string;
+  paymentDetails: (
+    | {
+        vpa: string;
+        id?: string | null;
+        blockName?: string | null;
+        blockType: "upi";
+      }
+    | {
+        cardNumber: string;
+        cardNetwork: string;
+        cardBankName: string;
+        id?: string | null;
+        blockName?: string | null;
+        blockType: "card";
+      }
+  )[];
   updatedAt: string;
   createdAt: string;
 }
@@ -289,6 +306,7 @@ export interface Review {
   description: string;
   rating: number;
   product: number | Product;
+  order: number | Order;
   user: number | User;
   updatedAt: string;
   createdAt: string;
@@ -486,6 +504,27 @@ export interface OrdersSelect<T extends boolean = true> {
   user?: T;
   product?: T;
   cashfreeOrderId?: T;
+  cashfreePaymentId?: T;
+  paymentDetails?:
+    | T
+    | {
+        upi?:
+          | T
+          | {
+              vpa?: T;
+              id?: T;
+              blockName?: T;
+            };
+        card?:
+          | T
+          | {
+              cardNumber?: T;
+              cardNetwork?: T;
+              cardBankName?: T;
+              id?: T;
+              blockName?: T;
+            };
+      };
   updatedAt?: T;
   createdAt?: T;
 }
@@ -497,6 +536,7 @@ export interface ReviewsSelect<T extends boolean = true> {
   description?: T;
   rating?: T;
   product?: T;
+  order?: T;
   user?: T;
   updatedAt?: T;
   createdAt?: T;

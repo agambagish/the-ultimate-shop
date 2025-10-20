@@ -16,7 +16,7 @@ import { useTRPC } from "@/trpc/client";
 import type { AppRouter } from "@/trpc/routers/_app";
 
 interface Props {
-  productId: string;
+  orderId: string;
   initialData?: inferRouterOutputs<AppRouter>["reviews"]["getOne"];
 }
 
@@ -25,7 +25,7 @@ const formSchema = z.object({
   description: z.string().min(1, "Description is required"),
 });
 
-export function ReviewForm({ productId, initialData }: Props) {
+export function ReviewForm({ orderId, initialData }: Props) {
   const [isPreview, setIsPreview] = useState<boolean>(!!initialData);
 
   const trpc = useTRPC();
@@ -36,7 +36,7 @@ export function ReviewForm({ productId, initialData }: Props) {
       onSuccess: () => {
         queryClient.invalidateQueries(
           trpc.reviews.getOne.queryOptions({
-            productId,
+            orderId,
           }),
         );
 
@@ -53,7 +53,7 @@ export function ReviewForm({ productId, initialData }: Props) {
       onSuccess: () => {
         queryClient.invalidateQueries(
           trpc.reviews.getOne.queryOptions({
-            productId,
+            orderId,
           }),
         );
 
@@ -82,7 +82,7 @@ export function ReviewForm({ productId, initialData }: Props) {
       });
     } else {
       createReview.mutate({
-        productId,
+        orderId,
         rating: values.rating,
         description: values.description,
       });
@@ -141,7 +141,11 @@ export function ReviewForm({ productId, initialData }: Props) {
           <Button
             type="submit"
             size="lg"
-            disabled={createReview.isPending || updateReview.isPending}
+            disabled={
+              createReview.isPending ||
+              updateReview.isPending ||
+              !form.formState.isDirty
+            }
           >
             {createReview.isPending ||
               (updateReview.isPending && <Loader2 className="animate-spin" />)}

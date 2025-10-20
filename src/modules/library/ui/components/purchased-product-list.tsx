@@ -72,14 +72,14 @@ export function PurchasedProductList() {
       <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
         {data.pages
           .flatMap((page) => page.docs)
-          .map((product) => (
+          .map((order) => (
             <PurchasedProductCard
-              key={product.id}
-              id={product.id}
-              title={product.title}
-              imageUrl={product.image?.url}
-              storeName={product.tenant.name}
-              storeAvatarUrl={product.tenant.avatar?.url}
+              key={order.id}
+              id={order.id}
+              title={order.product?.title || ""}
+              imageUrl={order.product?.image?.url}
+              storeName={order.product?.tenant.name || ""}
+              storeAvatarUrl={order.product?.tenant.avatar?.url}
             />
           ))}
       </div>

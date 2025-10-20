@@ -36,3 +36,13 @@ export function formatCurrency(value: number | string) {
     maximumFractionDigits: 0,
   }).format(Number(value));
 }
+
+export function formatDateTime(date: string) {
+  return Intl.DateTimeFormat("en-IN", {
+    month: "long",
+    day: "numeric",
+    year: "numeric",
+    hour: "numeric",
+    minute: "numeric",
+  }).format(new Date(date));
+}

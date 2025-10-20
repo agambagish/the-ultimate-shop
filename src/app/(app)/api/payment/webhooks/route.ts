@@ -2,10 +2,16 @@ import type { NextRequest } from "next/server";
 import { NextResponse } from "next/server";
 
 import config from "@payload-config";
-import type { PaymentWebhookDataEntity, PGWebhookEvent } from "cashfree-pg";
+import type {
+  OrderExtendedDataEntity,
+  PaymentWebhookDataEntity,
+  PGWebhookEvent,
+} from "cashfree-pg";
 import { getPayload } from "payload";
 
 import { cashfree } from "@/lib/cashfree";
+import type { StrictDefined } from "@/lib/types";
+import type { PaymentDetails } from "@/modules/library/lib/types";
 
 export async function POST(req: NextRequest) {
   const signature = req.headers.get("x-webhook-signature") || "";
@@ -31,20 +37,12 @@ export async function POST(req: NextRequest) {
   const payload = await getPayload({ config });
 
   if (permittedEvents.includes(event.type)) {
-    let data: PaymentWebhookDataEntity;
+    let data: StrictDefined<PaymentWebhookDataEntity>;
 
     try {
       switch (event.type) {
         case "PAYMENT_SUCCESS_WEBHOOK":
-          data = event.object.data as PaymentWebhookDataEntity;
-
-          if (!data.order?.order_id) {
-            throw new Error("Order doesn't exist");
-          }
-
-          if (!data.customer_details?.customer_id) {
-            throw new Error("User ID is required");
-          }
+          data = event.object.data as StrictDefined<PaymentWebhookDataEntity>;
 
           const user = await payload.findByID({
             collection: "users",
@@ -55,30 +53,49 @@ export async function POST(req: NextRequest) {
             throw new Error("User not found");
           }
 
-          const extendedOrder = await cashfree.PGFetchOrderExtendedData(
-            data.order.order_id,
-          );
+          const { data: extendedOrder } =
+            (await cashfree.PGFetchOrderExtendedData(data.order.order_id)) as {
+              data: StrictDefined<OrderExtendedDataEntity>;
+            };
 
-          if (
-            !extendedOrder.data.cart?.items ||
-            !extendedOrder.data.cart.items.length ||
-            extendedOrder.status !== 200
-          ) {
+          if (extendedOrder.cart.items.length === 0) {
             throw new Error("No cart items found");
           }
 
-          const cartItems = extendedOrder.data.cart.items;
+          const cartItems = extendedOrder.cart.items;
+
+          let paymentDetails: PaymentDetails = [];
+
+          if ("upi" in data.payment.payment_method) {
+            paymentDetails = [
+              {
+                blockType: "upi",
+                vpa: data.payment.payment_method.upi.upi_id,
+              },
+            ];
+          } else if ("card" in data.payment.payment_method) {
+            paymentDetails = [
+              {
+                blockType: "card",
+                cardNumber: data.payment.payment_method.card.card_number,
+                cardNetwork: data.payment.payment_method.card.card_network,
+                cardBankName: data.payment.payment_method.card.card_bank_name,
+              },
+            ];
+          }
 
           for (const item of cartItems) {
             await payload.create({
               collection: "orders",
               data: {
                 cashfreeOrderId: data.order.order_id,
+                cashfreePaymentId: data.payment.cf_payment_id,
                 user: user.id,
                 product: Number(item.item_id),
-                title: item.item_name || "",
+                title: item.item_name,
                 price: Number(item.item_original_unit_price),
                 discountedPrice: Number(item.item_discounted_unit_price),
+                paymentDetails,
               },
             });
           }

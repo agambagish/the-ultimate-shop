@@ -48,5 +48,48 @@ export const Orders: CollectionConfig = {
       type: "text",
       required: true,
     },
+    {
+      name: "cashfreePaymentId",
+      type: "text",
+      required: true,
+    },
+    {
+      name: "paymentDetails",
+      type: "blocks",
+      required: true,
+      blocks: [
+        {
+          slug: "upi",
+
+          fields: [
+            {
+              name: "vpa",
+              type: "text",
+              required: true,
+            },
+          ],
+        },
+        {
+          slug: "card",
+          fields: [
+            {
+              name: "cardNumber",
+              type: "text",
+              required: true,
+            },
+            {
+              name: "cardNetwork",
+              type: "text",
+              required: true,
+            },
+            {
+              name: "cardBankName",
+              type: "text",
+              required: true,
+            },
+          ],
+        },
+      ],
+    },
   ],
 };
