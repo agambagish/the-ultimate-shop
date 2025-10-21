@@ -95,9 +95,7 @@ export function CategoryBar() {
               id: NaN,
               label: "All",
               slug: "all",
-              createdAt: "",
-              updatedAt: "",
-              subcategories: [],
+              other_categories: [],
             }}
             isActive={activeCategory === "all"}
             isHovered={isAnyHovered}

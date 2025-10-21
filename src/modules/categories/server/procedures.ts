@@ -1,28 +1,25 @@
-import type { Category } from "@/payload-types";
+import { prisma } from "@/lib/prisma";
 import { baseProcedure, createTRPCRouter } from "@/trpc/init";
 
 export const categoriesRouter = createTRPCRouter({
-  getMany: baseProcedure.query(async ({ ctx }) => {
-    const data = await ctx.payload.find({
-      collection: "categories",
-      depth: 1,
-      pagination: false,
-      where: {
-        parent: {
-          exists: false,
+  getMany: baseProcedure.query(async () => {
+    const data = await prisma.categories.findMany({
+      where: { parent_id: null },
+      select: {
+        id: true,
+        label: true,
+        slug: true,
+        other_categories: {
+          select: {
+            id: true,
+            label: true,
+            slug: true,
+          },
         },
       },
-      sort: "label",
+      orderBy: { label: "asc" },
     });
 
-    const formattedData = data.docs.map((doc) => ({
-      ...doc,
-      subcategories: (doc.subcategories?.docs ?? []).map((doc) => ({
-        ...(doc as Category),
-        subcategories: undefined,
-      })),
-    }));
-
-    return formattedData;
+    return data;
   }),
 });

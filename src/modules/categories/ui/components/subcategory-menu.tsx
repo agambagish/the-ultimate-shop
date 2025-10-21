@@ -5,10 +5,10 @@ import Link from "next/link";
 
 import { createPortal } from "react-dom";
 
-import type { CategoryWithSubCategory } from "@/lib/types";
+import type { TQueryResult } from "@/lib/types";
 
 interface Props {
-  category: CategoryWithSubCategory;
+  category: TQueryResult<"categories.getMany">[0];
   isOpen: boolean;
 }
 
@@ -23,14 +23,14 @@ export function SubcategoryMenu({ category, isOpen }: Props) {
     }
   }, [isOpen]);
 
-  if (!isOpen || !category.subcategories?.length) return null;
+  if (!isOpen || !category.other_categories.length) return null;
 
   const menu = (
     <div
       className="fixed z-[999999] w-60 rounded-2xl border bg-background text-black shadow-lg"
       style={{ top: position.top, left: position.left }}
     >
-      {category.subcategories.map((subcategory) => (
+      {category.other_categories.map((subcategory) => (
         <Link
           key={subcategory.slug}
           href={`/products/${category.slug}/${subcategory.slug}`}

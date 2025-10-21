@@ -4,13 +4,13 @@ import { useRef, useState } from "react";
 import Link from "next/link";
 
 import { buttonVariants } from "@/components/ui/button";
-import type { CategoryWithSubCategory } from "@/lib/types";
+import type { TQueryResult } from "@/lib/types";
 import { cn } from "@/lib/utils";
 
 import { SubcategoryMenu } from "./subcategory-menu";
 
 interface Props {
-  category: CategoryWithSubCategory;
+  category: TQueryResult<"categories.getMany">[0];
   isActive: boolean;
   isHovered: boolean;
 }
@@ -20,7 +20,7 @@ export function CategoryDropdown({ category, isActive, isHovered }: Props) {
   const dropdownRef = useRef<HTMLDivElement>(null);
 
   function onMouseEnter() {
-    if (category.subcategories) {
+    if (category.other_categories) {
       setIsOpen(true);
     }
   }

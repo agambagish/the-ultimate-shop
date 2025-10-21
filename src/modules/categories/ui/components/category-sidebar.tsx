@@ -11,7 +11,7 @@ import {
   SheetHeader,
   SheetTitle,
 } from "@/components/ui/sheet";
-import type { CategoryWithSubCategory } from "@/lib/types";
+import type { TQueryResult } from "@/lib/types";
 import { useTRPC } from "@/trpc/client";
 
 interface Props {
@@ -25,12 +25,12 @@ export function CategorySidebar({ open, onOpenChange }: Props) {
 
   const router = useRouter();
 
-  const [parentCategories, setParentCategories] = useState<
-    CategoryWithSubCategory[] | null
-  >(null);
+  const [parentCategories, setParentCategories] =
+    useState<TQueryResult<"categories.getMany"> | null>(null);
 
-  const [selectedCategory, setSelectedCategory] =
-    useState<CategoryWithSubCategory | null>(null);
+  const [selectedCategory, setSelectedCategory] = useState<
+    TQueryResult<"categories.getMany">[0] | null
+  >(null);
 
   const currentCategories = parentCategories ?? data ?? [];
 
@@ -40,9 +40,13 @@ export function CategorySidebar({ open, onOpenChange }: Props) {
     onOpenChange(open);
   }
 
-  function handleCategoryClick(category: CategoryWithSubCategory) {
-    if (category.subcategories && category.subcategories.length > 0) {
-      setParentCategories(category.subcategories as CategoryWithSubCategory[]);
+  function handleCategoryClick(
+    category: TQueryResult<"categories.getMany">[0],
+  ) {
+    if (category.other_categories && category.other_categories.length > 0) {
+      setParentCategories(
+        category.other_categories as TQueryResult<"categories.getMany">,
+      );
       setSelectedCategory(category);
     } else {
       if (parentCategories && selectedCategory) {
@@ -102,9 +106,7 @@ export function CategorySidebar({ open, onOpenChange }: Props) {
                   id: NaN,
                   label: "All",
                   slug: "all",
-                  createdAt: "",
-                  updatedAt: "",
-                  subcategories: [],
+                  other_categories: [],
                 })
               }
               type="button"
@@ -121,9 +123,10 @@ export function CategorySidebar({ open, onOpenChange }: Props) {
               className="flex w-full cursor-pointer items-center justify-between p-4 text-left font-medium text-base hover:bg-secondary"
             >
               {category.label}
-              {category.subcategories && category.subcategories.length > 0 && (
-                <ChevronRight className="size-4" />
-              )}
+              {category.other_categories &&
+                category.other_categories.length > 0 && (
+                  <ChevronRight className="size-4" />
+                )}
             </button>
           ))}
         </ScrollArea>
