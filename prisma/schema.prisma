@@ -1,0 +1,361 @@
+generator client {
+  provider = "prisma-client-js"
+  output   = "../src/generated/prisma"
+}
+
+datasource db {
+  provider  = "postgresql"
+  url       = env("DATABASE_URL")
+  directUrl = env("DIRECT_URL")
+}
+
+model categories {
+  id                            Int                             @id @default(autoincrement())
+  label                         String                          @db.VarChar
+  slug                          String                          @unique(map: "categories_slug_idx") @db.VarChar
+  parent_id                     Int?
+  updated_at                    DateTime                        @default(now()) @db.Timestamptz(3)
+  created_at                    DateTime                        @default(now()) @db.Timestamptz(3)
+  categories                    categories?                     @relation("categoriesTocategories", fields: [parent_id], references: [id], onUpdate: NoAction, map: "categories_parent_id_categories_id_fk")
+  other_categories              categories[]                    @relation("categoriesTocategories")
+  payload_locked_documents_rels payload_locked_documents_rels[]
+  products                      products[]
+
+  @@index([created_at])
+  @@index([parent_id], map: "categories_parent_idx")
+  @@index([updated_at])
+}
+
+model media {
+  id                            Int                             @id @default(autoincrement())
+  alt                           String                          @db.VarChar
+  updated_at                    DateTime                        @default(now()) @db.Timestamptz(3)
+  created_at                    DateTime                        @default(now()) @db.Timestamptz(3)
+  url                           String?                         @db.VarChar
+  thumbnail_u_r_l               String?                         @db.VarChar
+  filename                      String?                         @unique(map: "media_filename_idx") @db.VarChar
+  mime_type                     String?                         @db.VarChar
+  filesize                      Decimal?                        @db.Decimal
+  width                         Decimal?                        @db.Decimal
+  height                        Decimal?                        @db.Decimal
+  focal_x                       Decimal?                        @db.Decimal
+  focal_y                       Decimal?                        @db.Decimal
+  payload_locked_documents_rels payload_locked_documents_rels[]
+  products                      products[]
+  stores                        stores[]
+
+  @@index([created_at])
+  @@index([updated_at])
+}
+
+model orders {
+  id                            Int                             @id @default(autoincrement())
+  price                         Decimal                         @db.Decimal
+  discounted_price              Decimal                         @db.Decimal
+  user_id                       Int
+  product_id                    Int
+  cashfree_order_id             String                          @db.VarChar
+  cashfree_payment_id           String                          @db.VarChar
+  updated_at                    DateTime                        @default(now()) @db.Timestamptz(3)
+  created_at                    DateTime                        @default(now()) @db.Timestamptz(3)
+  products                      products                        @relation(fields: [product_id], references: [id], onDelete: SetNull, onUpdate: NoAction, map: "orders_product_id_products_id_fk")
+  users                         users                           @relation(fields: [user_id], references: [id], onDelete: SetNull, onUpdate: NoAction, map: "orders_user_id_users_id_fk")
+  orders_blocks_card            orders_blocks_card[]
+  orders_blocks_upi             orders_blocks_upi[]
+  payload_locked_documents_rels payload_locked_documents_rels[]
+  reviews                       reviews[]
+
+  @@index([created_at])
+  @@index([product_id], map: "orders_product_idx")
+  @@index([updated_at])
+  @@index([user_id], map: "orders_user_idx")
+}
+
+model payload_locked_documents {
+  id                            Int                             @id @default(autoincrement())
+  global_slug                   String?                         @db.VarChar
+  updated_at                    DateTime                        @default(now()) @db.Timestamptz(3)
+  created_at                    DateTime                        @default(now()) @db.Timestamptz(3)
+  payload_locked_documents_rels payload_locked_documents_rels[]
+
+  @@index([created_at])
+  @@index([global_slug])
+  @@index([updated_at])
+}
+
+model payload_locked_documents_rels {
+  id                       Int                      @id @default(autoincrement())
+  order                    Int?
+  parent_id                Int
+  path                     String                   @db.VarChar
+  users_id                 Int?
+  media_id                 Int?
+  categories_id            Int?
+  products_id              Int?
+  tags_id                  Int?
+  stores_id                Int?
+  orders_id                Int?
+  reviews_id               Int?
+  categories               categories?              @relation(fields: [categories_id], references: [id], onDelete: Cascade, onUpdate: NoAction, map: "payload_locked_documents_rels_categories_fk")
+  media                    media?                   @relation(fields: [media_id], references: [id], onDelete: Cascade, onUpdate: NoAction, map: "payload_locked_documents_rels_media_fk")
+  orders                   orders?                  @relation(fields: [orders_id], references: [id], onDelete: Cascade, onUpdate: NoAction, map: "payload_locked_documents_rels_orders_fk")
+  payload_locked_documents payload_locked_documents @relation(fields: [parent_id], references: [id], onDelete: Cascade, onUpdate: NoAction, map: "payload_locked_documents_rels_parent_fk")
+  products                 products?                @relation(fields: [products_id], references: [id], onDelete: Cascade, onUpdate: NoAction, map: "payload_locked_documents_rels_products_fk")
+  reviews                  reviews?                 @relation(fields: [reviews_id], references: [id], onDelete: Cascade, onUpdate: NoAction, map: "payload_locked_documents_rels_reviews_fk")
+  stores                   stores?                  @relation(fields: [stores_id], references: [id], onDelete: Cascade, onUpdate: NoAction, map: "payload_locked_documents_rels_stores_fk")
+  tags                     tags?                    @relation(fields: [tags_id], references: [id], onDelete: Cascade, onUpdate: NoAction, map: "payload_locked_documents_rels_tags_fk")
+  users                    users?                   @relation(fields: [users_id], references: [id], onDelete: Cascade, onUpdate: NoAction, map: "payload_locked_documents_rels_users_fk")
+
+  @@index([categories_id])
+  @@index([media_id])
+  @@index([order])
+  @@index([orders_id])
+  @@index([parent_id], map: "payload_locked_documents_rels_parent_idx")
+  @@index([path])
+  @@index([products_id])
+  @@index([reviews_id])
+  @@index([stores_id])
+  @@index([tags_id])
+  @@index([users_id])
+}
+
+model payload_migrations {
+  id         Int      @id @default(autoincrement())
+  name       String?  @db.VarChar
+  batch      Decimal? @db.Decimal
+  updated_at DateTime @default(now()) @db.Timestamptz(3)
+  created_at DateTime @default(now()) @db.Timestamptz(3)
+
+  @@index([created_at])
+  @@index([updated_at])
+}
+
+model payload_preferences {
+  id                       Int                        @id @default(autoincrement())
+  key                      String?                    @db.VarChar
+  value                    Json?
+  updated_at               DateTime                   @default(now()) @db.Timestamptz(3)
+  created_at               DateTime                   @default(now()) @db.Timestamptz(3)
+  payload_preferences_rels payload_preferences_rels[]
+
+  @@index([created_at])
+  @@index([key])
+  @@index([updated_at])
+}
+
+model payload_preferences_rels {
+  id                  Int                 @id @default(autoincrement())
+  order               Int?
+  parent_id           Int
+  path                String              @db.VarChar
+  users_id            Int?
+  payload_preferences payload_preferences @relation(fields: [parent_id], references: [id], onDelete: Cascade, onUpdate: NoAction, map: "payload_preferences_rels_parent_fk")
+  users               users?              @relation(fields: [users_id], references: [id], onDelete: Cascade, onUpdate: NoAction, map: "payload_preferences_rels_users_fk")
+
+  @@index([order])
+  @@index([parent_id], map: "payload_preferences_rels_parent_idx")
+  @@index([path])
+  @@index([users_id])
+}
+
+model products {
+  id                            Int                             @id @default(autoincrement())
+  tenant_id                     Int?
+  title                         String                          @db.VarChar
+  description                   String?                         @db.VarChar
+  price                         Decimal                         @db.Decimal
+  discount_type                 enum_products_discount_type     @default(flat)
+  discount_value                Decimal                         @default(0) @db.Decimal
+  category_id                   Int?
+  image_id                      Int?
+  content                       String?                         @db.VarChar
+  updated_at                    DateTime                        @default(now()) @db.Timestamptz(3)
+  created_at                    DateTime                        @default(now()) @db.Timestamptz(3)
+  orders                        orders[]
+  payload_locked_documents_rels payload_locked_documents_rels[]
+  categories                    categories?                     @relation(fields: [category_id], references: [id], onUpdate: NoAction, map: "products_category_id_categories_id_fk")
+  media                         media?                          @relation(fields: [image_id], references: [id], onUpdate: NoAction, map: "products_image_id_media_id_fk")
+  stores                        stores?                         @relation(fields: [tenant_id], references: [id], onUpdate: NoAction, map: "products_tenant_id_stores_id_fk")
+  products_rels                 products_rels[]
+  reviews                       reviews[]
+  tags_rels                     tags_rels[]
+
+  @@index([category_id], map: "products_category_idx")
+  @@index([created_at])
+  @@index([image_id], map: "products_image_idx")
+  @@index([tenant_id], map: "products_tenant_idx")
+  @@index([updated_at])
+}
+
+model products_rels {
+  id        Int      @id @default(autoincrement())
+  order     Int?
+  parent_id Int
+  path      String   @db.VarChar
+  tags_id   Int?
+  products  products @relation(fields: [parent_id], references: [id], onDelete: Cascade, onUpdate: NoAction, map: "products_rels_parent_fk")
+  tags      tags?    @relation(fields: [tags_id], references: [id], onDelete: Cascade, onUpdate: NoAction, map: "products_rels_tags_fk")
+
+  @@index([order])
+  @@index([parent_id], map: "products_rels_parent_idx")
+  @@index([path])
+  @@index([tags_id])
+}
+
+model reviews {
+  id                            Int                             @id @default(autoincrement())
+  description                   String                          @db.VarChar
+  rating                        Decimal                         @db.Decimal
+  product_id                    Int
+  order_id                      Int
+  user_id                       Int
+  updated_at                    DateTime                        @default(now()) @db.Timestamptz(3)
+  created_at                    DateTime                        @default(now()) @db.Timestamptz(3)
+  payload_locked_documents_rels payload_locked_documents_rels[]
+  orders                        orders                          @relation(fields: [order_id], references: [id], onDelete: SetNull, onUpdate: NoAction, map: "reviews_order_id_orders_id_fk")
+  products                      products                        @relation(fields: [product_id], references: [id], onDelete: SetNull, onUpdate: NoAction, map: "reviews_product_id_products_id_fk")
+  users                         users                           @relation(fields: [user_id], references: [id], onDelete: SetNull, onUpdate: NoAction, map: "reviews_user_id_users_id_fk")
+
+  @@index([created_at])
+  @@index([product_id], map: "reviews_product_idx")
+  @@index([updated_at])
+  @@index([user_id], map: "reviews_user_idx")
+  @@index([order_id], map: "reviews_order_idx")
+}
+
+model stores {
+  id                            Int                             @id @default(autoincrement())
+  name                          String                          @db.VarChar
+  subdomain                     String                          @unique(map: "stores_subdomain_idx") @db.VarChar
+  avatar_id                     Int?
+  cashfree_vendor_id            String                          @db.VarChar
+  kyc_details_submitted         Boolean?
+  updated_at                    DateTime                        @default(now()) @db.Timestamptz(3)
+  created_at                    DateTime                        @default(now()) @db.Timestamptz(3)
+  payload_locked_documents_rels payload_locked_documents_rels[]
+  products                      products[]
+  media                         media?                          @relation(fields: [avatar_id], references: [id], onUpdate: NoAction, map: "stores_avatar_id_media_id_fk")
+  users_tenants                 users_tenants[]
+
+  @@index([avatar_id], map: "stores_avatar_idx")
+  @@index([created_at])
+  @@index([updated_at])
+}
+
+model tags {
+  id                            Int                             @id @default(autoincrement())
+  label                         String                          @unique(map: "tags_label_idx") @db.VarChar
+  updated_at                    DateTime                        @default(now()) @db.Timestamptz(3)
+  created_at                    DateTime                        @default(now()) @db.Timestamptz(3)
+  payload_locked_documents_rels payload_locked_documents_rels[]
+  products_rels                 products_rels[]
+  tags_rels                     tags_rels[]
+
+  @@index([created_at])
+  @@index([updated_at])
+}
+
+model tags_rels {
+  id          Int       @id @default(autoincrement())
+  order       Int?
+  parent_id   Int
+  path        String    @db.VarChar
+  products_id Int?
+  tags        tags      @relation(fields: [parent_id], references: [id], onDelete: Cascade, onUpdate: NoAction, map: "tags_rels_parent_fk")
+  products    products? @relation(fields: [products_id], references: [id], onDelete: Cascade, onUpdate: NoAction, map: "tags_rels_products_fk")
+
+  @@index([order])
+  @@index([parent_id], map: "tags_rels_parent_idx")
+  @@index([path])
+  @@index([products_id])
+}
+
+model users {
+  id                            Int                             @id @default(autoincrement())
+  fullname                      String                          @db.VarChar
+  role                          enum_users_role                 @default(user)
+  updated_at                    DateTime                        @default(now()) @db.Timestamptz(3)
+  created_at                    DateTime                        @default(now()) @db.Timestamptz(3)
+  email                         String                          @unique(map: "users_email_idx") @db.VarChar
+  reset_password_token          String?                         @db.VarChar
+  reset_password_expiration     DateTime?                       @db.Timestamptz(3)
+  salt                          String?                         @db.VarChar
+  hash                          String?                         @db.VarChar
+  login_attempts                Decimal?                        @default(0) @db.Decimal
+  lock_until                    DateTime?                       @db.Timestamptz(3)
+  orders                        orders[]
+  payload_locked_documents_rels payload_locked_documents_rels[]
+  payload_preferences_rels      payload_preferences_rels[]
+  reviews                       reviews[]
+  users_sessions                users_sessions[]
+  users_tenants                 users_tenants[]
+
+  @@index([created_at])
+  @@index([updated_at])
+}
+
+model users_sessions {
+  order      Int       @map("_order")
+  parent_id  Int       @map("_parent_id")
+  id         String    @id @db.VarChar
+  created_at DateTime? @db.Timestamptz(3)
+  expires_at DateTime  @db.Timestamptz(3)
+  users      users     @relation(fields: [parent_id], references: [id], onDelete: Cascade, onUpdate: NoAction, map: "users_sessions_parent_id_fk")
+
+  @@index([order], map: "users_sessions_order_idx")
+  @@index([parent_id], map: "users_sessions_parent_id_idx")
+}
+
+model users_tenants {
+  order     Int    @map("_order")
+  parent_id Int    @map("_parent_id")
+  id        String @id @db.VarChar
+  tenant_id Int
+  users     users  @relation(fields: [parent_id], references: [id], onDelete: Cascade, onUpdate: NoAction, map: "users_tenants_parent_id_fk")
+  stores    stores @relation(fields: [tenant_id], references: [id], onDelete: SetNull, onUpdate: NoAction, map: "users_tenants_tenant_id_stores_id_fk")
+
+  @@index([order], map: "users_tenants_order_idx")
+  @@index([parent_id], map: "users_tenants_parent_id_idx")
+  @@index([tenant_id], map: "users_tenants_tenant_idx")
+}
+
+model orders_blocks_card {
+  order          Int     @map("_order")
+  parent_id      Int     @map("_parent_id")
+  path           String  @map("_path")
+  id             String  @id @db.VarChar
+  card_number    String  @db.VarChar
+  card_network   String  @db.VarChar
+  card_bank_name String  @db.VarChar
+  block_name     String? @db.VarChar
+  orders         orders  @relation(fields: [parent_id], references: [id], onDelete: Cascade, onUpdate: NoAction, map: "orders_blocks_card_parent_id_fk")
+
+  @@index([order], map: "orders_blocks_card_order_idx")
+  @@index([parent_id], map: "orders_blocks_card_parent_id_idx")
+  @@index([path], map: "orders_blocks_card_path_idx")
+}
+
+model orders_blocks_upi {
+  order      Int     @map("_order")
+  parent_id  Int     @map("_parent_id")
+  path       String  @map("_path")
+  id         String  @id @db.VarChar
+  vpa        String  @db.VarChar
+  block_name String? @db.VarChar
+  orders     orders  @relation(fields: [parent_id], references: [id], onDelete: Cascade, onUpdate: NoAction, map: "orders_blocks_upi_parent_id_fk")
+
+  @@index([order], map: "orders_blocks_upi_order_idx")
+  @@index([parent_id], map: "orders_blocks_upi_parent_id_idx")
+  @@index([path], map: "orders_blocks_upi_path_idx")
+}
+
+enum enum_users_role {
+  user
+  seller
+  super_admin
+}
+
+enum enum_products_discount_type {
+  flat
+  percentage
+}

@@ -1,9 +1,11 @@
+/** biome-ignore-all lint/suspicious/noConsole: _ */
 import "dotenv/config";
 
 import config from "@payload-config";
 import { getPayload } from "payload";
 
 import { env } from "@/env";
+import { prisma } from "@/lib/prisma";
 
 const categories = [
   {
@@ -232,41 +234,42 @@ const categories = [
 ];
 
 (async () => {
-  const payload = await getPayload({ config });
+  try {
+    const payload = await getPayload({ config });
 
-  await payload.create({
-    collection: "users",
-    data: {
-      fullname: "Admin Account",
-      email: "admin@tus.in",
-      password: env.SUPER_ADMIN_PASSWORD,
-      role: "super_admin",
-    },
-  });
-
-  for (const category of categories) {
-    const parentCategory = await payload.create({
-      collection: "categories",
+    await payload.create({
+      collection: "users",
       data: {
-        label: category.name,
-        slug: category.slug,
-        parent: null,
+        fullname: "Admin Account",
+        email: "admin@tus.in",
+        password: env.SUPER_ADMIN_PASSWORD,
+        role: "super_admin",
       },
     });
 
-    for (const subcategory of category.subcategories || []) {
-      await payload.create({
-        collection: "categories",
+    for (const category of categories) {
+      const parentCategory = await prisma.categories.create({
         data: {
-          label: subcategory.name,
-          slug: subcategory.slug,
-          parent: parentCategory.id,
+          label: category.name,
+          slug: category.slug,
         },
       });
-    }
-  }
 
-  // biome-ignore lint/suspicious/noConsole: _
-  console.log("✅ DB seeded successfully");
-  process.exit(0);
+      for (const subcategory of category.subcategories || []) {
+        await prisma.categories.create({
+          data: {
+            label: subcategory.name,
+            slug: subcategory.slug,
+            parent_id: parentCategory.id,
+          },
+        });
+      }
+    }
+
+    console.log("✅ DB seeded successfully");
+    process.exit(0);
+  } catch {
+    console.error("❌ Unable to seed DB");
+    process.exit(1);
+  }
 })();

@@ -15,7 +15,10 @@
       "!build",
       "!src/components/ui/*",
       "!**/importMap.js",
-      "!src/migrations/*"
+      "!src/migrations/*",
+      "!prisma/*",
+      "!src/generated/*",
+      "!src/payload-types.ts"
     ]
   },
   "assist": {

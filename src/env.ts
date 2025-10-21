@@ -9,6 +9,7 @@ export const env = createEnv({
     SUPER_ADMIN_PASSWORD: z.string(),
     CF_CLIENT_ID: z.string(),
     CF_CLIENT_SECRET: z.string(),
+    NODE_ENV: z.enum(["development", "production"]).default("development"),
   },
   client: {
     NEXT_PUBLIC_APP_URL: z.url(),
@@ -20,6 +21,7 @@ export const env = createEnv({
     SUPER_ADMIN_PASSWORD: process.env.SUPER_ADMIN_PASSWORD,
     CF_CLIENT_ID: process.env.CF_CLIENT_ID,
     CF_CLIENT_SECRET: process.env.CF_CLIENT_SECRET,
+    NODE_ENV: process.env.NODE_ENV,
   },
   emptyStringAsUndefined: true,
   onValidationError: (issues) => {

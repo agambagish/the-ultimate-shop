@@ -92,7 +92,6 @@ export async function POST(req: NextRequest) {
                 cashfreePaymentId: data.payment.cf_payment_id,
                 user: user.id,
                 product: Number(item.item_id),
-                title: item.item_name,
                 price: Number(item.item_original_unit_price),
                 discountedPrice: Number(item.item_discounted_unit_price),
                 paymentDetails,

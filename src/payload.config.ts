@@ -17,6 +17,12 @@ import { Tags } from "./collections/tags";
 import { Users } from "./collections/users";
 import { env } from "./env";
 import { isSuperAdmin } from "./lib/access";
+import {
+  computeSchemaHash,
+  readStoredHash,
+  storeHash,
+} from "./lib/hash-schema";
+import { exec } from "node:child_process";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
 
@@ -51,6 +57,33 @@ export default buildConfig({
       connectionString: env.DATABASE_URI,
     },
   }),
+  onInit: (payload) => {
+    payload.logger.info("Checking schema hash for Prisma sync...");
+
+    const schemaFiles = ["src/payload-types.ts"];
+    const hashFile = ".schema_hash";
+
+    const newHash = computeSchemaHash(schemaFiles);
+    const oldHash = readStoredHash(hashFile);
+
+    if (newHash === oldHash) {
+      payload.logger.info("No schema changes detected. Skipping Prisma sync.");
+      return;
+    }
+
+    payload.logger.info("Schema changes detected. Running Prisma sync...");
+
+    exec("pnpm prisma:sync", (error, stdout, stderr) => {
+      if (error) {
+        payload.logger.error(`Failed to run Prisma sync: ${error.message}`);
+        return;
+      }
+      if (stderr) payload.logger.warn(stderr);
+      payload.logger.info(stdout);
+
+      storeHash(hashFile, newHash);
+    });
+  },
   sharp,
   plugins: [
     payloadCloudPlugin(),

@@ -10,15 +10,7 @@ export const Orders: CollectionConfig = {
     update: ({ req }) => isSuperAdmin(req.user),
     delete: ({ req }) => isSuperAdmin(req.user),
   },
-  admin: {
-    useAsTitle: "title",
-  },
   fields: [
-    {
-      name: "title",
-      type: "text",
-      required: true,
-    },
     {
       name: "price",
       type: "number",

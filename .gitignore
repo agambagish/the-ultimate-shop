@@ -40,3 +40,6 @@ mprocs.log
 # typescript
 *.tsbuildinfo
 next-env.d.ts
+
+/src/generated/prisma
+.schema_hash
