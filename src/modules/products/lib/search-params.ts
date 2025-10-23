@@ -1,6 +1,14 @@
-import { createLoader, parseAsArrayOf, parseAsString } from "nuqs/server";
+import {
+  createLoader,
+  parseAsArrayOf,
+  parseAsString,
+  parseAsStringLiteral,
+} from "nuqs/server";
+
+import { sortValues } from "./constants";
 
 const params = {
+  sort: parseAsStringLiteral(sortValues).withDefault("new"),
   minPrice: parseAsString.withOptions({
     clearOnDefault: true,
   }),

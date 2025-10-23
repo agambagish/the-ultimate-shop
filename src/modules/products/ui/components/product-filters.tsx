@@ -10,6 +10,7 @@ import { Button } from "@/components/ui/button";
 
 import { useProductFilters } from "../../hooks/use-product-filters";
 import { PriceFilter } from "./price-filter";
+import { SortFilter } from "./sort-filter";
 import { TagsFilter } from "./tags-filter";
 
 export function ProductFilters() {
@@ -29,9 +30,10 @@ export function ProductFilters() {
 
   function onClear() {
     setFilters({
-      minPrice: "",
-      maxPrice: "",
-      tags: [],
+      minPrice: null,
+      maxPrice: null,
+      tags: null,
+      sort: null,
     });
   }
 
@@ -53,6 +55,17 @@ export function ProductFilters() {
             )}
           </div>
           <Accordion type="multiple" className="w-full">
+            <AccordionItem value="sort" className="border-border/40">
+              <AccordionTrigger className="py-3 font-medium text-sm hover:no-underline">
+                Sort
+              </AccordionTrigger>
+              <AccordionContent className="pt-2 pb-4">
+                <SortFilter
+                  value={filters.sort}
+                  onChange={(value) => onChange("sort", value)}
+                />
+              </AccordionContent>
+            </AccordionItem>
             <AccordionItem value="price" className="border-border/40">
               <AccordionTrigger className="py-3 font-medium text-sm hover:no-underline">
                 Price Range

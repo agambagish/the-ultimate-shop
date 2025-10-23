@@ -1,6 +1,14 @@
-import { parseAsArrayOf, parseAsString, useQueryStates } from "nuqs";
+import {
+  parseAsArrayOf,
+  parseAsString,
+  parseAsStringLiteral,
+  useQueryStates,
+} from "nuqs";
+
+import { sortValues } from "../lib/constants";
 
 const params = {
+  sort: parseAsStringLiteral(sortValues).withDefault("new"),
   minPrice: parseAsString.withOptions({
     clearOnDefault: true,
   }),

@@ -19,10 +19,8 @@ export default async function ({ params, searchParams }: Props) {
   void queryClient.prefetchInfiniteQuery(
     trpc.products.getMany.infiniteQueryOptions({
       category,
-      minPrice: filters.minPrice,
-      maxPrice: filters.maxPrice,
-      tags: filters.tags,
       limit: DEFAULT_LIMIT,
+      ...filters,
     }),
   );
 

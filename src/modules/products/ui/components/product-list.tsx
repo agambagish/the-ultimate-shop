@@ -25,19 +25,17 @@ export function ProductList({ category, storeSubdomain }: Props) {
         {
           category,
           storeSubdomain,
-          minPrice: filters.minPrice,
-          maxPrice: filters.maxPrice,
-          tags: filters.tags,
           limit: DEFAULT_LIMIT,
+          ...filters,
         },
         {
           getNextPageParam: (lastPage) =>
-            lastPage.docs.length > 0 ? lastPage.nextPage : undefined,
+            lastPage.products.length > 0 ? lastPage.nextPage : undefined,
         },
       ),
     );
 
-  if (data.pages?.[0]?.docs.length === 0) {
+  if (data.pages?.[0]?.products.length === 0) {
     return (
       <div className="flex w-full flex-col items-center justify-center gap-y-4 rounded-2xl border border-border/40 bg-background/60 p-8 text-muted-foreground backdrop-blur-sm">
         <File />
@@ -50,22 +48,9 @@ export function ProductList({ category, storeSubdomain }: Props) {
     <>
       <div className="grid grid-cols-2 gap-6 sm:grid-cols-2 md:grid-cols-2 xl:grid-cols-3">
         {data.pages
-          .flatMap((page) => page.docs)
+          .flatMap((page) => page.products)
           .map((product) => (
-            <ProductCard
-              key={product.id}
-              id={product.id}
-              title={product.title}
-              imageUrl={product.image?.url}
-              storeName={product.tenant.name}
-              storeSubdomain={product.tenant.subdomain}
-              storeAvatarUrl={product.tenant.avatar?.url}
-              reviewRating={product.reviewRating}
-              reviewCount={product.reviewCount}
-              price={product.price}
-              discountType={product.discountType}
-              discountValue={product.discountValue}
-            />
+            <ProductCard key={product.id} product={product} />
           ))}
       </div>
       <div className="flex justify-center pt-8">

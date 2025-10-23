@@ -1,59 +1,81 @@
 import { headers as getHeaders } from "next/headers";
 
-import type { Where } from "payload";
 import z from "zod";
 
-import type { Category, Media, Store } from "@/payload-types";
+import type { Prisma } from "@/generated/prisma";
+import { prisma } from "@/lib/prisma";
 import { baseProcedure, createTRPCRouter } from "@/trpc/init";
 
-import { DEFAULT_LIMIT } from "../lib/constants";
+import { DEFAULT_LIMIT, sortValues } from "../lib/constants";
 
 export const productsRouter = createTRPCRouter({
   getOne: baseProcedure
     .input(
       z.object({
-        id: z.string(),
+        productId: z.string(),
       }),
     )
     .query(async ({ ctx, input }) => {
       const headers = await getHeaders();
       const session = await ctx.payload.auth({ headers });
 
-      const product = await ctx.payload.findByID({
-        collection: "products",
-        select: { content: false },
-        id: input.id,
-        depth: 2,
+      const product = await prisma.products.findUnique({
+        where: { id: Number(input.productId) },
+        select: {
+          title: true,
+          description: true,
+          image_id: true,
+          price: true,
+          discount_type: true,
+          discount_value: true,
+          stores: {
+            select: {
+              name: true,
+              avatar_id: true,
+            },
+          },
+          categories: {
+            select: {
+              label: true,
+              slug: true,
+              categories: {
+                select: {
+                  label: true,
+                  slug: true,
+                },
+              },
+            },
+          },
+        },
       });
+
+      if (!product) return null;
 
       let isPurchased = false;
 
       if (session.user) {
-        const ordersData = await ctx.payload.find({
-          collection: "orders",
-          pagination: false,
-          limit: 1,
+        const order = await prisma.orders.findFirst({
           where: {
-            and: [
-              { product: { equals: input.id } },
-              { user: { equals: session.user.id } },
+            AND: [
+              { product_id: Number(input.productId) },
+              { user_id: session.user.id },
             ],
           },
+          select: { id: true },
         });
 
-        isPurchased = !!ordersData.docs[0];
+        isPurchased = !!order;
       }
 
-      const reviews = await ctx.payload.find({
-        collection: "reviews",
-        pagination: false,
-        where: { product: { equals: input.id } },
+      const reviews = await prisma.reviews.findMany({
+        where: { product_id: Number(input.productId) },
+        select: { rating: true },
       });
 
       const reviewRating =
-        reviews.docs.length > 0
-          ? reviews.docs.reduce((acc, review) => acc + review.rating, 0) /
-            reviews.totalDocs
+        reviews.length > 0
+          ? reviews.reduce((acc, review) => acc + review.rating.toNumber(), 0) /
+            reviews.length
           : 0;
 
       const ratingDistribution: Record<number, number> = {
@@ -64,9 +86,9 @@ export const productsRouter = createTRPCRouter({
         1: 0,
       };
 
-      if (reviews.totalDocs > 0) {
-        reviews.docs.forEach((review) => {
-          const rating = review.rating;
+      if (reviews.length > 0) {
+        reviews.forEach((review) => {
+          const rating = review.rating.toNumber();
 
           if (rating >= 1 && rating <= 5) {
             ratingDistribution[rating] = (ratingDistribution[rating] || 0) + 1;
@@ -77,19 +99,18 @@ export const productsRouter = createTRPCRouter({
           const rating = Number(key);
           const count = ratingDistribution[rating] || 0;
           ratingDistribution[rating] = Math.round(
-            (count / reviews.totalDocs) * 100,
+            (count / reviews.length) * 100,
           );
         });
       }
 
       return {
         ...product,
+        price: product.price.toNumber(),
+        discount_value: product.discount_value.toNumber(),
         isPurchased,
-        image: product.image as Media | null,
-        tenant: product.tenant as Store & { avatar: Media | null },
-        category: product.category as Category | null,
         reviewRating,
-        reviewCount: reviews.totalDocs,
+        reviewCount: reviews.length,
         ratingDistribution,
       };
     }),
@@ -99,117 +120,155 @@ export const productsRouter = createTRPCRouter({
         cursor: z.number().default(1),
         limit: z.number().default(DEFAULT_LIMIT),
         category: z.string().nullable().optional(),
+        sort: z.enum(sortValues).nullable().optional(),
         minPrice: z.string().nullable().optional(),
         maxPrice: z.string().nullable().optional(),
         tags: z.array(z.string()).nullable().optional(),
         storeSubdomain: z.string().nullable().optional(),
       }),
     )
-    .query(async ({ ctx, input }) => {
-      const where: Where = {};
+    .query(async ({ input }) => {
+      const where: Prisma.productsWhereInput = {};
+      const orderBy: Prisma.productsOrderByWithRelationInput = {};
+
+      switch (input.sort) {
+        case "new":
+          orderBy.created_at = "desc";
+          break;
+        case "lth":
+          orderBy.price = "asc";
+          break;
+        case "htl":
+          orderBy.price = "desc";
+          break;
+        default:
+          orderBy.created_at = "desc";
+          break;
+      }
 
       if (input.minPrice && input.maxPrice) {
         where.price = {
-          greater_than_equal: input.minPrice,
-          less_than_equal: input.maxPrice,
+          gte: input.minPrice,
+          lte: input.maxPrice,
         };
       } else if (input.minPrice) {
         where.price = {
-          greater_than_equal: input.minPrice,
+          gte: input.minPrice,
         };
       } else if (input.maxPrice) {
         where.price = {
-          less_than_equal: input.maxPrice,
+          lte: input.maxPrice,
         };
       }
 
       if (input.storeSubdomain) {
-        where["tenant.subdomain"] = {
-          equals: input.storeSubdomain,
-        };
+        const tenant = await prisma.stores.findUnique({
+          where: { subdomain: input.storeSubdomain },
+          select: { id: true },
+        });
+
+        where.tenant_id = tenant?.id;
       }
 
       if (input.category) {
-        const categoriesData = await ctx.payload.find({
-          collection: "categories",
-          limit: 1,
-          depth: 1,
-          pagination: false,
-          where: {
-            slug: {
-              equals: input.category,
+        const category = await prisma.categories.findUnique({
+          where: { slug: input.category },
+          select: {
+            slug: true,
+            other_categories: {
+              select: {
+                slug: true,
+              },
             },
           },
         });
 
-        const formattedCategoriesData = categoriesData.docs.map((doc) => ({
-          ...doc,
-          subcategories: (doc.subcategories?.docs ?? []).map((doc) => ({
-            ...(doc as Category),
-            subcategories: undefined,
-          })),
-        }));
-
         const subcategorySlugs = [];
-        const parentCategory = formattedCategoriesData[0];
 
-        if (parentCategory) {
+        if (category) {
           subcategorySlugs.push(
-            ...parentCategory.subcategories.map(
-              (subcategory) => subcategory.slug,
-            ),
+            ...category.other_categories.map((subcategory) => subcategory.slug),
           );
 
-          where["category.slug"] = {
-            in: [parentCategory.slug, ...subcategorySlugs],
+          where.categories = {
+            slug: { in: [category.slug, ...subcategorySlugs] },
           };
         }
       }
 
       if (input.tags && input.tags.length > 0) {
-        where["tags.label"] = {
-          in: input.tags,
-        };
+        where.OR = [
+          { products_rels: { some: { tags: { label: { in: input.tags } } } } },
+          { tags_rels: { some: { tags: { label: { in: input.tags } } } } },
+        ];
       }
 
-      const data = await ctx.payload.find({
-        collection: "products",
-        select: { content: false },
-        depth: 2,
-        where,
-        page: input.cursor,
-        limit: input.limit,
-      });
+      const skip = (input.cursor - 1) * input.limit;
 
-      const dataWithSummarizedReviews = await Promise.all(
-        data.docs.map(async (doc) => {
-          const reviewsData = await ctx.payload.find({
-            collection: "reviews",
-            pagination: false,
-            where: { product: { equals: doc.id } },
+      const [totalProducts, products] = await Promise.all([
+        prisma.products.count({ where }),
+        prisma.products.findMany({
+          where,
+          skip,
+          take: input.limit,
+          orderBy,
+          select: {
+            id: true,
+            title: true,
+            price: true,
+            discount_type: true,
+            discount_value: true,
+            image_id: true,
+            stores: {
+              select: {
+                name: true,
+                subdomain: true,
+                avatar_id: true,
+              },
+            },
+          },
+        }),
+      ]);
+
+      const productsWithReviews = await Promise.all(
+        products.map(async (product) => {
+          const reviews = await prisma.reviews.findMany({
+            where: { product_id: product.id },
           });
 
           return {
-            ...doc,
-            reviewCount: reviewsData.totalDocs,
+            ...product,
+            reviewCount: reviews.length,
             reviewRating:
-              reviewsData.docs.length === 0
+              reviews.length === 0
                 ? 0
-                : reviewsData.docs.reduce(
-                    (acc, review) => acc + review.rating,
-                    0,
-                  ) / reviewsData.totalDocs,
+                : (
+                    reviews.reduce(
+                      (acc, review) => acc + review.rating.toNumber(),
+                      0,
+                    ) / reviews.length
+                  ).toFixed(1),
           };
         }),
       );
 
+      const totalPages = Math.ceil(totalProducts / input.limit);
+
       return {
-        ...data,
-        docs: dataWithSummarizedReviews.map((doc) => ({
-          ...doc,
-          image: doc.image as Media | null,
-          tenant: doc.tenant as Store & { avatar: Media | null },
+        products: productsWithReviews.map((product) => ({
+          ...product,
+          price: product.price.toNumber(),
+          discount_value: product.discount_value.toNumber(),
         })),
+        totalProducts,
+        limit: input.limit,
+        totalPages,
+        page: input.cursor,
+        pagingCounter: skip + 1,
+        hasPrevPage: input.cursor > 1,
+        hasNextPage: input.cursor < totalPages,
+        prevPage: input.cursor > 1 ? input.cursor - 1 : null,
+        nextPage: input.cursor < totalPages ? input.cursor + 1 : null,
       };
     }),
 });

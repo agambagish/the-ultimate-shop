@@ -59,7 +59,6 @@ export function CategoryBar() {
     }
 
     const resizeObserver = new ResizeObserver(calculateVisible);
-    // biome-ignore lint/style/noNonNullAssertion: _
     resizeObserver.observe(containerRef.current!);
 
     return () => resizeObserver.disconnect();

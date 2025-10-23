@@ -1,6 +1,11 @@
+import { Suspense } from "react";
+
 import { dehydrate, HydrationBoundary } from "@tanstack/react-query";
 
-import { ProductView } from "@/modules/products/ui/views/product-view";
+import {
+  ProductView,
+  ProductViewSkeleton,
+} from "@/modules/products/ui/views/product-view";
 import { getQueryClient, trpc } from "@/trpc/server";
 
 interface Props {
@@ -16,13 +21,15 @@ export default async function ({ params }: Props) {
   const queryClient = getQueryClient();
   void queryClient.prefetchQuery(
     trpc.products.getOne.queryOptions({
-      id: productId,
+      productId,
     }),
   );
 
   return (
     <HydrationBoundary state={dehydrate(queryClient)}>
-      <ProductView productId={productId} storeSubdomain={subdomain} />
+      <Suspense fallback={<ProductViewSkeleton />}>
+        <ProductView productId={productId} storeSubdomain={subdomain} />
+      </Suspense>
     </HydrationBoundary>
   );
 }
