@@ -69,14 +69,12 @@ export function CheckoutItem({
             <div className="flex items-center space-x-2">
               <span className="font-bold text-lg">
                 {discountType === "flat"
-                  ? formatCurrency(Math.round(price - discountValue))
-                  : formatCurrency(
-                      Math.round(price - (price * discountValue) / 100),
-                    )}
+                  ? formatCurrency(price - discountValue)
+                  : formatCurrency(price - (price * discountValue) / 100)}
               </span>
               {discountValue > 0 && (
                 <span className="text-muted-foreground text-sm line-through">
-                  {formatCurrency(Math.round(price))}
+                  {formatCurrency(price)}
                 </span>
               )}
             </div>

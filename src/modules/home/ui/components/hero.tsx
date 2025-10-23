@@ -44,10 +44,13 @@ export function Hero() {
               </Link>
               <Link
                 href="/pricing"
-                className={buttonVariants({
-                  variant: "outline",
-                  size: "lg",
-                })}
+                className={cn(
+                  buttonVariants({
+                    variant: "outline",
+                    size: "lg",
+                  }),
+                  "themed-outline-btn",
+                )}
               >
                 View Pricing
               </Link>

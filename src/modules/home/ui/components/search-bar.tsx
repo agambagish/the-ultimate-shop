@@ -26,7 +26,7 @@ export function SearchBar() {
         prefetch
         className={cn(
           buttonVariants({ variant: "outline" }),
-          "h-12 rounded-xl border-border/40 bg-background/60 px-6 backdrop-blur-sm transition-all hover:bg-background/80",
+          "themed-outline-btn h-12 rounded-xl px-6",
         )}
       >
         <PackageOpen />

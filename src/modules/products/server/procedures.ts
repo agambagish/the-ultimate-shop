@@ -74,8 +74,14 @@ export const productsRouter = createTRPCRouter({
 
       const reviewRating =
         reviews.length > 0
-          ? reviews.reduce((acc, review) => acc + review.rating.toNumber(), 0) /
-            reviews.length
+          ? Number(
+              (
+                reviews.reduce(
+                  (acc, review) => acc + review.rating.toNumber(),
+                  0,
+                ) / reviews.length
+              ).toFixed(1),
+            )
           : 0;
 
       const ratingDistribution: Record<number, number> = {
@@ -106,8 +112,8 @@ export const productsRouter = createTRPCRouter({
 
       return {
         ...product,
-        price: product.price.toNumber(),
-        discount_value: product.discount_value.toNumber(),
+        price: Math.round(product.price.toNumber()),
+        discount_value: Math.round(product.discount_value.toNumber()),
         isPurchased,
         reviewRating,
         reviewCount: reviews.length,
@@ -242,12 +248,14 @@ export const productsRouter = createTRPCRouter({
             reviewRating:
               reviews.length === 0
                 ? 0
-                : (
-                    reviews.reduce(
-                      (acc, review) => acc + review.rating.toNumber(),
-                      0,
-                    ) / reviews.length
-                  ).toFixed(1),
+                : Number(
+                    (
+                      reviews.reduce(
+                        (acc, review) => acc + review.rating.toNumber(),
+                        0,
+                      ) / reviews.length
+                    ).toFixed(1),
+                  ),
           };
         }),
       );
@@ -257,8 +265,8 @@ export const productsRouter = createTRPCRouter({
       return {
         products: productsWithReviews.map((product) => ({
           ...product,
-          price: product.price.toNumber(),
-          discount_value: product.discount_value.toNumber(),
+          price: Math.round(product.price.toNumber()),
+          discount_value: Math.round(product.discount_value.toNumber()),
         })),
         totalProducts,
         limit: input.limit,

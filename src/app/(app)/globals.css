@@ -198,3 +198,7 @@ input[type="number"]::-webkit-outer-spin-button {
 .shiny-button {
   @apply from-primary via-primary/60 to-primary bg-transparent bg-gradient-to-r [background-size:200%_auto] hover:bg-transparent hover:bg-[99%_center];
 }
+
+.themed-outline-btn {
+  @apply border-border/40 bg-background/60 backdrop-blur-sm hover:bg-background/80 shadow-lg;
+}

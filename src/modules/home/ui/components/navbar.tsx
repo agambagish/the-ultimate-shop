@@ -106,10 +106,13 @@ export function Navbar() {
               <Link
                 href="/login"
                 prefetch
-                className={buttonVariants({
-                  variant: "outline",
-                  size: "lg",
-                })}
+                className={cn(
+                  buttonVariants({
+                    variant: "outline",
+                    size: "lg",
+                  }),
+                  "themed-outline-btn",
+                )}
               >
                 Login
               </Link>

@@ -89,7 +89,7 @@ export function PurchasedProductList() {
             disabled={isFetchingNextPage}
             onClick={() => fetchNextPage()}
             variant="outline"
-            className="cursor-pointer"
+            className="themed-outline-btn cursor-pointer"
           >
             {isFetchingNextPage && <Loader2 className="animate-spin" />}
             Load more

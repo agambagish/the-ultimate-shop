@@ -23,7 +23,7 @@ export function CheckoutButton({ storeSubdomain, hideIfEmpty }: Props) {
       href={`${generateStoreURL(storeSubdomain)}/checkout`}
       className={cn(
         buttonVariants({ variant: "outline", size: "icon" }),
-        "relative",
+        "themed-outline-btn relative",
       )}
     >
       <ShoppingBag />

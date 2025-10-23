@@ -78,19 +78,15 @@ export function ProductCard({ product }: Props) {
           <div className="flex items-center space-x-2 pt-1">
             <span className="font-bold text-foreground text-lg">
               {product.discount_type === "flat"
-                ? formatCurrency(
-                    Math.round(product.price - product.discount_value),
-                  )
+                ? formatCurrency(product.price - product.discount_value)
                 : formatCurrency(
-                    Math.round(
-                      product.price -
-                        (product.price * product.discount_value) / 100,
-                    ),
+                    product.price -
+                      (product.price * product.discount_value) / 100,
                   )}
             </span>
             {product.discount_value > 0 && (
               <span className="font-bold text-lg text-muted-foreground line-through">
-                {formatCurrency(Math.round(product.price))}
+                {formatCurrency(product.price)}
               </span>
             )}
           </div>

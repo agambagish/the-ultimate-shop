@@ -45,9 +45,7 @@ export function StarRating({
           );
         })}
       </div>
-      <span className="font-semibold text-foreground">
-        {safeRating.toFixed(1)}
-      </span>
+      <span className="font-semibold text-foreground">{safeRating}</span>
       <span className="text-muted-foreground">({reviewCount} reviews)</span>
     </div>
   );

@@ -107,26 +107,21 @@ export function ProductView({ productId, storeSubdomain }: Props) {
                 <div className="flex items-baseline space-x-2">
                   <span className="font-bold text-4xl">
                     {data.discount_type === "flat"
-                      ? formatCurrency(
-                          Math.round(data.price - data.discount_value),
-                        )
+                      ? formatCurrency(data.price - data.discount_value)
                       : formatCurrency(
-                          Math.round(
-                            data.price -
-                              (data.price * data.discount_value) / 100,
-                          ),
+                          data.price - (data.price * data.discount_value) / 100,
                         )}
                   </span>
                   {data.discount_value > 0 && (
                     <span className="text-lg text-muted-foreground line-through">
-                      {formatCurrency(Math.round(data.price))}
+                      {formatCurrency(data.price)}
                     </span>
                   )}
                   {data.discount_value > 0 && data.price > 0 && (
                     <Badge className="bg-green-100 text-green-800">
                       {data.discount_type === "percentage"
-                        ? Math.round(data.discount_value)
-                        : Math.round((data.discount_value / data.price) * 100)}
+                        ? data.discount_value
+                        : (data.discount_value / data.price) * 100}
                       % OFF
                     </Badge>
                   )}
@@ -156,7 +151,7 @@ export function ProductView({ productId, storeSubdomain }: Props) {
                     <Button
                       size="icon"
                       variant="outline"
-                      className="size-14"
+                      className="themed-outline-btn size-14 cursor-pointer"
                       onClick={handleShare}
                       disabled={isShared}
                     >
