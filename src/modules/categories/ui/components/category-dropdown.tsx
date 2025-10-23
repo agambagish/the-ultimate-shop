@@ -10,7 +10,7 @@ import { cn } from "@/lib/utils";
 import { SubcategoryMenu } from "./subcategory-menu";
 
 interface Props {
-  category: TQueryResult<"categories.getMany">[0];
+  category: TQueryResult<"categories.getMany">[number];
   isActive: boolean;
   isHovered: boolean;
 }

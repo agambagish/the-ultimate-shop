@@ -29,7 +29,7 @@ export function CategorySidebar({ open, onOpenChange }: Props) {
     useState<TQueryResult<"categories.getMany"> | null>(null);
 
   const [selectedCategory, setSelectedCategory] = useState<
-    TQueryResult<"categories.getMany">[0] | null
+    TQueryResult<"categories.getMany">[number] | null
   >(null);
 
   const currentCategories = parentCategories ?? data ?? [];
@@ -41,7 +41,7 @@ export function CategorySidebar({ open, onOpenChange }: Props) {
   }
 
   function handleCategoryClick(
-    category: TQueryResult<"categories.getMany">[0],
+    category: TQueryResult<"categories.getMany">[number],
   ) {
     if (category.other_categories && category.other_categories.length > 0) {
       setParentCategories(

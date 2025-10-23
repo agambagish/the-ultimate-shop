@@ -8,7 +8,7 @@ import { createPortal } from "react-dom";
 import type { TQueryResult } from "@/lib/types";
 
 interface Props {
-  category: TQueryResult<"categories.getMany">[0];
+  category: TQueryResult<"categories.getMany">[number];
   isOpen: boolean;
 }
 
