@@ -5,11 +5,12 @@ import { X } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
 import { Separator } from "@/components/ui/separator";
+import { calculateProductPricing } from "@/lib/calculate";
 import { formatCurrency } from "@/lib/utils";
 
 interface Props {
   isLast?: boolean;
-  imageUrl?: string | null;
+  imageUrl: string;
   title: string;
   productUrl: string;
   storeUrl: string;
@@ -34,12 +35,18 @@ export function CheckoutItem({
   discountType,
   discountValue,
 }: Props) {
+  const { discountedPrice, originalPrice } = calculateProductPricing({
+    price,
+    discount_type: discountType,
+    discount_value: discountValue,
+  });
+
   return (
     <>
       <div className="flex items-start space-x-4">
         <div className="relative h-20 w-20 flex-shrink-0 overflow-hidden rounded-xl">
           <Image
-            src={imageUrl || "/placeholder.png"}
+            src={imageUrl}
             alt={title}
             className="h-full w-full object-cover"
             fill
@@ -68,13 +75,11 @@ export function CheckoutItem({
           <div className="mt-3">
             <div className="flex items-center space-x-2">
               <span className="font-bold text-lg">
-                {discountType === "flat"
-                  ? formatCurrency(price - discountValue)
-                  : formatCurrency(price - (price * discountValue) / 100)}
+                {formatCurrency(discountedPrice)}
               </span>
-              {discountValue > 0 && (
+              {originalPrice && (
                 <span className="text-muted-foreground text-sm line-through">
-                  {formatCurrency(price)}
+                  {formatCurrency(originalPrice)}
                 </span>
               )}
             </div>

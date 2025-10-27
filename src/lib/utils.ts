@@ -37,7 +37,7 @@ export function formatCurrency(value: number | string) {
   }).format(Number(value));
 }
 
-export function formatDateTime(date: string) {
+export function formatDateTime(date: string | Date) {
   return Intl.DateTimeFormat("en-IN", {
     month: "long",
     day: "numeric",

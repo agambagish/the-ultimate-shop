@@ -1,65 +1,55 @@
-import { TRPCError } from "@trpc/server";
 import z from "zod";
 
+import { prisma } from "@/lib/prisma";
 import { DEFAULT_LIMIT } from "@/modules/products/lib/constants";
-import type { Media, Store } from "@/payload-types";
 import { createTRPCRouter, protectedProcedure } from "@/trpc/init";
 
 export const libraryRouter = createTRPCRouter({
   getOne: protectedProcedure
     .input(
       z.object({
-        orderId: z.string(),
+        productId: z.string(),
       }),
     )
     .query(async ({ ctx, input }) => {
-      const order = await ctx.payload
-        .find({
-          collection: "orders",
-          limit: 1,
-          pagination: false,
-          depth: 0,
-          where: {
-            and: [
-              { id: { equals: input.orderId } },
-              { user: { equals: ctx.session.user.id } },
-            ],
-          },
-        })
-        .then(({ docs }) => docs[0]);
-
-      if (!order) {
-        throw new TRPCError({
-          code: "NOT_FOUND",
-          message: "Order not found",
-        });
-      }
-
-      const product = await ctx.payload.findByID({
-        collection: "products",
-        id: order.product as number,
+      const product = await prisma.products.findUnique({
+        where: { id: Number(input.productId) },
+        select: {
+          id: true,
+          content: true,
+        },
       });
 
-      if (!product) {
-        throw new TRPCError({
-          code: "NOT_FOUND",
-          message: "Product not found",
-        });
-      }
+      if (!product) return null;
+
+      const order = await prisma.orders.findFirst({
+        where: {
+          AND: [{ product_id: product.id }, { user_id: ctx.session.user.id }],
+        },
+        select: {
+          id: true,
+          created_at: true,
+          price: true,
+          discounted_price: true,
+        },
+      });
+
+      if (!order) return null;
+
+      const { paymentDetails } = await ctx.payload.findByID({
+        collection: "orders",
+        id: order.id,
+        select: { paymentDetails: true },
+      });
 
       return {
-        ...product,
-        orderId: order.id,
-        placedOn: order.createdAt,
-        paymentDetails: order.paymentDetails,
-        purchasedPrice: order.price,
-        purchasedDiscountedPrice: order.discountedPrice,
-        purchasedDiscountPercentage:
-          order.discountedPrice === order.price
-            ? 0
-            : Math.round(
-                ((order.price - order.discountedPrice) / order.price) * 100,
-              ),
+        product,
+        order: {
+          ...order,
+          price: order.price.toNumber(),
+          discounted_price: order.discounted_price.toNumber(),
+          paymentDetails,
+        },
       };
     }),
   getMany: protectedProcedure
@@ -70,59 +60,47 @@ export const libraryRouter = createTRPCRouter({
       }),
     )
     .query(async ({ ctx, input }) => {
-      const ordersData = await ctx.payload.find({
-        collection: "orders",
-        depth: 0,
-        page: input.cursor,
-        limit: input.limit,
-        where: {
-          user: { equals: ctx.session.user.id },
-        },
+      const orders = await prisma.orders.findMany({
+        where: { user_id: ctx.session.user.id },
+        select: { product_id: true },
       });
 
-      if (!ordersData.docs.length) {
-        return {
-          ...ordersData,
-          totalSpent: 0,
-          docs: [],
-        };
-      }
+      const productIds = orders.map((order) => order.product_id);
+      const skip = (input.cursor - 1) * input.limit;
+      const where = { id: { in: productIds } };
 
-      const productIds = ordersData.docs.map((order) => order.product);
+      const [totalProducts, products] = await Promise.all([
+        prisma.products.count({ where }),
+        prisma.products.findMany({
+          where,
+          skip,
+          take: input.limit,
+          select: {
+            id: true,
+            title: true,
+            image_id: true,
+            stores: {
+              select: {
+                name: true,
+                avatar_id: true,
+              },
+            },
+          },
+        }),
+      ]);
 
-      const productsData = await ctx.payload.find({
-        collection: "products",
-        select: { content: false },
-        pagination: false,
-        where: {
-          id: { in: productIds },
-        },
-      });
-
-      const productMap = new Map(productsData.docs.map((p) => [p.id, p]));
-
-      const mergedDocs = ordersData.docs.map((order) => {
-        const product = productMap.get(order.product as number);
-
-        return {
-          ...order,
-          product: product
-            ? {
-                ...product,
-                image: product.image as Media | null,
-                tenant: product.tenant as Store & { avatar: Media | null },
-              }
-            : null,
-        };
-      });
+      const totalPages = Math.ceil(totalProducts / input.limit);
 
       return {
-        ...ordersData,
-        docs: mergedDocs,
-        totalSpent: ordersData.docs.reduce(
-          (acc, order) => acc + order.discountedPrice,
-          0,
-        ),
+        products,
+        limit: input.limit,
+        totalPages,
+        page: input.cursor,
+        pagingCounter: skip + 1,
+        hasPrevPage: input.cursor > 1,
+        hasNextPage: input.cursor < totalPages,
+        prevPage: input.cursor > 1 ? input.cursor - 1 : null,
+        nextPage: input.cursor < totalPages ? input.cursor + 1 : null,
       };
     }),
 });

@@ -22,7 +22,7 @@ export function TagsFilter({ values, onChange }: Props) {
         },
         {
           getNextPageParam: (lastPage) =>
-            lastPage.docs.length > 0 ? lastPage.nextPage : undefined,
+            lastPage.tags.length > 0 ? lastPage.nextPage : undefined,
         },
       ),
     );
@@ -43,7 +43,7 @@ export function TagsFilter({ values, onChange }: Props) {
         </div>
       ) : (
         data?.pages.map((page) =>
-          page.docs.map((tag) => (
+          page.tags.map((tag) => (
             // biome-ignore lint/a11y/useKeyWithClickEvents: _
             <div
               key={tag.id}

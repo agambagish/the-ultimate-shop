@@ -63,7 +63,6 @@ model orders {
   orders_blocks_card            orders_blocks_card[]
   orders_blocks_upi             orders_blocks_upi[]
   payload_locked_documents_rels payload_locked_documents_rels[]
-  reviews                       reviews[]
 
   @@index([created_at])
   @@index([product_id], map: "orders_product_idx")
@@ -207,12 +206,10 @@ model reviews {
   description                   String                          @db.VarChar
   rating                        Decimal                         @db.Decimal
   product_id                    Int
-  order_id                      Int
   user_id                       Int
   updated_at                    DateTime                        @default(now()) @db.Timestamptz(3)
   created_at                    DateTime                        @default(now()) @db.Timestamptz(3)
   payload_locked_documents_rels payload_locked_documents_rels[]
-  orders                        orders                          @relation(fields: [order_id], references: [id], onDelete: SetNull, onUpdate: NoAction, map: "reviews_order_id_orders_id_fk")
   products                      products                        @relation(fields: [product_id], references: [id], onDelete: SetNull, onUpdate: NoAction, map: "reviews_product_id_products_id_fk")
   users                         users                           @relation(fields: [user_id], references: [id], onDelete: SetNull, onUpdate: NoAction, map: "reviews_user_id_users_id_fk")
 
@@ -220,7 +217,6 @@ model reviews {
   @@index([product_id], map: "reviews_product_idx")
   @@index([updated_at])
   @@index([user_id], map: "reviews_user_idx")
-  @@index([order_id], map: "reviews_order_idx")
 }
 
 model stores {

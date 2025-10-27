@@ -4,28 +4,28 @@ import { PurchasedProductView } from "@/modules/library/ui/views/purchased-produ
 import { getQueryClient, trpc } from "@/trpc/server";
 
 interface Props {
-  params: Promise<{ orderId: string }>;
+  params: Promise<{ productId: string }>;
 }
 
 export default async function ({ params }: Props) {
-  const { orderId } = await params;
+  const { productId } = await params;
 
   const queryClient = getQueryClient();
   void queryClient.prefetchQuery(
     trpc.library.getOne.queryOptions({
-      orderId,
+      productId,
     }),
   );
 
   void queryClient.prefetchQuery(
     trpc.reviews.getOne.queryOptions({
-      orderId,
+      productId,
     }),
   );
 
   return (
     <HydrationBoundary state={dehydrate(queryClient)}>
-      <PurchasedProductView orderId={orderId} />
+      <PurchasedProductView productId={productId} />
     </HydrationBoundary>
   );
 }

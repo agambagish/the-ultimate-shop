@@ -3,37 +3,35 @@ import { AtSign, Landmark, Percent, ReceiptIndianRupee } from "lucide-react";
 
 import { UPILogo } from "@/components/upi-logo";
 import { formatCurrency } from "@/lib/utils";
+import type { Order } from "@/payload-types";
 import { useTRPC } from "@/trpc/client";
 
-import type { PaymentDetails } from "../../lib/types";
 import { ReviewForm } from "./review-form";
 
 interface Props {
-  orderId: string;
-  paymentDetails: PaymentDetails;
+  productId: string;
+  paymentDetails: Order["paymentDetails"];
   purchasedPrice: number;
   purchasedDiscountedPrice: number;
-  purchasedDiscountPercentage: number;
 }
 
 export function ReviewSidebar({
-  orderId,
+  productId,
   paymentDetails,
   purchasedPrice,
   purchasedDiscountedPrice,
-  purchasedDiscountPercentage,
 }: Props) {
   const trpc = useTRPC();
   const { data } = useSuspenseQuery(
     trpc.reviews.getOne.queryOptions({
-      orderId,
+      productId,
     }),
   );
 
   return (
     <div className="space-y-6 md:col-span-4">
       <div className="rounded-lg border border-border/40 bg-background/70 p-4 backdrop-blur-sm">
-        <ReviewForm orderId={orderId} initialData={data} />
+        <ReviewForm productId={productId} initialData={data} />
       </div>
       <div className="rounded-lg border border-border/40 bg-background/70 p-4 backdrop-blur-sm">
         <h3 className="mb-3 font-semibold text-base text-foreground">
@@ -62,7 +60,11 @@ export function ReviewSidebar({
               Discount
             </span>
             <span className="truncate font-medium text-green-600">
-              {purchasedDiscountPercentage}%
+              {Math.round(
+                ((purchasedPrice - purchasedDiscountedPrice) / purchasedPrice) *
+                  100,
+              )}
+              %
             </span>
           </div>
         </div>

@@ -1,12 +1,13 @@
 import { TRPCError } from "@trpc/server";
-import type { CartItem } from "cashfree-pg";
+import type { CartItem, OrderEntity, PayOrderEntity } from "cashfree-pg";
 import z from "zod";
 
 import { env } from "@/env";
-import { calculatePricing } from "@/lib/calculate";
+import { calculateProductPricing, calculateTotals } from "@/lib/calculate";
 import { cashfree } from "@/lib/cashfree";
+import { prisma } from "@/lib/prisma";
 import { tryCatch } from "@/lib/try-catch";
-import type { Media, Store } from "@/payload-types";
+import type { StrictDefined } from "@/lib/types";
 import {
   baseProcedure,
   createTRPCRouter,
@@ -32,39 +33,33 @@ export const checkoutRouter = createTRPCRouter({
       }),
     )
     .mutation(async ({ ctx, input }) => {
-      const products = await ctx.payload.find({
-        collection: "products",
-        select: { content: false },
-        depth: 2,
+      const products = await prisma.products.findMany({
         where: {
-          and: [
-            { id: { in: input.productIds } },
-            {
-              "tenant.subdomain": {
-                equals: input.storeSubdomain,
-              },
-            },
+          AND: [
+            { id: { in: input.productIds.map(Number) } },
+            { stores: { subdomain: input.storeSubdomain } },
           ],
+        },
+        select: {
+          id: true,
+          title: true,
+          price: true,
+          discount_type: true,
+          discount_value: true,
         },
       });
 
-      if (products.totalDocs !== input.productIds.length) {
+      if (products.length !== input.productIds.length) {
         throw new TRPCError({
           code: "NOT_FOUND",
           message: "Products not found",
         });
       }
 
-      const storesData = await ctx.payload.find({
-        collection: "stores",
-        limit: 1,
-        pagination: false,
-        where: {
-          subdomain: { equals: input.storeSubdomain },
-        },
+      const store = await prisma.stores.findUnique({
+        where: { subdomain: input.storeSubdomain },
+        select: { subdomain: true },
       });
-
-      const store = storesData.docs[0];
 
       if (!store) {
         throw new TRPCError({
@@ -75,25 +70,25 @@ export const checkoutRouter = createTRPCRouter({
 
       // TODO: Throw error if CF details not provided
 
-      const cart_items: CartItem[] = products.docs.map((product) => ({
-        item_quantity: 1,
-        item_original_unit_price: product.price,
-        item_discounted_unit_price:
-          product.discountType === "flat"
-            ? Math.round(product.price - product.discountValue)
-            : Math.round(
-                product.price - (product.price * product.discountValue) / 100,
-              ),
-        item_currency: "INR",
-        item_name: product.title,
-        item_id: product.id.toString(),
-        item_details_url: `${env.NEXT_PUBLIC_APP_URL}/stores/${store.subdomain}/products/${product.id}`,
-      }));
+      const cart_items: CartItem[] = products.map((product) => {
+        const { discountedPrice: item_discounted_unit_price } =
+          calculateProductPricing(product);
 
-      const { total: order_amount } = calculatePricing(products.docs);
+        return {
+          item_quantity: 1,
+          item_original_unit_price: product.price.toNumber(),
+          item_discounted_unit_price,
+          item_currency: "INR",
+          item_name: product.title,
+          item_id: product.id.toString(),
+          item_details_url: `${env.NEXT_PUBLIC_APP_URL}/stores/${store.subdomain}/products/${product.id}`,
+        };
+      });
+
+      const { total: order_amount } = calculateTotals(products);
       const order_id = crypto.randomUUID();
 
-      const { data: order } = await tryCatch(
+      const orderData = await tryCatch(
         cashfree.PGCreateOrder({
           order_id,
           order_amount,
@@ -111,16 +106,18 @@ export const checkoutRouter = createTRPCRouter({
         }),
       );
 
-      if (!order?.data.payment_session_id || order.status !== 200) {
+      if (orderData.error) {
         throw new TRPCError({
           code: "INTERNAL_SERVER_ERROR",
           message: "Failed to create order",
         });
       }
 
-      const { data: payment } = await tryCatch(
+      const order = orderData.data.data as StrictDefined<OrderEntity>;
+
+      const paymentData = await tryCatch(
         cashfree.PGPayOrder({
-          payment_session_id: order.data.payment_session_id,
+          payment_session_id: order.payment_session_id,
           payment_method: {
             ...(input.credentials.type === "upi"
               ? {
@@ -139,50 +136,66 @@ export const checkoutRouter = createTRPCRouter({
         }),
       );
 
-      if (!payment?.data.data?.url || payment.status !== 200) {
+      if (paymentData.error) {
         throw new TRPCError({
           code: "INTERNAL_SERVER_ERROR",
           message: "Failed to create checkout session",
         });
       }
 
-      return { url: payment.data.data.url };
+      const payment = paymentData.data.data as StrictDefined<PayOrderEntity>;
+
+      return { url: payment.data.url };
     }),
   getProducts: baseProcedure
     .input(
       z.object({
         productIds: z.array(z.string()),
+        storeSubdomain: z.string(),
       }),
     )
-    .query(async ({ ctx, input }) => {
-      const data = await ctx.payload.find({
-        collection: "products",
-        select: { content: false },
-        depth: 2,
+    .query(async ({ input }) => {
+      const data = await prisma.products.findMany({
         where: {
-          id: { in: input.productIds },
+          AND: [
+            { id: { in: input.productIds.map(Number) } },
+            { stores: { subdomain: input.storeSubdomain } },
+          ],
+        },
+        select: {
+          id: true,
+          title: true,
+          image_id: true,
+          price: true,
+          discount_type: true,
+          discount_value: true,
+          stores: {
+            select: {
+              name: true,
+              subdomain: true,
+            },
+          },
         },
       });
 
-      if (data.totalDocs !== input.productIds.length) {
+      if (data.length !== input.productIds.length) {
         throw new TRPCError({
           code: "NOT_FOUND",
           message: "Products not found",
         });
       }
 
-      const { subtotal, total, totalSavings } = calculatePricing(data.docs);
+      const { subtotal, total, totalSavings } = calculateTotals(data);
 
       return {
-        ...data,
+        products: data.map((product) => ({
+          ...product,
+          price: product.price.toNumber(),
+          discount_value: product.discount_value.toNumber(),
+        })),
         subtotal,
         totalSavings,
         total,
-        docs: data.docs.map((doc) => ({
-          ...doc,
-          image: doc.image as Media | null,
-          tenant: doc.tenant as Store & { avatar: Media | null },
-        })),
       };
     }),
 });

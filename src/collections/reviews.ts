@@ -34,13 +34,6 @@ export const Reviews: CollectionConfig = {
       required: true,
     },
     {
-      name: "order",
-      type: "relationship",
-      relationTo: "orders",
-      hasMany: false,
-      required: true,
-    },
-    {
       name: "user",
       type: "relationship",
       relationTo: "users",

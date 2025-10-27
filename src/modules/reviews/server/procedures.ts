@@ -1,71 +1,50 @@
 import { TRPCError } from "@trpc/server";
 import z from "zod";
 
+import { prisma } from "@/lib/prisma";
 import { createTRPCRouter, protectedProcedure } from "@/trpc/init";
 
 export const reviewsRouter = createTRPCRouter({
   getOne: protectedProcedure
     .input(
       z.object({
-        orderId: z.string(),
+        productId: z.string(),
       }),
     )
-    .query(async ({ ctx, input }) => {
-      const order = await ctx.payload.findByID({
-        collection: "orders",
-        id: input.orderId,
+    .query(async ({ input, ctx }) => {
+      const review = await prisma.reviews.findFirst({
+        where: {
+          AND: [
+            { product_id: Number(input.productId) },
+            { user_id: ctx.session.user.id },
+          ],
+        },
+        select: {
+          id: true,
+          rating: true,
+          description: true,
+        },
       });
-
-      if (!order) {
-        throw new TRPCError({
-          code: "NOT_FOUND",
-          message: "Order not found",
-        });
-      }
-
-      const review = await ctx.payload
-        .find({
-          collection: "reviews",
-          limit: 1,
-          where: {
-            and: [
-              { order: { equals: order.id } },
-              { user: { equals: ctx.session.user.id } },
-            ],
-          },
-        })
-        .then(({ docs }) => docs[0]);
 
       if (!review) return null;
 
-      return review;
+      return {
+        ...review,
+        rating: review.rating.toNumber(),
+      };
     }),
   create: protectedProcedure
     .input(
       z.object({
-        orderId: z.string(),
+        productId: z.string(),
         rating: z.number().min(1).max(5),
         description: z.string().min(1),
       }),
     )
     .mutation(async ({ ctx, input }) => {
-      const order = await ctx.payload.findByID({
-        collection: "orders",
-        id: input.orderId,
-        depth: 0,
-      });
-
-      if (!order) {
-        throw new TRPCError({
-          code: "NOT_FOUND",
-          message: "Order not found",
-        });
-      }
-
-      const product = await ctx.payload.findByID({
-        collection: "products",
-        select: { content: false },
-        id: order.product as number,
+      const product = await prisma.products.findUnique({
+        where: { id: Number(input.productId) },
+        select: { id: true },
       });
 
       if (!product) {
@@ -75,31 +54,25 @@ export const reviewsRouter = createTRPCRouter({
         });
       }
 
-      const existingReviewsData = await ctx.payload.find({
-        collection: "reviews",
+      const existingReview = await prisma.reviews.findFirst({
         where: {
-          and: [
-            { product: { equals: order.product } },
-            { user: { equals: ctx.session.user.id } },
-          ],
+          AND: [{ product_id: product.id }, { user_id: ctx.session.user.id }],
         },
+        select: { id: true },
       });
 
-      if (existingReviewsData.totalDocs > 0) {
+      if (existingReview) {
         throw new TRPCError({
           code: "CONFLICT",
           message: "You have already reviewed this product",
         });
       }
 
-      const review = await ctx.payload.create({
-        collection: "reviews",
+      const review = await prisma.reviews.create({
         data: {
-          user: ctx.session.user.id,
-          product: product.id,
-          rating: input.rating,
-          description: input.description,
-          order: order.id,
+          user_id: ctx.session.user.id,
+          product_id: product.id,
+          ...input,
         },
       });
 
@@ -114,10 +87,9 @@ export const reviewsRouter = createTRPCRouter({
       }),
     )
     .mutation(async ({ ctx, input }) => {
-      const existingReview = await ctx.payload.findByID({
-        depth: 0,
-        collection: "reviews",
-        id: input.reviewId,
+      const existingReview = await prisma.reviews.findUnique({
+        where: { id: Number(input.reviewId) },
+        select: { user_id: true },
       });
 
       if (!existingReview) {
@@ -127,16 +99,15 @@ export const reviewsRouter = createTRPCRouter({
         });
       }
 
-      if (existingReview.user !== ctx.session.user.id) {
+      if (existingReview.user_id !== ctx.session.user.id) {
         throw new TRPCError({
           code: "FORBIDDEN",
           message: "You are not allowed to update this review",
         });
       }
 
-      const updatedReview = await ctx.payload.update({
-        collection: "reviews",
-        id: input.reviewId,
+      const updatedReview = await prisma.reviews.update({
+        where: { id: Number(input.reviewId) },
         data: {
           rating: input.rating,
           description: input.description,

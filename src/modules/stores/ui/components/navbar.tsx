@@ -2,6 +2,7 @@
 
 import dynamic from "next/dynamic";
 import Link from "next/link";
+import { notFound } from "next/navigation";
 
 import { useSuspenseQuery } from "@tanstack/react-query";
 
@@ -33,6 +34,10 @@ export function Navbar({ subdomain }: Props) {
     }),
   );
 
+  if (!data) {
+    notFound();
+  }
+
   return (
     <nav className="h-20 border-b bg-background">
       <div className="mx-auto flex h-full max-w-7xl items-center justify-between px-4 sm:px-6 lg:px-8">
@@ -40,9 +45,9 @@ export function Navbar({ subdomain }: Props) {
           href={generateStoreURL(subdomain)}
           className="flex items-center gap-2"
         >
-          {data.avatar?.url && (
+          {data.avatar_id && (
             <Avatar className="size-[32px]">
-              <AvatarImage src={data.avatar.url} />
+              <AvatarImage src={`/api/images/${data.avatar_id}`} />
               <AvatarFallback className="bg-primary/10 text-primary">
                 {data.name.charAt(0)}
               </AvatarFallback>

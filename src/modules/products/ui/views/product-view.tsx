@@ -16,6 +16,7 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Progress } from "@/components/ui/progress";
 import { Skeleton } from "@/components/ui/skeleton";
+import { calculateProductPricing } from "@/lib/calculate";
 import { formatCurrency } from "@/lib/utils";
 import { useTRPC } from "@/trpc/client";
 
@@ -55,6 +56,9 @@ export function ProductView({ productId, storeSubdomain }: Props) {
   if (!data) {
     notFound();
   }
+
+  const { discountPercentage, discountedPrice, originalPrice } =
+    calculateProductPricing(data);
 
   return (
     <div className="mx-auto max-w-7xl px-4 py-8 sm:px-6 lg:px-8">
@@ -106,23 +110,16 @@ export function ProductView({ productId, storeSubdomain }: Props) {
                 />
                 <div className="flex items-baseline space-x-2">
                   <span className="font-bold text-4xl">
-                    {data.discount_type === "flat"
-                      ? formatCurrency(data.price - data.discount_value)
-                      : formatCurrency(
-                          data.price - (data.price * data.discount_value) / 100,
-                        )}
+                    {formatCurrency(discountedPrice)}
                   </span>
-                  {data.discount_value > 0 && (
+                  {originalPrice && (
                     <span className="text-lg text-muted-foreground line-through">
-                      {formatCurrency(data.price)}
+                      {formatCurrency(originalPrice)}
                     </span>
                   )}
                   {data.discount_value > 0 && data.price > 0 && (
                     <Badge className="bg-green-100 text-green-800">
-                      {data.discount_type === "percentage"
-                        ? data.discount_value
-                        : (data.discount_value / data.price) * 100}
-                      % OFF
+                      {discountPercentage}% OFF
                     </Badge>
                   )}
                 </div>

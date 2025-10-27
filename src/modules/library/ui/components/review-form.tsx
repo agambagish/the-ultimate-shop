@@ -16,7 +16,7 @@ import { useTRPC } from "@/trpc/client";
 import type { AppRouter } from "@/trpc/routers/_app";
 
 interface Props {
-  orderId: string;
+  productId: string;
   initialData?: inferRouterOutputs<AppRouter>["reviews"]["getOne"];
 }
 
@@ -25,7 +25,7 @@ const formSchema = z.object({
   description: z.string().min(1, "Description is required"),
 });
 
-export function ReviewForm({ orderId, initialData }: Props) {
+export function ReviewForm({ productId, initialData }: Props) {
   const [isPreview, setIsPreview] = useState<boolean>(!!initialData);
 
   const trpc = useTRPC();
@@ -36,7 +36,7 @@ export function ReviewForm({ orderId, initialData }: Props) {
       onSuccess: () => {
         queryClient.invalidateQueries(
           trpc.reviews.getOne.queryOptions({
-            orderId,
+            productId,
           }),
         );
 
@@ -53,7 +53,7 @@ export function ReviewForm({ orderId, initialData }: Props) {
       onSuccess: () => {
         queryClient.invalidateQueries(
           trpc.reviews.getOne.queryOptions({
-            orderId,
+            productId,
           }),
         );
 
@@ -82,7 +82,7 @@ export function ReviewForm({ orderId, initialData }: Props) {
       });
     } else {
       createReview.mutate({
-        orderId,
+        productId,
         rating: values.rating,
         description: values.description,
       });

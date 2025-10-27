@@ -12,16 +12,20 @@ import { useTRPC } from "@/trpc/client";
 import { ReviewSidebar } from "../components/review-sidebar";
 
 interface Props {
-  orderId: string;
+  productId: string;
 }
 
-export function PurchasedProductView({ orderId }: Props) {
+export function PurchasedProductView({ productId }: Props) {
   const trpc = useTRPC();
   const { data } = useSuspenseQuery(
     trpc.library.getOne.queryOptions({
-      orderId,
+      productId,
     }),
   );
+
+  if (!data) {
+    return <div>TODO: Add Error Placeholder</div>;
+  }
 
   return (
     <div className="mx-auto max-w-7xl px-4 py-8 sm:px-6 lg:px-8">
@@ -36,7 +40,7 @@ export function PurchasedProductView({ orderId }: Props) {
         <div className="flex items-center justify-between">
           <div>
             <span className="font-bold text-3xl text-foreground">
-              Order #{data.orderId}
+              Order #{data.order.id}
             </span>
             <div className="mt-2 flex items-center space-x-4">
               <Badge className="border-green-200 bg-green-100 p-1.5 text-green-800">
@@ -44,7 +48,7 @@ export function PurchasedProductView({ orderId }: Props) {
                 Completed
               </Badge>
               <span className="text-muted-foreground">
-                Placed on {formatDateTime(data.placedOn)}
+                Placed on {formatDateTime(data.order.created_at)}
               </span>
             </div>
           </div>
@@ -52,11 +56,10 @@ export function PurchasedProductView({ orderId }: Props) {
       </div>
       <div className="grid grid-cols-1 gap-8 md:grid-cols-12">
         <ReviewSidebar
-          orderId={orderId}
-          paymentDetails={data.paymentDetails}
-          purchasedPrice={data.purchasedPrice}
-          purchasedDiscountedPrice={data.purchasedDiscountedPrice}
-          purchasedDiscountPercentage={data.purchasedDiscountPercentage}
+          productId={data.product.id.toString()}
+          paymentDetails={data.order.paymentDetails}
+          purchasedPrice={data.order.price}
+          purchasedDiscountedPrice={data.order.discounted_price}
         />
         <div className="md:col-span-8">
           <p className="font-medium text-muted-foreground italic">

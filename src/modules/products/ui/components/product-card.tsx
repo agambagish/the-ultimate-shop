@@ -8,6 +8,7 @@ import { useRouter } from "next/navigation";
 import { Star } from "lucide-react";
 
 import { Skeleton } from "@/components/ui/skeleton";
+import { calculateProductPricing } from "@/lib/calculate";
 import type { TQueryResult } from "@/lib/types";
 import { formatCurrency, generateStoreURL } from "@/lib/utils";
 
@@ -24,6 +25,8 @@ export function ProductCard({ product }: Props) {
 
     router.push(generateStoreURL(product.stores!.subdomain));
   }
+
+  const { discountedPrice, originalPrice } = calculateProductPricing(product);
 
   return (
     <Link
@@ -77,16 +80,11 @@ export function ProductCard({ product }: Props) {
           </div>
           <div className="flex items-center space-x-2 pt-1">
             <span className="font-bold text-foreground text-lg">
-              {product.discount_type === "flat"
-                ? formatCurrency(product.price - product.discount_value)
-                : formatCurrency(
-                    product.price -
-                      (product.price * product.discount_value) / 100,
-                  )}
+              {formatCurrency(discountedPrice)}
             </span>
-            {product.discount_value > 0 && (
+            {originalPrice && (
               <span className="font-bold text-lg text-muted-foreground line-through">
-                {formatCurrency(product.price)}
+                {formatCurrency(originalPrice)}
               </span>
             )}
           </div>

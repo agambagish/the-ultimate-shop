@@ -10,8 +10,9 @@ import type {
 import { getPayload } from "payload";
 
 import { cashfree } from "@/lib/cashfree";
+import { prisma } from "@/lib/prisma";
 import type { StrictDefined } from "@/lib/types";
-import type { PaymentDetails } from "@/modules/library/lib/types";
+import type { Order } from "@/payload-types";
 
 export async function POST(req: NextRequest) {
   const signature = req.headers.get("x-webhook-signature") || "";
@@ -44,9 +45,11 @@ export async function POST(req: NextRequest) {
         case "PAYMENT_SUCCESS_WEBHOOK":
           data = event.object.data as StrictDefined<PaymentWebhookDataEntity>;
 
-          const user = await payload.findByID({
-            collection: "users",
-            id: data.customer_details.customer_id,
+          const user = await prisma.users.findUnique({
+            where: {
+              id: Number(data.customer_details.customer_id),
+            },
+            select: { id: true },
           });
 
           if (!user) {
@@ -64,7 +67,7 @@ export async function POST(req: NextRequest) {
 
           const cartItems = extendedOrder.cart.items;
 
-          let paymentDetails: PaymentDetails = [];
+          let paymentDetails: Order["paymentDetails"] = [];
 
           if ("upi" in data.payment.payment_method) {
             paymentDetails = [
